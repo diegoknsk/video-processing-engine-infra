@@ -1,0 +1,259 @@
+---
+description: Regras de infraestrutura (Terraform, Kubernetes, AWS)
+alwaysApply: true
+---
+
+🧩 Regras gerais deste repositório (Infra / Terraform / Kubernetes)
+
+Este repositório é responsável por infraestrutura, não por lógica de negócio.
+
+Tudo que for criado na cloud deve ser descrito em Terraform ou em manifestos Kubernetes – nada de "ajeitar no console" sem voltar para o código.
+
+Manter o padrão de organização atual:
+
+- Infra AWS: diretório `terraform/`
+- Manifests Kubernetes: diretório `k8s/` (subpastas `app/` e `infra/`)
+
+Sempre que copiar algo de outro projeto, adaptar nomes, variáveis e comentários para o contexto atual.
+
+=====================
+0. AUTENTICAÇÃO NA AWS
+=====================
+
+**Regra obrigatória:** toda interação com a AWS (Terraform, AWS CLI, pipelines) deve usar credenciais explícitas e nunca hardcoded no código.
+
+0.1. Autenticação via Access Key, Secret Key e Session Token
+
+Para execução local (desenvolvimento, testes) e em pipelines que não assumem role:
+
+- **Access Key ID** (`AWS_ACCESS_KEY_ID`): identificador da credencial.
+- **Secret Access Key** (`AWS_SECRET_ACCESS_KEY`): chave secreta.
+- **Session Token** (`AWS_SESSION_TOKEN`): token de sessão (obrigatório quando as credenciais são temporárias, ex.: AWS Academy, SSO, assumed role).
+
+Variáveis de ambiente obrigatórias ao usar credenciais temporárias:
+
+```bash
+export AWS_ACCESS_KEY_ID="<sua-access-key-id>"
+export AWS_SECRET_ACCESS_KEY="<sua-secret-access-key>"
+export AWS_SESSION_TOKEN="<seu-session-token>"
+export AWS_REGION="<região>"
+```
+
+- Nunca commitar Access Key ID, Secret Access Key ou Session Token em arquivos do repositório.
+- Não definir credenciais em arquivos `.tf` ou em `backend` config com valores literais.
+- Preferir variáveis de ambiente ou arquivo de perfil (`~/.aws/credentials`) fora do versionamento.
+- Em CI/CD, usar secrets do pipeline (GitHub Secrets, GitLab CI variables, etc.) para injetar essas variáveis.
+
+0.2. Credenciais temporárias (AWS Academy / SSO)
+
+Em ambientes como **AWS Academy**, as credenciais são temporárias e incluem Session Token. O token expira; renove as credenciais pelo portal da Academy antes de rodar `terraform plan/apply` ou pipelines.
+
+- Sempre que usar credenciais da Academy, garantir que `AWS_SESSION_TOKEN` está definido.
+- Se o comando falhar com erro de credenciais expiradas, atualizar as três variáveis (Access Key ID, Secret Access Key, Session Token) e executar novamente.
+
+**Regra obrigatória:** em ambiente **AWS Academy**, a criação de vários componentes (EKS cluster, Node Groups, ECR, etc.) exige que o Terraform use a **Lab Role** fornecida pela Academy. O aluno não cria recursos com a identidade direta do usuário; a Lab Role é quem possui as permissões necessárias.
+
+0.3. Lab Role – Criação de componentes (AWS Academy)
+
+- **Lab Role** (`var.lab_role`): ARN da role que o Terraform usa para criar e gerenciar recursos (EKS, EKS Node Group, etc.). Deve ser **recebida como parâmetro** (variável ou variável de ambiente) e nunca hardcoded.
+- **Principal ARN** (`var.principal_arn`): ARN do principal (usuário ou role do aluno) que terá acesso ao cluster EKS via EKS Access Entry.
+- **Policy ARN** (`var.policy_arn`): ARN da policy de acesso ao EKS (ex.: `AmazonEKSClusterAdminPolicy`) associada ao principal.
+
+0.4. Obrigações
+
+- Antes de rodar `terraform plan` ou `terraform apply`, garantir que:
+  1. Você está autenticado (Access Key ID, Secret Access Key e, se aplicável, Session Token), conforme seção 0.1.
+  2. A variável **lab_role** está definida (tfvars, variável de ambiente ou pipeline) com o ARN da Lab Role fornecida pela AWS Academy.
+- Recursos que **devem** usar `var.lab_role`:
+  - `aws_eks_cluster`: `role_arn = var.lab_role`
+  - `aws_eks_node_group`: `node_role_arn = var.lab_role`
+- Acesso ao cluster (quem pode usar o cluster):
+  - Usar `aws_eks_access_entry` e `aws_eks_access_policy_association` com `principal_arn = var.principal_arn` e `policy_arn = var.policy_arn`.
+- Nunca hardcodear o ARN da Lab Role nem do principal nos arquivos `.tf`; sempre usar variáveis (ex.: `var.lab_role`, `var.principal_arn`).
+
+=====================
+1. REGRAS DE TERRAFORM
+=====================
+
+1.1. Versão e providers
+
+- Usar bloco `terraform` com `required_version >= "1.0"`.
+- Usar o provider AWS da família `~> 5.0` (ou versão estável atual).
+- Provider principal: região sempre parametrizada, nunca hardcoded.
+
+```hcl
+provider "aws" {
+  region = var.aws_region
+}
+```
+
+1.2. Backend remoto (state) – boas práticas DevOps
+
+- Backend deve ser **sempre S3**, nunca local.
+- O arquivo `backend.tf` é o dono único da configuração do backend.
+- Habilitar **state locking** com DynamoDB para evitar conflitos em execuções paralelas (recomendado em equipe e CI/CD).
+- Não commitar: `*.tfstate`, `*.tfstate.backup`, `.terraform/`, arquivos `.tfplan`.
+- Não alterar bucket ou key do state sem planejamento; garantir que o bucket (e a tabela DynamoDB, se usar lock) exista antes de `terraform init`.
+
+Exemplo de backend com lock:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "nome-do-bucket-state"
+    key            = "ambiente/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-lock"
+    encrypt        = true
+  }
+}
+```
+
+1.3. Organização de arquivos
+
+Um arquivo por responsabilidade:
+
+- `providers.tf` → versão do Terraform e provider AWS
+- `backend.tf` → configuração do backend S3 (e lock se aplicável)
+- `datasource.tf` → `data "aws_*"` e helpers de descoberta
+- `network.tf` → VPC e subnets
+- `sg.tf` → Security Groups principais
+- `eks-cluster.tf` → `aws_eks_cluster`
+- `eks-node.tf` → `aws_eks_node_group`
+- `eks-access-policy.tf` / `access-entry.tf` → acesso ao cluster (IAM/EKS)
+- `ecr.tf` → repositórios ECR
+- `network-rds.tf` → regras SG entre EKS e RDS (quando aplicável)
+- `variables.tf` → variáveis de entrada
+- `outputs.tf` → outputs públicos
+- `locals.tf` → locals (evitar valores sensíveis)
+
+Para novos recursos: `network-*.tf`, `sg-*.tf`, `monitoring-*.tf`, etc. Evitar arquivos únicos com centenas de linhas.
+
+1.4. Variáveis, nomes e tags
+
+Parametrizar por ambiente: `project_name`, `env`, `aws_region`, `lab_role`, `policy_arn`, `principal_arn`.
+
+Padrão de nomes:
+
+```hcl
+name = "${var.project_name}-api"
+name = "eks-${var.project_name}"
+node_group_name = "nodeg-${var.project_name}"
+```
+
+Tags mínimas em todos os recursos suportados:
+
+```hcl
+tags = {
+  Name        = "${var.project_name}-<recurso>"
+  Environment = var.env
+  Project     = var.project_name
+}
+```
+
+1.5. Uso da Lab Role (EKS e Node Group)
+
+- Não criar novas roles "admin" no Terraform; usar a Lab Role fornecida (seção 0).
+- EKS: `role_arn = var.lab_role`.
+- Node Group: `node_role_arn = var.lab_role`.
+- Acesso ao cluster: `aws_eks_access_entry` + `aws_eks_access_policy_association` com `cluster_name`, `policy_arn`, `principal_arn` via variáveis.
+
+1.6. VPC e subnets
+
+- Usar VPC default quando o contexto permitir (ex.: AWS Academy):
+
+```hcl
+data "aws_vpc" "default" { default = true }
+```
+
+- Subnets: descobrir via `data "aws_subnets"` filtrando pela VPC e AZs permitidas.
+- Excluir AZs não suportadas no ambiente (ex.: `us-east-1e` no Academy) quando necessário.
+- Não criar VPC nova se o ambiente (ex.: Academy) restringir ou se não for requisito.
+
+1.7. Security Groups
+
+- SG principal: expor apenas portas necessárias (ex.: 80, 443). Egress 0.0.0.0/0 é aceitável para MVP; não abrir ingress desnecessário.
+- EKS ↔ RDS: regras em arquivo dedicado (ex.: `network-rds.tf`), restringindo por SG do EKS e SG do RDS. Nunca abrir RDS para 0.0.0.0/0. Portas: MySQL 3306, PostgreSQL 5432.
+
+1.8. Cluster EKS e Node Group
+
+- Cluster: `role_arn = var.lab_role`, `version` e `vpc_config` parametrizados.
+- Node Group: `node_role_arn = var.lab_role`, `scaling_config` (min/desired/max), `update_config { max_unavailable = 1 }`, `instance_types` via variável.
+
+1.9. ECR
+
+- Usar feature flag (ex.: `var.manage_ecr`) para criar ou não repositórios.
+- ECR: `image_tag_mutability = "MUTABLE"`, `image_scanning_configuration { scan_on_push = true }`, `force_delete = true` em lab, lifecycle policy para expirar imagens antigas. Nomes: `${var.project_name}-<sufixo>`.
+
+1.10. Data sources e outputs
+
+- Evitar IDs hardcoded; usar `data "aws_*"` quando possível.
+- Outputs: apenas o necessário para kubeconfig, pipelines e integração (ex.: `eks_name`, `eks_endpoint`, `eks_ca`, URLs ECR).
+
+1.11. Boas práticas DevOps (Terraform)
+
+- **Idempotência:** múltiplas execuções de `terraform apply` com o mesmo estado não devem criar recursos duplicados.
+- **Estado remoto e lock:** sempre S3 + DynamoDB (ou equivalente) em ambiente compartilhado.
+- **Sem segredos no código:** nenhuma senha, token ou connection string em `.tf`; usar Secrets Manager ou variáveis de ambiente nos pipelines e injetar em Kubernetes Secret.
+- **Validação antes de commit:**
+  1. `terraform init` (se houver mudança de módulos/backend)
+  2. `terraform fmt -recursive`
+  3. `terraform validate` → deve retornar "Success! The configuration is valid."
+- Não commitar código com `terraform validate` falhando.
+- Opcional: em CI, rodar `terraform plan` e revisar mudanças antes de apply.
+
+=====================
+2. REGRAS DE KUBERNETES (manifests em /k8s)
+=====================
+
+2.1. Organização
+
+- Aplicações: `k8s/app/<serviço>/` (ex.: `api-deployment.yaml`, `api-service.yaml`, `api-hpa.yaml`).
+- Infra compartilhada: `k8s/infra/` (namespace, configmap, metrics, etc.).
+
+2.2. Namespaces
+
+- Não usar o namespace `default` para aplicações do projeto.
+- Usar Namespace explícito (ex.: `namespace.yaml`) com nome claro por contexto (ex.: orderhub, paystream, kitchenflow).
+
+2.3. Deployments
+
+- `kind: Deployment`, `strategy: RollingUpdate` (ex.: `maxUnavailable: 0`, `maxSurge: 1`).
+- `spec.selector.matchLabels` = `spec.template.metadata.labels`.
+- Imagem da aplicação principal a partir de ECR (não Docker Hub público para produção).
+- Container: `ports.containerPort` nomeado (ex.: `name: http`), `resources.requests` e `resources.limits` definidos.
+- Config não sensível: `envFrom.configMapRef`; sensível: `envFrom.secretRef`.
+
+2.4. Services
+
+- Uma aplicação exposta = um Service. LoadBalancer com annotations NLB quando em AWS (internet-facing, nlb). `spec.selector` alinhado ao Deployment.
+
+2.5. HPA
+
+- API `autoscaling/v2`, métrica de CPU (e opcionalmente memória). `minReplicas >= 2` quando alta disponibilidade for requisito; `maxReplicas` coerente com capacidade do cluster.
+
+2.6. ConfigMaps e Secrets
+
+- **ConfigMap:** apenas dados não sensíveis (URLs, issuer, audience, timeouts, nomes).
+- **Secret:** senhas, connection strings, tokens, chaves. Nunca commitar valores reais; usar placeholders ou injeção via pipeline.
+
+=====================
+3. AUTENTICAÇÃO E ACESSO (resumo)
+=====================
+
+- **Terraform / CLI:** autenticar com Access Key ID, Secret Access Key e Session Token (variáveis de ambiente ou perfil), conforme seção 0.1.
+- **Criação de recursos (AWS Academy):** usar Lab Role em `var.lab_role`; nunca hardcodear ARNs (seção 0.3–0.4).
+- **Acesso ao EKS:** `aws eks update-kubeconfig --name <eks_name> --region <region> --role-arn <lab_role>`; preferir EKS Access Entry em vez de editar `aws-auth` manualmente.
+- **Tokens de aplicação (JWT/Cognito):** Terraform não gerencia; apenas prover infra. Em Kubernetes: config em ConfigMap, segredos em Secret.
+
+=====================
+4. DEFINIÇÃO DE "FEITO" PARA MUDANÇAS DE INFRA
+=====================
+
+Considerar a mudança concluída somente se:
+
+- `terraform fmt -recursive` e `terraform validate` executados sem erro.
+- `terraform init` executado quando houver mudança de módulos/backend.
+- Nomes e tags seguindo o padrão; segurança mínima (nada exposto desnecessariamente).
+- Manifests com namespace correto; Deployment + Service + HPA quando aplicável; ConfigMap vs Secret usados corretamente.
+- Nenhuma credencial (Access Key, Secret, Token, Lab Role ARN literal) commitada em `.tf` ou `.yaml`.
