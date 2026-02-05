@@ -1,3 +1,3 @@
 # Módulo 30-messaging
-# Propósito: SNS (tópicos) e SQS (filas + DLQs). Recursos nas Storie-05 e Storie-06.
-# Nenhum resource "aws_*" neste placeholder.
+# Propósito: SNS (tópicos + subscriptions) — Storie-05; SQS (filas + DLQs + redrive) — Storie-06.
+# Recursos: sns.tf (tópicos e subscriptions), sqs.tf (filas e DLQs), variables.tf, outputs.tf.

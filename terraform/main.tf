@@ -35,8 +35,25 @@ module "data" {
   common_tags = module.foundation.common_tags
 }
 
+# --- Messaging (SNS + SQS) ---
+module "messaging" {
+  source = "./30-messaging"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+
+  enable_email_subscription_completed  = var.enable_email_subscription_completed
+  email_endpoint                      = var.email_endpoint
+  enable_lambda_subscription_completed = var.enable_lambda_subscription_completed
+  lambda_subscription_arn              = var.lambda_subscription_arn
+
+  visibility_timeout_seconds    = var.visibility_timeout_seconds
+  message_retention_seconds    = var.message_retention_seconds
+  max_receive_count            = var.max_receive_count
+  dlq_message_retention_seconds = var.dlq_message_retention_seconds
+}
+
 # --- Demais módulos: incluir quando implementados ---
-# module "messaging"  { source = "./30-messaging";  prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "lambdas"    { source = "./50-lambdas-shell"; ... }
 # module "api"        { source = "./60-api"; ... }

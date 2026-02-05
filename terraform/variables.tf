@@ -47,3 +47,52 @@ variable "enable_lifecycle_expiration" {
   type        = bool
   default     = true
 }
+
+# --- Messaging (30-messaging: SNS + SQS) ---
+variable "enable_email_subscription_completed" {
+  description = "Habilita subscription email no topic-video-completed (SNS)."
+  type        = bool
+  default     = false
+}
+
+variable "email_endpoint" {
+  description = "E-mail para notificação no topic-video-completed quando enable_email_subscription_completed = true."
+  type        = string
+  default     = null
+}
+
+variable "enable_lambda_subscription_completed" {
+  description = "Placeholder: habilita subscription Lambda no topic-video-completed (preparado para depois)."
+  type        = bool
+  default     = false
+}
+
+variable "lambda_subscription_arn" {
+  description = "ARN da Lambda para subscription no topic-video-completed (quando enable_lambda_subscription_completed = true)."
+  type        = string
+  default     = null
+}
+
+variable "visibility_timeout_seconds" {
+  description = "SQS: tempo de visibilidade da mensagem após recebimento (segundos)."
+  type        = number
+  default     = 300
+}
+
+variable "message_retention_seconds" {
+  description = "SQS: retenção de mensagens na fila principal (segundos)."
+  type        = number
+  default     = 345600
+}
+
+variable "max_receive_count" {
+  description = "SQS: tentativas antes de enviar mensagem à DLQ."
+  type        = number
+  default     = 3
+}
+
+variable "dlq_message_retention_seconds" {
+  description = "SQS: retenção na DLQ (segundos)."
+  type        = number
+  default     = 1209600
+}

@@ -1,8 +1,13 @@
 # Storie-06: Implementar Módulo Terraform 30-Messaging (Parte SQS)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2025
+
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2025, às 14:30
+- **Fim:** dia 05/02/2025, às 15:05
+- **Tempo total de desenvolvimento:** 35 min
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/30-messaging` provisione as filas SQS e DLQs necessárias ao fluxo do Processador Video MVP (q-video-process, q-video-status-update, q-video-zip-finalize e suas DLQs), com redrive policy em todas e parâmetros essenciais via variável, para garantir resiliência e uma "caixa de falhas" (DLQ) sem criar Lambdas nem event mappings nesta story.
@@ -67,24 +72,24 @@ O diretório `terraform/30-messaging/` é um **módulo** consumido pelo **root**
 - **Resiliência:** documentar na story e no README que DLQ é a "caixa de falhas" e que redrive policy evita perda de mensagens.
 
 ## Subtasks
-- [Subtask 01: Variáveis SQS (visibility, retention, maxReceiveCount) e consumo do foundation](./subtask/Subtask-01-Variaveis_SQS_Foundation.md)
-- [Subtask 02: Filas principais e DLQs (q-video-process, q-video-status-update, q-video-zip-finalize)](./subtask/Subtask-02-Filas_DLQs.md)
-- [Subtask 03: Redrive policy em todas as filas principais](./subtask/Subtask-03-Redrive_Policy.md)
-- [Subtask 04: Outputs (queue URLs e ARNs) e documentação do encaixe no desenho](./subtask/Subtask-04-Outputs_Encaixe.md)
-- [Subtask 05: Documentar resiliência e DLQ como caixa de falhas; validação](./subtask/Subtask-05-Resiliencia_Validacao.md)
+- [x] [Subtask 01: Variáveis SQS (visibility, retention, maxReceiveCount) e consumo do foundation](./subtask/Subtask-01-Variaveis_SQS_Foundation.md)
+- [x] [Subtask 02: Filas principais e DLQs (q-video-process, q-video-status-update, q-video-zip-finalize)](./subtask/Subtask-02-Filas_DLQs.md)
+- [x] [Subtask 03: Redrive policy em todas as filas principais](./subtask/Subtask-03-Redrive_Policy.md)
+- [x] [Subtask 04: Outputs (queue URLs e ARNs) e documentação do encaixe no desenho](./subtask/Subtask-04-Outputs_Encaixe.md)
+- [x] [Subtask 05: Documentar resiliência e DLQ como caixa de falhas; validação](./subtask/Subtask-05-Resiliencia_Validacao.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/30-messaging` cria três pares de fila + DLQ: q-video-process + dlq-video-process, q-video-status-update + dlq-video-status-update, q-video-zip-finalize + dlq-video-zip-finalize, com nomes derivados do prefix
-- [ ] Redrive policy está configurada em todas as filas principais, apontando para a DLQ correspondente com maxReceiveCount via variável
-- [ ] Parâmetros essenciais são configuráveis por variável: visibility_timeout (visibility_timeout_seconds), retention (message_retention_seconds), maxReceiveCount (max_receive_count); DLQ retention opcional (dlq_message_retention_seconds)
-- [ ] Outputs expõem queue URLs e ARNs das seis filas (três principais + três DLQs)
-- [ ] Nenhuma Lambda nem event mapping (event_source_mapping, subscription SNS→SQS) criada nesta story
-- [ ] A story documenta o encaixe no desenho: SNS video-submitted → q-video-process; status update → q-video-status-update; finalize zip → q-video-zip-finalize
-- [ ] A story reforça resiliência e DLQ como "caixa de falhas" (evitar perda de mensagens, inspeção e retry)
-- [ ] Consumo de prefix e common_tags do foundation; terraform plan sem referências quebradas
+- [x] O módulo `terraform/30-messaging` cria três pares de fila + DLQ: q-video-process + dlq-video-process, q-video-status-update + dlq-video-status-update, q-video-zip-finalize + dlq-video-zip-finalize, com nomes derivados do prefix
+- [x] Redrive policy está configurada em todas as filas principais, apontando para a DLQ correspondente com maxReceiveCount via variável
+- [x] Parâmetros essenciais são configuráveis por variável: visibility_timeout (visibility_timeout_seconds), retention (message_retention_seconds), maxReceiveCount (max_receive_count); DLQ retention opcional (dlq_message_retention_seconds)
+- [x] Outputs expõem queue URLs e ARNs das seis filas (três principais + três DLQs)
+- [x] Nenhuma Lambda nem event mapping (event_source_mapping, subscription SNS→SQS) criada nesta story
+- [x] A story documenta o encaixe no desenho: SNS video-submitted → q-video-process; status update → q-video-status-update; finalize zip → q-video-zip-finalize
+- [x] A story reforça resiliência e DLQ como "caixa de falhas" (evitar perda de mensagens, inspeção e retry)
+- [x] Consumo de prefix e common_tags do foundation; terraform plan sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] Arquivos .tf do 30-messaging (parte SQS) criados/atualizados; nenhum aws_lambda_* nem event mapping no escopo desta story
-- [ ] terraform init e terraform validate em terraform/30-messaging com sucesso
-- [ ] terraform plan com variáveis fornecidas, sem erros de referência
-- [ ] README ou story documenta encaixe no desenho e resiliência/DLQ como caixa de falhas
+- [x] Arquivos .tf do 30-messaging (parte SQS) criados/atualizados; nenhum aws_lambda_* nem event mapping no escopo desta story
+- [x] terraform init e terraform validate em terraform/30-messaging com sucesso
+- [x] terraform plan com variáveis fornecidas, sem erros de referência
+- [x] README ou story documenta encaixe no desenho e resiliência/DLQ como caixa de falhas

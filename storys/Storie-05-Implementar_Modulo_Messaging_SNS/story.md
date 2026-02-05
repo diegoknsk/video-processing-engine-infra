@@ -1,8 +1,13 @@
 # Storie-05: Implementar Módulo Terraform 30-Messaging (Parte SNS)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2025
+
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2025, às 14:30
+- **Fim:** dia 05/02/2025, às 15:05
+- **Tempo total de desenvolvimento:** 35 min
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/30-messaging` provisione os tópicos SNS necessários ao fluxo do Processador Video MVP (topic-video-submitted e topic-video-completed), com subscription placeholder configurável por variável (email para notificação ou Lambda para futuro), para suportar o desenho de eventos sem criar SQS nesta story.
@@ -71,23 +76,23 @@ Resumo: **ativo agora** = tópicos SNS + subscription email (opcional, configur�
 - **Serviços:** apenas SNS e aws_sns_topic_subscription (protocol email ou lambda); sem inventar outros serviços.
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
-- [Subtask 02: Tópicos SNS topic-video-submitted e topic-video-completed](./subtask/Subtask-02-Topicos_SNS.md)
-- [Subtask 03: Subscription placeholder configurável (email e Lambda)](./subtask/Subtask-03-Subscription_Placeholder.md)
-- [Subtask 04: Outputs (topic ARNs) e documentação do caminho de eventos](./subtask/Subtask-04-Outputs_Documentacao.md)
-- [Subtask 05: Documentar "ativo agora" vs "preparado para depois" e validação](./subtask/Subtask-05-Ativo_Preparado_Validacao.md)
+- [x] [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
+- [x] [Subtask 02: Tópicos SNS topic-video-submitted e topic-video-completed](./subtask/Subtask-02-Topicos_SNS.md)
+- [x] [Subtask 03: Subscription placeholder configurável (email e Lambda)](./subtask/Subtask-03-Subscription_Placeholder.md)
+- [x] [Subtask 04: Outputs (topic ARNs) e documentação do caminho de eventos](./subtask/Subtask-04-Outputs_Documentacao.md)
+- [x] [Subtask 05: Documentar "ativo agora" vs "preparado para depois" e validação](./subtask/Subtask-05-Ativo_Preparado_Validacao.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/30-messaging` cria dois tópicos SNS: topic-video-submitted e topic-video-completed, com nomes derivados do prefix
-- [ ] Outputs expõem os ARNs dos dois tópicos (topic_video_submitted_arn, topic_video_completed_arn)
-- [ ] Subscription placeholder é configurável por variável: email (notificação, ativo agora) e/ou Lambda (futuro, preparado para depois) para topic-video-completed
-- [ ] Nenhuma fila SQS criada nesta story; nenhum serviço inventado fora da lista (SNS, subscriptions email/Lambda)
-- [ ] A story documenta o caminho de evento: quem publica em topic-video-submitted (ex.: S3 event / Lambda Video Management) e quem consome depois (SQS); quem publica em topic-video-completed (Lambda Video Finalizer) e quem consome (email/Lambda)
-- [ ] A story separa explicitamente "ativo agora" (tópicos + subscription email opcional) vs "preparado para depois" (subscription Lambda placeholder, SQS em outra story)
-- [ ] Consumo de prefix e common_tags do foundation; terraform plan sem referências quebradas
+- [x] O módulo `terraform/30-messaging` cria dois tópicos SNS: topic-video-submitted e topic-video-completed, com nomes derivados do prefix
+- [x] Outputs expõem os ARNs dos dois tópicos (topic_video_submitted_arn, topic_video_completed_arn)
+- [x] Subscription placeholder é configurável por variável: email (notificação, ativo agora) e/ou Lambda (futuro, preparado para depois) para topic-video-completed
+- [x] Nenhuma fila SQS criada nesta story; nenhum serviço inventado fora da lista (SNS, subscriptions email/Lambda)
+- [x] A story documenta o caminho de evento: quem publica em topic-video-submitted (ex.: S3 event / Lambda Video Management) e quem consome depois (SQS); quem publica em topic-video-completed (Lambda Video Finalizer) e quem consome (email/Lambda)
+- [x] A story separa explicitamente "ativo agora" (tópicos + subscription email opcional) vs "preparado para depois" (subscription Lambda placeholder, SQS em outra story)
+- [x] Consumo de prefix e common_tags do foundation; terraform plan sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] Arquivos .tf do 30-messaging (parte SNS) criados; nenhum aws_sqs_queue no módulo
-- [ ] terraform init e terraform validate em terraform/30-messaging com sucesso
-- [ ] terraform plan com prefix e common_tags fornecidos, sem erros de referência
-- [ ] README ou story documenta caminho de eventos e tabela ativo agora vs preparado para depois
+- [x] Arquivos .tf do 30-messaging (parte SNS) criados; nenhum aws_sqs_queue no módulo
+- [x] terraform init e terraform validate em terraform/30-messaging com sucesso
+- [x] terraform plan com prefix e common_tags fornecidos, sem erros de referência
+- [x] README ou story documenta caminho de eventos e tabela ativo agora vs preparado para depois
