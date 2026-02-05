@@ -2,12 +2,12 @@
 
 ## Status
 - **Estado:** ✅ Concluída
-- **Data de Conclusão:** 05/02/2025
+- **Data de Conclusão:** 05/02/2026
 
 ## Rastreamento (dev tracking)
-- **Início:** dia 05/02/2025, às 14:30
-- **Fim:** dia 05/02/2025, às 15:05
-- **Tempo total de desenvolvimento:** 35 min
+- **Início:** dia 05/02/2026, às 00:45 (Brasília)
+- **Fim:** dia 05/02/2026, às 00:55 (Brasília)
+- **Tempo total de desenvolvimento:** 10 min
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/30-messaging` provisione os tópicos SNS necessários ao fluxo do Processador Video MVP (topic-video-submitted e topic-video-completed), com subscription placeholder configurável por variável (email para notificação ou Lambda para futuro), para suportar o desenho de eventos sem criar SQS nesta story.
