@@ -5,7 +5,7 @@
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Rastreamento (dev tracking)
-- **Início:** dia 05/02/2026 (Brasília)
+- **Início:** dia 05/02/2026, às 14:47 (Brasília)
 - **Fim:** —
 - **Tempo total de desenvolvimento:** —
 
