@@ -153,3 +153,28 @@ variable "enable_status_update_consumer" {
   type        = bool
   default     = true
 }
+
+# --- API Gateway (60-api, Storie-10) ---
+variable "enable_api_authorizer" {
+  description = "Habilita JWT authorizer Cognito na API Gateway. Quando false ou quando 40-auth não existir, rotas ficam acessíveis sem token (bootstrap)."
+  type        = bool
+  default     = false
+}
+
+variable "cognito_issuer_url" {
+  description = "URL do issuer do Cognito User Pool (output do módulo 40-auth). Obrigatório quando enable_api_authorizer = true."
+  type        = string
+  default     = null
+}
+
+variable "cognito_audience" {
+  description = "Audience do JWT Cognito (ex.: client ID do App Client). Output do módulo 40-auth. List quando múltiplos clients."
+  type        = list(string)
+  default     = null
+}
+
+variable "api_stage_name" {
+  description = "Nome do stage da API Gateway (ex.: dev)."
+  type        = string
+  default     = "dev"
+}

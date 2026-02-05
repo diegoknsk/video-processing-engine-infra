@@ -118,6 +118,21 @@ module "orchestration" {
   lab_role_arn = var.lab_role_arn
 }
 
+# --- API Gateway HTTP API (Storie-10) ---
+module "api" {
+  source = "./60-api"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+
+  lambda_auth_arn             = module.lambdas.lambda_auth_arn
+  lambda_video_management_arn = module.lambdas.lambda_video_management_arn
+
+  enable_authorizer  = var.enable_api_authorizer
+  cognito_issuer_url = var.cognito_issuer_url
+  cognito_audience   = var.cognito_audience
+  stage_name         = var.api_stage_name
+}
+
 # --- Demais módulos: incluir quando implementados ---
 # module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
-# module "api"        { source = "./60-api"; ... }

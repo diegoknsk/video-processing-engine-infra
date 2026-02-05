@@ -4,6 +4,11 @@
 - **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026 (Brasília)
+- **Fim:** —
+- **Tempo total de desenvolvimento:** —
+
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/60-api` provisione uma API Gateway HTTP API com stage dev e rotas placeholder (/auth/* → LambdaAuth, /videos/* → LambdaVideoManagement), com suporte preparado para JWT authorizer do Cognito (enable_authorizer, issuer/audience via outputs do módulo 40-auth), para que o fluxo de entrada no sistema (autenticação e gerenciamento de vídeos) esteja alinhado ao desenho do Processador Video MVP com o mínimo necessário para bootstrap e evolução.
 
@@ -85,23 +90,23 @@ O diretório `terraform/60-api/` é um **módulo** consumido pelo **root** em `t
 - **Mínimo para bootstrap:** Sem throttling, WAF ou regras complexas; apenas API, stage, rotas, integrações e authorizer opcional.
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo e consumo de ARNs (Lambdas, Cognito)](./subtask/Subtask-01-Variaveis_Consumo.md)
-- [Subtask 02: HTTP API, stage dev e integrações Lambda (Auth, VideoManagement)](./subtask/Subtask-02-API_Stage_Integracoes.md)
-- [Subtask 03: Rotas placeholder /auth/* e /videos/*](./subtask/Subtask-03-Rotas_Placeholder.md)
-- [Subtask 04: JWT authorizer (Cognito) opcional e outputs](./subtask/Subtask-04-Authorizer_Outputs.md)
-- [Subtask 05: Documentar decisão HTTP API vs REST e validação](./subtask/Subtask-05-Documentacao_Validacao.md)
+- [x] [Subtask 01: Variáveis do módulo e consumo de ARNs (Lambdas, Cognito)](./subtask/Subtask-01-Variaveis_Consumo.md)
+- [x] [Subtask 02: HTTP API, stage dev e integrações Lambda (Auth, VideoManagement)](./subtask/Subtask-02-API_Stage_Integracoes.md)
+- [x] [Subtask 03: Rotas placeholder /auth/* e /videos/*](./subtask/Subtask-03-Rotas_Placeholder.md)
+- [x] [Subtask 04: JWT authorizer (Cognito) opcional e outputs](./subtask/Subtask-04-Authorizer_Outputs.md)
+- [x] [Subtask 05: Documentar decisão HTTP API vs REST e validação](./subtask/Subtask-05-Documentacao_Validacao.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/60-api` cria uma API Gateway HTTP API com stage dev quando variáveis de Lambdas são fornecidas
-- [ ] Rotas placeholder configuradas: /auth/* → LambdaAuth, /videos/* → LambdaVideoManagement; integrações apontam para as Lambdas casca (ARNs do módulo 50-lambdas-shell)
-- [ ] Suporte a JWT authorizer do Cognito preparado: enable_authorizer por variável; issuer e audience via variáveis (outputs do Cognito / 40-auth quando existir); quando enable_authorizer = true e issuer/audience fornecidos, authorizer configurado (rotas /videos/* protegidas ou conforme decisão)
-- [ ] Outputs expõem a invoke URL da API (ex.: https://{api_id}.execute-api.{region}.amazonaws.com/dev)
-- [ ] Sem regras complexas (apenas API, stage, rotas, integrações, authorizer opcional); mínimo para bootstrap e evolução
-- [ ] A story documenta a decisão HTTP API vs REST e o porquê (custo, JWT nativo, simplicidade para MVP)
-- [ ] Consumo de prefix/common_tags e dos outputs dos módulos lambdas (e 40-auth quando authorizer habilitado); terraform plan sem referências quebradas
+- [x] O módulo `terraform/60-api` cria uma API Gateway HTTP API com stage dev quando variáveis de Lambdas são fornecidas
+- [x] Rotas placeholder configuradas: /auth/* → LambdaAuth, /videos/* → LambdaVideoManagement; integrações apontam para as Lambdas casca (ARNs do módulo 50-lambdas-shell)
+- [x] Suporte a JWT authorizer do Cognito preparado: enable_authorizer por variável; issuer e audience via variáveis (outputs do Cognito / 40-auth quando existir); quando enable_authorizer = true e issuer/audience fornecidos, authorizer configurado (rotas /videos/* protegidas ou conforme decisão)
+- [x] Outputs expõem a invoke URL da API (ex.: https://{api_id}.execute-api.{region}.amazonaws.com/dev)
+- [x] Sem regras complexas (apenas API, stage, rotas, integrações, authorizer opcional); mínimo para bootstrap e evolução
+- [x] A story documenta a decisão HTTP API vs REST e o porquê (custo, JWT nativo, simplicidade para MVP)
+- [x] Consumo de prefix/common_tags e dos outputs dos módulos lambdas (e 40-auth quando authorizer habilitado); terraform plan sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] HTTP API e stage dev criados; rotas /auth/* e /videos/* com integrações Lambda
-- [ ] JWT authorizer opcional (enable_authorizer, issuer/audience); outputs com invoke URL
-- [ ] README com decisão HTTP API vs REST e descrição das rotas
-- [ ] terraform init, validate e plan com variáveis fornecidas passam
+- [x] HTTP API e stage dev criados; rotas /auth/* e /videos/* com integrações Lambda
+- [x] JWT authorizer opcional (enable_authorizer, issuer/audience); outputs com invoke URL
+- [x] README com decisão HTTP API vs REST e descrição das rotas
+- [x] terraform init, validate e plan com variáveis fornecidas passam

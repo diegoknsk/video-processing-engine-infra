@@ -9,4 +9,4 @@ retention_days              = 7
 enable_cloudwatch_retention = true
 
 # AWS Academy: role existente (sem iam:CreateRole)
-lab_role_arn                = "arn:aws:iam::804879632477:role/LabRole"
+lab_role_arn = "arn:aws:iam::804879632477:role/LabRole"

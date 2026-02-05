@@ -79,3 +79,14 @@ output "step_machine_log_group_name" {
   description = "Nome do log group CloudWatch da Step Functions."
   value       = module.orchestration.log_group_name
 }
+
+# --- API Gateway HTTP API (Storie-10) ---
+output "api_invoke_url" {
+  description = "URL de invocação da API Gateway (stage). Ex.: https://{api_id}.execute-api.{region}.amazonaws.com/dev"
+  value       = module.api.api_invoke_url
+}
+
+output "api_id" {
+  description = "ID da API Gateway HTTP API."
+  value       = module.api.api_id
+}
