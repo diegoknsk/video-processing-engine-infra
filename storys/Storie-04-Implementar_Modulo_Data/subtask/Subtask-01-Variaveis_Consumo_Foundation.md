@@ -15,6 +15,6 @@ Criar o arquivo `terraform/20-data/variables.tf` com as variáveis necessárias 
 3. Listar variáveis documentadas na story (prefix, common_tags, enable_ttl, ttl_attribute_name, billing_mode, environment) e confirmar que estão declaradas em variables.tf.
 
 ## Critérios de aceite da subtask
-- [ ] O arquivo `terraform/20-data/variables.tf` existe e declara prefix e common_tags (obrigatórios ou com default compatível).
-- [ ] Variáveis enable_ttl, ttl_attribute_name e billing_mode estão declaradas com default documentado.
-- [ ] O módulo não possui referência quebrada ao foundation; terraform validate passa.
+- [x] O arquivo `terraform/20-data/variables.tf` existe e declara prefix e common_tags (obrigatórios ou com default compatível).
+- [x] Variáveis enable_ttl, ttl_attribute_name e billing_mode estão declaradas com default documentado.
+- [x] O módulo não possui referência quebrada ao foundation; terraform validate passa.

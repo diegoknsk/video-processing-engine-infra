@@ -15,6 +15,6 @@ Adicionar um GSI à tabela DynamoDB com partition key GSI1PK e sort key GSI1SK, 
 3. Ler README ou comentários e confirmar que o pattern PK/SK e GSI está descrito (consulta por usuário e por VideoId).
 
 ## Critérios de aceite da subtask
-- [ ] A tabela DynamoDB possui 1 GSI com hash_key GSI1PK e range_key GSI1SK; atributos GSI1PK e GSI1SK declarados.
-- [ ] O GSI permite consulta por VideoId (GSI1PK=VideoId) e a tabela principal permite consulta por usuário (PK=UserId, SK=VideoId).
-- [ ] terraform validate e plan passam; documentação do pattern de acesso (tabela principal + GSI) presente no código ou README.
+- [x] A tabela DynamoDB possui 1 GSI com hash_key GSI1PK e range_key GSI1SK; atributos GSI1PK e GSI1SK declarados.
+- [x] O GSI permite consulta por VideoId (GSI1PK=VideoId) e a tabela principal permite consulta por usuário (PK=UserId, SK=VideoId).
+- [x] terraform validate e plan passam; documentação do pattern de acesso (tabela principal + GSI) presente no código ou README.

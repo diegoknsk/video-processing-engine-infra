@@ -1,3 +1,2 @@
-# Módulo 20-data
-# Propósito: Tabela DynamoDB para metadados e status dos vídeos. Recursos na Storie-04.
-# Nenhum resource "aws_*" neste placeholder.
+# Módulo 20-data — Tabela DynamoDB (vídeos/processamento).
+# Recursos em dynamodb.tf; variáveis em variables.tf; outputs em outputs.tf.

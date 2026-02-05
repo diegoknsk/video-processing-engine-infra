@@ -27,8 +27,15 @@ module "storage" {
   enable_lifecycle_expiration = var.enable_lifecycle_expiration
 }
 
+# --- Data (DynamoDB vídeos/processamento) ---
+module "data" {
+  source = "./20-data"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+}
+
 # --- Demais módulos: incluir quando implementados ---
-# module "data"       { source = "./20-data";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "messaging"  { source = "./30-messaging";  prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "lambdas"    { source = "./50-lambdas-shell"; ... }

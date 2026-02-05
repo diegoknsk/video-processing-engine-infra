@@ -52,3 +52,19 @@ output "zip_bucket_arn" {
   description = "ARN do bucket S3 de zip."
   value       = module.storage.zip_bucket_arn
 }
+
+# --- Data (DynamoDB vídeos) ---
+output "dynamodb_table_name" {
+  description = "Nome da tabela DynamoDB de vídeos."
+  value       = module.data.table_name
+}
+
+output "dynamodb_table_arn" {
+  description = "ARN da tabela DynamoDB de vídeos."
+  value       = module.data.table_arn
+}
+
+output "dynamodb_gsi1_name" {
+  description = "Nome do GSI1 (consulta por VideoId)."
+  value       = module.data.gsi1_name
+}

@@ -15,6 +15,6 @@ Adicionar versioning opcional aos buckets (controlado por variável enable_versi
 3. Validar sintaxe: terraform validate no módulo 10-storage deve passar; nenhuma referência a var.retention_days em contexto que exija número > 0 sem tratamento (ex.: conditional).
 
 ## Critérios de aceite da subtask
-- [ ] Versioning dos buckets é controlado por variável (enable_versioning); quando true, versioning habilitado; quando false, suspended ou equivalente.
-- [ ] Lifecycle para expirar objetos antigos é configurável (retention_days e enable_lifecycle_expiration); quando retention_days > 0 e enable_lifecycle_expiration = true, regra de expiration aplicada.
-- [ ] terraform plan não falha quando retention_days = 0 ou enable_lifecycle_expiration = false; terraform validate passa.
+- [x] Versioning dos buckets é controlado por variável (enable_versioning); quando true, versioning habilitado; quando false, suspended ou equivalente.
+- [x] Lifecycle para expirar objetos antigos é configurável (retention_days e enable_lifecycle_expiration); quando retention_days > 0 e enable_lifecycle_expiration = true, regra de expiration aplicada.
+- [x] terraform plan não falha quando retention_days = 0 ou enable_lifecycle_expiration = false; terraform validate passa.

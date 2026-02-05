@@ -1,8 +1,8 @@
 # Storie-04: Implementar Módulo Terraform 20-Data (DynamoDB Vídeos/Processamento)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2025
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/20-data` provisione uma tabela DynamoDB para rastrear vídeos e estado do processamento (status, datas, ZipS3Key, ErrorMessage, UserId, VideoId), com um GSI para consulta por VideoId e listagem por usuário, para suportar o fluxo do Processador Video MVP conforme contexto arquitetural, consumindo prefix/tags do foundation e sem criar IAM.
@@ -75,23 +75,23 @@ A aplicação (Lambdas) deve persistir UserId e VideoId nos atributos e usar PK=
 - **TTL:** opcional; quando enable_ttl = true, definir attribute ttl com nome configurável (ex.: TTL).
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
-- [Subtask 02: Tabela DynamoDB com PK, SK e atributos (sem GSI ainda)](./subtask/Subtask-02-Tabela_DynamoDB_Base.md)
-- [Subtask 03: GSI1 (GSI1PK/GSI1SK) para consulta por VideoId e listagem por usuário](./subtask/Subtask-03-GSI_VideoId_Usuario.md)
-- [Subtask 04: TTL opcional e outputs (table name, arn, GSI names)](./subtask/Subtask-04-TTL_Outputs.md)
-- [Subtask 05: Documentação do pattern PK/SK e validação (terraform plan)](./subtask/Subtask-05-Documentacao_Validacao.md)
+- [x] [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
+- [x] [Subtask 02: Tabela DynamoDB com PK, SK e atributos (sem GSI ainda)](./subtask/Subtask-02-Tabela_DynamoDB_Base.md)
+- [x] [Subtask 03: GSI1 (GSI1PK/GSI1SK) para consulta por VideoId e listagem por usuário](./subtask/Subtask-03-GSI_VideoId_Usuario.md)
+- [x] [Subtask 04: TTL opcional e outputs (table name, arn, GSI names)](./subtask/Subtask-04-TTL_Outputs.md)
+- [x] [Subtask 05: Documentação do pattern PK/SK e validação (terraform plan)](./subtask/Subtask-05-Documentacao_Validacao.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/20-data` cria uma tabela DynamoDB com PK e SK; atributos Status, CreatedAt, UpdatedAt, ZipS3Key, ErrorMessage, UserId, VideoId (definidos como non-key attributes ou via application); schema de chaves PK/SK documentado
-- [ ] Existe 1 GSI com GSI1PK e GSI1SK que permite buscar por VideoId e suporta listagem por usuário (tabela principal com PK=UserId, SK=VideoId; GSI com GSI1PK=VideoId)
-- [ ] TTL é opcional e ativável por variável (ex.: enable_ttl); nome do atributo TTL configurável
-- [ ] Somente DynamoDB no módulo (nenhum recurso IAM)
-- [ ] Outputs: table name, table arn, GSI names (ex.: gsi1_name ou lista de nomes de GSI)
-- [ ] A story explica o pattern de PK/SK e como atende consulta por usuário (Query PK=UserId) e por VideoId (Query GSI1PK=VideoId)
-- [ ] Consumo de prefix e common_tags do foundation; terraform plan no root (`terraform/`) sem referências quebradas
+- [x] O módulo `terraform/20-data` cria uma tabela DynamoDB com PK e SK; atributos Status, CreatedAt, UpdatedAt, ZipS3Key, ErrorMessage, UserId, VideoId (definidos como non-key attributes ou via application); schema de chaves PK/SK documentado
+- [x] Existe 1 GSI com GSI1PK e GSI1SK que permite buscar por VideoId e suporta listagem por usuário (tabela principal com PK=UserId, SK=VideoId; GSI com GSI1PK=VideoId)
+- [x] TTL é opcional e ativável por variável (ex.: enable_ttl); nome do atributo TTL configurável
+- [x] Somente DynamoDB no módulo (nenhum recurso IAM)
+- [x] Outputs: table name, table arn, GSI names (ex.: gsi1_name ou lista de nomes de GSI)
+- [x] A story explica o pattern de PK/SK e como atende consulta por usuário (Query PK=UserId) e por VideoId (Query GSI1PK=VideoId)
+- [x] Consumo de prefix e common_tags do foundation; terraform plan no root (`terraform/`) sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] Arquivos .tf do 20-data criados; nenhum aws_iam_* no módulo
-- [ ] terraform init e terraform validate no root (`terraform/`) com sucesso (módulo 20-data invocado pelo root)
-- [ ] terraform plan no root com variáveis em envs/dev.tfvars inclui 20-data e não apresenta erros de referência
-- [ ] README ou story documenta PK/SK, GSI e variáveis
+- [x] Arquivos .tf do 20-data criados; nenhum aws_iam_* no módulo
+- [x] terraform init e terraform validate no root (`terraform/`) com sucesso (módulo 20-data invocado pelo root)
+- [x] terraform plan no root com variáveis em envs/dev.tfvars inclui 20-data e não apresenta erros de referência
+- [x] README ou story documenta PK/SK, GSI e variáveis

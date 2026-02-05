@@ -16,6 +16,6 @@ Documentar no README do módulo `terraform/20-data` (ou em docs) o pattern de PK
 3. Rodar `terraform plan -var="prefix=video-processing-engine-dev" -var='common_tags={}'` (ou tfvars) e verificar que o plano mostra a tabela DynamoDB, GSI e outputs sem erros.
 
 ## Critérios de aceite da subtask
-- [ ] README (ou documentação na story) explica o pattern de PK/SK e como atende consulta por usuário (Query PK=UserId) e por VideoId (Query GSI1PK=VideoId).
-- [ ] terraform init, terraform validate e terraform plan no módulo 20-data executam sem referências quebradas.
-- [ ] Variáveis e outputs do módulo documentados; decisão "somente DynamoDB, sem IAM" registrada.
+- [x] README (ou documentação na story) explica o pattern de PK/SK e como atende consulta por usuário (Query PK=UserId) e por VideoId (Query GSI1PK=VideoId).
+- [x] terraform init, terraform validate e terraform plan no módulo 20-data executam sem referências quebradas.
+- [x] Variáveis e outputs do módulo documentados; decisão "somente DynamoDB, sem IAM" registrada.

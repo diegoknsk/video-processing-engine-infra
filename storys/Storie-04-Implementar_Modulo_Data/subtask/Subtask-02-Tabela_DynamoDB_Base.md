@@ -15,6 +15,6 @@ Criar o recurso `aws_dynamodb_table` em `terraform/20-data/` com partition key (
 3. Confirmar que os atributos PK e SK estão declarados no bloco attribute e referenciados em hash_key e range_key.
 
 ## Critérios de aceite da subtask
-- [ ] Existe recurso aws_dynamodb_table com hash_key (PK) e range_key (SK); atributos PK e SK declarados.
-- [ ] Nome da tabela usa var.prefix; tags = var.common_tags; billing_mode parametrizado.
-- [ ] Nenhum recurso IAM no módulo; terraform validate e plan (com variáveis) passam.
+- [x] Existe recurso aws_dynamodb_table com hash_key (PK) e range_key (SK); atributos PK e SK declarados.
+- [x] Nome da tabela usa var.prefix; tags = var.common_tags; billing_mode parametrizado.
+- [x] Nenhum recurso IAM no módulo; terraform validate e plan (com variáveis) passam.

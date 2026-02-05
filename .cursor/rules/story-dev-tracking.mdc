@@ -1,0 +1,42 @@
+---
+description: Controle de tempo e conclusão ao desenvolver stories — início, fechamento e tempo total
+alwaysApply: true
+---
+
+# Controle de tempo e conclusão em desenvolvimento de stories
+
+Esta rule aplica-se **sempre** que estivermos desenvolvendo uma story (arquivos em `storys/` ou tarefas referenciando story/subtask).
+
+---
+
+## Ao **iniciar** uma story
+
+1. **Registrar o horário de início** no início da conversa/sessão de desenvolvimento da story.
+2. Anotar de forma explícita, por exemplo:
+   - **Início:** dia [DD/MM/AAAA], às [HH]:[MM] (ex.: dia 05/02/2025, às 14:30).
+
+Pode ser em mensagem direta ao usuário ou em comentário no próprio `story.md` (seção de Status ou nova seção "Rastreamento"), conforme preferência do projeto.
+
+---
+
+## Ao usuário avisar que está **concluído** ("pronto", "pode fechar", "finalizado", etc.)
+
+1. **Encerrar a story:**
+   - Marcar a story como concluída no `story.md` (Status: Concluída, Data de Conclusão).
+   - Marcar **todas as subtasks** como prontas (`[x]`) no `story.md` e, se aplicável, nos arquivos de subtask em `subtask/*.md` (ex.: status/conclusão no topo de cada subtask).
+2. **Registrar horário de fim e tempo total:**
+   - **Fim:** dia [DD/MM/AAAA], às [HH]:[MM].
+   - **Tempo total de desenvolvimento:** [X]h [Y]min (ou em minutos, conforme preferência).
+
+Incluir esses dados na seção de Status (ou "Rastreamento") do `story.md`, para ficar registrado no repositório.
+
+---
+
+## Resumo
+
+| Momento | Ação |
+|--------|------|
+| **Início da story** | Anotar dia e horário de início (ex.: dia 05/02/2025, às 14:30). |
+| **Usuário diz que concluiu** | Marcar story e subtasks como prontas; anotar horário final e tempo total de dev. |
+
+Usar sempre data e hora no formato dia DD/MM/AAAA e HH:MM para consistência.

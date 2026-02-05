@@ -15,6 +15,6 @@ Criar os recursos Terraform para os três buckets S3: videos (upload), images (f
 3. Verificar nos recursos aws_s3_bucket_public_access_block que as quatro opções estão true.
 
 ## Critérios de aceite da subtask
-- [ ] Existem três recursos aws_s3_bucket (videos, images, zip) com nomes usando var.prefix e tags usando var.common_tags.
-- [ ] Cada bucket possui aws_s3_bucket_public_access_block com block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets = true.
-- [ ] Cada bucket possui aws_s3_bucket_server_side_encryption_configuration com SSE-S3 (AES256); nenhum recurso IAM no módulo.
+- [x] Existem três recursos aws_s3_bucket (videos, images, zip) com nomes usando var.prefix e tags usando var.common_tags.
+- [x] Cada bucket possui aws_s3_bucket_public_access_block com block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets = true.
+- [x] Cada bucket possui aws_s3_bucket_server_side_encryption_configuration com SSE-S3 (AES256); nenhum recurso IAM no módulo.

@@ -15,6 +15,6 @@ Criar `terraform/10-storage/outputs.tf` expondo os nomes e ARNs dos três bucket
 3. Verificar que outputs.tf não referencia módulo foundation nem recursos inexistentes; apenas aws_s3_bucket.*.
 
 ## Critérios de aceite da subtask
-- [ ] outputs.tf expõe nomes e ARNs dos três buckets (videos, images, zip); seis outputs no mínimo (name + arn por bucket).
-- [ ] README ou documentação equivalente descreve variáveis do módulo e decisões técnicas (Block Public Access, encryption, versioning, lifecycle, IAM fora do escopo).
-- [ ] terraform plan lista os outputs sem referências quebradas.
+- [x] outputs.tf expõe nomes e ARNs dos três buckets (videos, images, zip); seis outputs no mínimo (name + arn por bucket).
+- [x] README ou documentação equivalente descreve variáveis do módulo e decisões técnicas (Block Public Access, encryption, versioning, lifecycle, IAM fora do escopo).
+- [x] terraform plan lista os outputs sem referências quebradas.

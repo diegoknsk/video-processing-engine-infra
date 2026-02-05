@@ -15,6 +15,6 @@ Configurar TTL na tabela DynamoDB de forma opcional (variável enable_ttl) e cri
 3. Validar que a aplicação pode usar o atributo TTL (epoch em segundos) quando enable_ttl = true; documentar nome do atributo no README.
 
 ## Critérios de aceite da subtask
-- [ ] TTL é opcional: quando enable_ttl = true, ttl habilitado com attribute_name = var.ttl_attribute_name; quando false, ttl desabilitado ou não aplicado.
-- [ ] outputs.tf expõe table_name, table_arn e gsi names (ex.: gsi1_name ou gsi_names como list).
-- [ ] terraform plan lista os outputs sem referências quebradas; nenhum recurso IAM no módulo.
+- [x] TTL é opcional: quando enable_ttl = true, ttl habilitado com attribute_name = var.ttl_attribute_name; quando false, ttl desabilitado ou não aplicado.
+- [x] outputs.tf expõe table_name, table_arn e gsi names (ex.: gsi1_name ou gsi_names como list).
+- [x] terraform plan lista os outputs sem referências quebradas; nenhum recurso IAM no módulo.

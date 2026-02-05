@@ -1,8 +1,8 @@
 # Storie-03: Implementar Módulo Terraform 10-Storage (Buckets S3)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2025
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/10-storage` provisione três buckets S3 (vídeos, imagens, zip) com Block Public Access, encryption, versioning opcional e lifecycle configurável, para suportar o fluxo de upload, processamento e entrega do Processador Video MVP conforme contexto arquitetural, consumindo prefix e tags do foundation e sem criar IAM.
@@ -42,25 +42,25 @@ O diretório `terraform/10-storage/` é um **módulo** consumido pelo **root** e
 - **IAM:** não criar políticas nem roles neste módulo; políticas de acesso aos buckets serão criadas na story de Lambdas/IAM.
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
-- [Subtask 02: Recursos S3 (buckets) com Block Public Access e encryption](./subtask/Subtask-02-Buckets_Block_Public_Encryption.md)
-- [Subtask 03: Versioning opcional e lifecycle configurável](./subtask/Subtask-03-Versioning_Lifecycle.md)
-- [Subtask 04: Outputs (nomes e ARNs) e documentação de variáveis/decisões](./subtask/Subtask-04-Outputs_Documentacao.md)
-- [Subtask 05: Validação (terraform plan sem referências quebradas)](./subtask/Subtask-05-Validacao_Plan.md)
+- [x] [Subtask 01: Variáveis do módulo e consumo de prefix/tags do foundation](./subtask/Subtask-01-Variaveis_Consumo_Foundation.md)
+- [x] [Subtask 02: Recursos S3 (buckets) com Block Public Access e encryption](./subtask/Subtask-02-Buckets_Block_Public_Encryption.md)
+- [x] [Subtask 03: Versioning opcional e lifecycle configurável](./subtask/Subtask-03-Versioning_Lifecycle.md)
+- [x] [Subtask 04: Outputs (nomes e ARNs) e documentação de variáveis/decisões](./subtask/Subtask-04-Outputs_Documentacao.md)
+- [x] [Subtask 05: Validação (terraform plan sem referências quebradas)](./subtask/Subtask-05-Validacao_Plan.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/10-storage` cria três buckets S3: videos (upload), images (frames), zip (resultado final), com nomes derivados do prefix do foundation
-- [ ] Block Public Access está habilitado em todos os buckets (quatro configurações true)
-- [ ] Encryption está habilitada em todos os buckets (SSE-S3 ou equivalente)
-- [ ] Versioning é opcional e controlado por variável (ex.: enable_versioning)
-- [ ] Lifecycle para expirar objetos antigos é configurável (ex.: retention_days e/ou enable_lifecycle_expiration)
-- [ ] Outputs expõem nomes e ARNs dos três buckets; nenhum recurso IAM criado neste módulo
-- [ ] O módulo consome prefix e tags do foundation (via variáveis ou module)
-- [ ] `terraform plan` no root (`terraform/`) inclui o módulo 10-storage e não apresenta referências quebradas (variáveis e dependências do foundation resolvidas pelo root)
-- [ ] A story documenta variáveis do módulo e decisões técnicas (naming, encryption, Block Public Access, IAM fora do escopo)
+- [x] O módulo `terraform/10-storage` cria três buckets S3: videos (upload), images (frames), zip (resultado final), com nomes derivados do prefix do foundation
+- [x] Block Public Access está habilitado em todos os buckets (quatro configurações true)
+- [x] Encryption está habilitada em todos os buckets (SSE-S3 ou equivalente)
+- [x] Versioning é opcional e controlado por variável (ex.: enable_versioning)
+- [x] Lifecycle para expirar objetos antigos é configurável (ex.: retention_days e/ou enable_lifecycle_expiration)
+- [x] Outputs expõem nomes e ARNs dos três buckets; nenhum recurso IAM criado neste módulo
+- [x] O módulo consome prefix e tags do foundation (via variáveis ou module)
+- [x] `terraform plan` no root (`terraform/`) inclui o módulo 10-storage e não apresenta referências quebradas (variáveis e dependências do foundation resolvidas pelo root)
+- [x] A story documenta variáveis do módulo e decisões técnicas (naming, encryption, Block Public Access, IAM fora do escopo)
 
 ## Checklist de Conclusão
-- [ ] Todos os arquivos .tf do 10-storage criados; nenhum aws_iam_* no módulo
-- [ ] terraform init e terraform validate executados com sucesso no root (`terraform/`) ou no módulo 10-storage para desenvolvimento isolado
-- [ ] terraform plan no root (`terraform/`) com variáveis em envs/dev.tfvars inclui storage e não apresenta erros de referência
-- [ ] README ou seção na story com variáveis e decisões documentadas
+- [x] Todos os arquivos .tf do 10-storage criados; nenhum aws_iam_* no módulo
+- [x] terraform init e terraform validate executados com sucesso no root (`terraform/`) ou no módulo 10-storage para desenvolvimento isolado
+- [x] terraform plan no root (`terraform/`) com variáveis em envs/dev.tfvars inclui storage e não apresenta erros de referência
+- [x] README ou seção na story com variáveis e decisões documentadas

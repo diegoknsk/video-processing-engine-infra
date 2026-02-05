@@ -15,6 +15,6 @@ Criar o arquivo `terraform/10-storage/variables.tf` com as variáveis necessári
 3. Listar as variáveis documentadas na story (prefix, common_tags, enable_versioning, retention_days, enable_lifecycle_expiration) e confirmar que todas estão declaradas em variables.tf.
 
 ## Critérios de aceite da subtask
-- [ ] O arquivo `terraform/10-storage/variables.tf` existe e declara prefix e common_tags como obrigatórios (ou com default compatível com foundation).
-- [ ] Variáveis enable_versioning, retention_days e enable_lifecycle_expiration estão declaradas com default documentado.
-- [ ] O módulo não possui referência quebrada ao foundation (consumo via variáveis de entrada); terraform validate passa.
+- [x] O arquivo `terraform/10-storage/variables.tf` existe e declara prefix e common_tags como obrigatórios (ou com default compatível com foundation).
+- [x] Variáveis enable_versioning, retention_days e enable_lifecycle_expiration estão declaradas com default documentado.
+- [x] O módulo não possui referência quebrada ao foundation (consumo via variáveis de entrada); terraform validate passa.

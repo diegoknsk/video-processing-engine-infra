@@ -16,6 +16,6 @@ Garantir que o módulo `terraform/10-storage` seja validado com `terraform init`
 3. Verificar que nenhuma mensagem de erro menciona "reference", "undefined", "missing" para variáveis ou recursos do módulo.
 
 ## Critérios de aceite da subtask
-- [ ] terraform init e terraform validate em terraform/10-storage/ executam com sucesso.
-- [ ] terraform plan no módulo 10-storage não apresenta referências quebradas (todas as variáveis obrigatórias fornecidas; recursos referenciados existem no módulo).
-- [ ] Está documentado como fornecer prefix e common_tags ao módulo (tfvars ou variáveis do root que consuma o foundation).
+- [x] terraform init e terraform validate em terraform/10-storage/ executam com sucesso.
+- [x] terraform plan no módulo 10-storage não apresenta referências quebradas (todas as variáveis obrigatórias fornecidas; recursos referenciados existem no módulo).
+- [x] Está documentado como fornecer prefix e common_tags ao módulo (tfvars ou variáveis do root que consuma o foundation).
