@@ -1,3 +1,2 @@
-# Módulo 10-storage
-# Propósito: Buckets S3 (vídeos, imagens, zip). Recursos serão criados na Storie-03.
-# Nenhum resource "aws_*" neste placeholder.
+# Módulo 10-storage — Buckets S3 (vídeos, imagens, zip).
+# Recursos em buckets.tf; variáveis em variables.tf; outputs em outputs.tf.

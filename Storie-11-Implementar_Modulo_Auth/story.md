@@ -25,6 +25,9 @@ Criar o módulo `terraform/40-auth` com **Cognito User Pool** e **App Client sem
 - Dependências: Storie-02 (00-foundation) concluída.
 - Riscos/Pré-condições: Issuer URL do Cognito segue o formato https://cognito-idp.{region}.amazonaws.com/{userPoolId}; jwks_uri é https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json. O API Gateway JWT authorizer valida o token usando issuer e audience (client_id); este módulo expõe esses valores via outputs.
 
+## Modelo de execução (root único)
+O diretório `terraform/40-auth/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix e common_tags do module.foundation. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Uso pelo API Gateway (Authorizer)

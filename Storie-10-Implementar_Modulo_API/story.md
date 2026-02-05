@@ -25,6 +25,9 @@ Criar o módulo `terraform/60-api` com **API Gateway HTTP API** (preferência so
 - Dependências: Storie-02 (foundation), Storie-08 (50-lambdas-shell — LambdaAuth e LambdaVideoManagement ARNs). Módulo 40-auth (Cognito) desejável para JWT authorizer (issuer/audience); quando 40-auth não existir, enable_authorizer = false ou variáveis placeholder.
 - Riscos/Pré-condições: JWT authorizer exige que o Cognito User Pool esteja configurado (issuer URL e audience); sem Cognito, authorizer fica desabilitado.
 
+## Modelo de execução (root único)
+O diretório `terraform/60-api/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix, common_tags, Lambda ARNs e outputs do 40-auth (Cognito). Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Decisão: HTTP API vs REST API

@@ -26,6 +26,9 @@ Criar o módulo `terraform/70-orchestration` com: State Machine Step Functions *
 - Dependências: Storie-02 (foundation), Storie-06 (messaging SQS — q-video-zip-finalize), Storie-08 (lambdas-shell — Processor e Finalizer ARNs).
 - Riscos/Pré-condições: Definição da state machine em JSON/HCL deve refletir o payload padrão; evolução para Map State implica alterar definição em story futura sem quebrar contrato de entrada/saída.
 
+## Modelo de execução (root único)
+O diretório `terraform/70-orchestration/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix, common_tags e outputs dos módulos lambdas e messaging. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Payload Padrão (entrada/saída)

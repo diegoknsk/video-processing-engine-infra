@@ -25,6 +25,9 @@ Criar o módulo `terraform/50-lambdas-shell` com cinco funções Lambda em casca
 - Dependências: Storie-02 (foundation), Storie-03 (storage), Storie-04 (data), Storie-05 e Storie-06 (messaging SNS/SQS); Storie de Step Functions (70-orchestration) desejável para stepfunction_arn, ou variável placeholder.
 - Riscos/Pré-condições: Políticas IAM devem ser mínimas; event source mapping exige permissão da fila SQS para invocar a Lambda (resource-based policy na Lambda ou queue policy). Artefato `artifacts/empty.zip` deve existir (Storie-01).
 
+## Modelo de execução (root único)
+O diretório `terraform/50-lambdas-shell/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix, common_tags e outputs dos módulos storage, data, messaging e orchestration. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Permissões por Lambda (Least Privilege)

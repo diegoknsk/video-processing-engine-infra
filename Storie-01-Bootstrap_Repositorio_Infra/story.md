@@ -25,6 +25,9 @@ Deixar o repositório pronto para receber os módulos Terraform e GitHub Actions
 - Dependências: Nenhuma outra story; depende apenas do documento [docs/contexto-arquitetural.md](../docs/contexto-arquitetural.md).
 - Riscos/Pré-condições: Nenhum crítico; pré-condição: repositório clonado e contexto arquitetural lido.
 
+## Modelo de execução (root único)
+Os diretórios `terraform/00-foundation/`, `10-storage/`, etc. são **módulos** Terraform consumidos por um **root** em `terraform/` (Storie-02-Parte2). A execução padrão é: `cd terraform && terraform init && terraform plan -var-file=envs/dev.tfvars` (e apply). Não é necessário rodar init/plan/apply em cada subpasta para uso normal.
+
 ## Ordem de Execução das Stories (visão para documentação)
 A ordem planejada dos módulos, alinhada ao desenho **Processador Video MVP + Fan-out** (contexto arquitetural), será documentada no README e na Subtask 05. Resumo: Foundation → Storage → Data → Messaging → Auth → Lambdas (shell) → API → Orchestration.
 

@@ -24,6 +24,9 @@ Criar a **parte SNS** do módulo `terraform/30-messaging`: dois tópicos SNS —
 - Dependências: Storie-02 (00-foundation) concluída; Storie-03 (10-storage) e Storie-04 (20-data) não obrigatórias para esta story.
 - Riscos/Pré-condições: Subscriptions SQS aos tópicos serão criadas na story de SQS; não criar SQS aqui. Subscriptions Lambda ao topic-video-completed podem ser "preparado para depois" (variável/placeholder).
 
+## Modelo de execução (root único)
+O diretório `terraform/30-messaging/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix e common_tags do module.foundation. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Caminho de Eventos (desenho)

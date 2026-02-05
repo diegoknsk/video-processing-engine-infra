@@ -25,6 +25,9 @@ Implementar o módulo `terraform/00-foundation` com: `providers.tf` (AWS provide
 - Dependências: Storie-01 (Bootstrap) concluída ou ao menos a árvore `terraform/00-foundation/` e `terraform/envs/dev.tfvars` existentes.
 - Riscos/Pré-condições: Backend S3 opcional exige bucket e DynamoDB existentes se habilitado; execução local deve funcionar sem backend remoto (backend vazio ou -backend=false).
 
+## Modelo de execução (root único)
+O diretório `terraform/00-foundation/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). Init/plan/apply são executados **uma vez** a partir de `terraform/`; o root repassa variáveis ao módulo foundation e usa seus outputs (prefix, common_tags) nos demais módulos.
+
 ## Subtasks
 - [Subtask 01: Criar providers.tf com required_version, required_providers e AWS provider](./subtask/Subtask-01-Providers_Tf.md)
 - [Subtask 02: Implementar locals.tf com tags padrão e convenção de naming](./subtask/Subtask-02-Locals_Tags_Naming.md)
@@ -39,8 +42,8 @@ Implementar o módulo `terraform/00-foundation` com: `providers.tf` (AWS provide
 - [ ] `terraform/00-foundation/outputs.tf` expõe account_id, region, prefix (naming), common_tags; módulo consumível por outros módulos
 - [ ] Backend remoto é opcional e configurável; execução local possível sem backend (init -backend=false ou backend vazio/comentado)
 - [ ] Nenhum recurso AWS criado além do necessário para provider/locals (ex.: data "aws_caller_identity" para account_id é permitido)
-- [ ] `terraform fmt -recursive` e `terraform validate` executados em `terraform/00-foundation/` retornam sucesso
-- [ ] Módulo é compilável e reutilizável pelos demais módulos (outputs e variáveis documentados ou autoexplicativos)
+- [ ] `terraform fmt -recursive` e `terraform validate` executados no root (`terraform/`) ou em `terraform/00-foundation/` retornam sucesso
+- [ ] Módulo é consumido pelo root (Storie-02-Parte2) e reutilizável pelos demais módulos (outputs e variáveis documentados ou autoexplicativos)
 
 ## Checklist de Conclusão
 - [ ] Todos os arquivos .tf do módulo 00-foundation criados/atualizados

@@ -24,6 +24,9 @@ Criar o módulo `terraform/10-storage` com três buckets S3: **videos** (upload 
 - Dependências: Storie-02 (00-foundation) concluída, com outputs prefix e common_tags disponíveis.
 - Riscos/Pré-condições: Nomes de bucket globais únicos na AWS; uso do prefix do foundation garante unicidade por ambiente. IAM para Lambdas acessarem os buckets será tratada em story dedicada.
 
+## Modelo de execução (root único)
+O diretório `terraform/10-storage/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix e common_tags do module.foundation ao módulo storage. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ## Variáveis do Módulo (documentação)
 - **prefix** (string, obrigatório): prefixo de naming vindo do foundation (ex.: `video-processing-engine-dev`).
 - **common_tags** (map, obrigatório): tags padrão do foundation (Project, Environment, ManagedBy, Owner).
@@ -53,11 +56,11 @@ Criar o módulo `terraform/10-storage` com três buckets S3: **videos** (upload 
 - [ ] Lifecycle para expirar objetos antigos é configurável (ex.: retention_days e/ou enable_lifecycle_expiration)
 - [ ] Outputs expõem nomes e ARNs dos três buckets; nenhum recurso IAM criado neste módulo
 - [ ] O módulo consome prefix e tags do foundation (via variáveis ou module)
-- [ ] `terraform plan` no módulo 10-storage não apresenta referências quebradas (variáveis e dependências do foundation resolvidas)
+- [ ] `terraform plan` no root (`terraform/`) inclui o módulo 10-storage e não apresenta referências quebradas (variáveis e dependências do foundation resolvidas pelo root)
 - [ ] A story documenta variáveis do módulo e decisões técnicas (naming, encryption, Block Public Access, IAM fora do escopo)
 
 ## Checklist de Conclusão
 - [ ] Todos os arquivos .tf do 10-storage criados; nenhum aws_iam_* no módulo
-- [ ] terraform init e terraform validate executados com sucesso no 10-storage
-- [ ] terraform plan executado com variáveis do foundation passadas (prefix, common_tags) e sem erros de referência
+- [ ] terraform init e terraform validate executados com sucesso no root (`terraform/`) ou no módulo 10-storage para desenvolvimento isolado
+- [ ] terraform plan no root (`terraform/`) com variáveis em envs/dev.tfvars inclui storage e não apresenta erros de referência
 - [ ] README ou seção na story com variáveis e decisões documentadas

@@ -22,6 +22,9 @@ Implementar observabilidade base **somente com CloudWatch** (sem ferramentas pag
 - Dependências: Storie-02 (foundation), Storie-08 (50-lambdas-shell — nomes das Lambdas para alinhar log groups), Storie-09 (70-orchestration — log group SFN já existe; garantir retenção via variável global).
 - Riscos/Pré-condições: Log groups para Lambda devem ter nome exatamente /aws/lambda/{function_name} para que a Lambda use o grupo ao ser invocada; criar os log groups antes ou na mesma ordem que as Lambdas para evitar criação automática sem retenção pela AWS.
 
+## Modelo de execução (root único)
+O diretório `terraform/75-observability/` (ou extensão em 50-lambdas-shell/70-orchestration) é consumido pelo **root** em `terraform/` (Storie-02-Parte2). Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Padrão de Naming (prefix + environment)

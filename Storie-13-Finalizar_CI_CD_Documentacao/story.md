@@ -24,6 +24,9 @@ Finalizar **CI/CD** e **documentação** do repo infra: **(1) Workflows obrigat�
 - Dependências: Stories de módulos Terraform (02 a 12) concluídas ou em estado que permitam apply/destroy; credenciais AWS (Academy ou IAM) configuradas como GitHub Secrets.
 - Riscos/Pré-condições: Secrets AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN (quando temporárias), AWS_REGION devem estar configurados no repositório; nunca commitar credenciais.
 
+## Modelo de execução (root único)
+O repositório adota **um único root Terraform** em `terraform/` que orquestra todos os módulos (Storie-02-Parte2). Os workflows **terraform-apply** e **terraform-destroy** devem usar **working-directory: terraform/** (ou equivalente) para init, plan e apply; não é necessário rodar Terraform em cada subpasta (00-foundation, 10-storage, etc.).
+
 ---
 
 ## Workflows Obrigatórios

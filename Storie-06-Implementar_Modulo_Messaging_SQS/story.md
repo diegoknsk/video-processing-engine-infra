@@ -24,6 +24,9 @@ Criar a **parte SQS** do módulo `terraform/30-messaging`: três pares de fila +
 - Dependências: Storie-02 (00-foundation) concluída; Storie-05 (30-messaging SNS) desejável para encaixe (topic-video-submitted → q-video-process), mas não obrigatória para criar as filas.
 - Riscos/Pré-condições: Subscription SNS topic-video-submitted → q-video-process será criada em story de integração ou separada; esta story cria apenas as filas e DLQs. Políticas IAM para Lambdas consumirem as filas ficam em story de Lambdas/IAM.
 
+## Modelo de execução (root único)
+O diretório `terraform/30-messaging/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix e common_tags do module.foundation. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Encaixe no Desenho (fluxo de mensagens)

@@ -23,6 +23,9 @@ Implementar a integração do evento "upload concluído" com o desenho: quando *
 - Dependências: Storie-03 (10-storage) e Storie-05 (30-messaging SNS) concluídas; bucket videos e tópico topic-video-submitted existentes.
 - Riscos/Pré-condições: Quando trigger_mode = "s3_event", o caller/root deve passar topic_video_submitted_arn ao módulo storage e videos_bucket_arn ao módulo messaging (saídas de um alimentam o outro); não há dependência circular se o root orquestrar. Quando api_publish, nenhum recurso novo; apenas documentação e garantia de que topic_video_submitted_arn está em outputs para a Lambda usar.
 
+## Modelo de execução (root único)
+A integração é feita nos módulos 10-storage e 30-messaging, ambos consumidos pelo **root** em `terraform/` (Storie-02-Parte2). O root orquestra e repassa topic_video_submitted_arn e videos_bucket_arn entre módulos. Init/plan/apply são executados uma vez em `terraform/`.
+
 ---
 
 ## Escolha do Modo (trigger_mode)

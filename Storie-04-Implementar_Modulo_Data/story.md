@@ -24,6 +24,9 @@ Criar o módulo `terraform/20-data` com uma tabela DynamoDB contendo: chaves PK/
 - Dependências: Storie-02 (00-foundation) concluída; Storie-03 (10-storage) independente (não obrigatória para esta story).
 - Riscos/Pré-condições: Definir schema de PK/SK e GSI de forma que aplicações (Lambdas) usem o mesmo padrão; IAM para Lambdas acessarem a tabela fica em story dedicada.
 
+## Modelo de execução (root único)
+O diretório `terraform/20-data/` é um **módulo** consumido pelo **root** em `terraform/` (Storie-02-Parte2). O root passa prefix e common_tags do module.foundation. Init/plan/apply são executados uma vez em `terraform/`; validar com `terraform plan` no root.
+
 ---
 
 ## Pattern PK/SK e Consultas
@@ -85,10 +88,10 @@ A aplicação (Lambdas) deve persistir UserId e VideoId nos atributos e usar PK=
 - [ ] Somente DynamoDB no módulo (nenhum recurso IAM)
 - [ ] Outputs: table name, table arn, GSI names (ex.: gsi1_name ou lista de nomes de GSI)
 - [ ] A story explica o pattern de PK/SK e como atende consulta por usuário (Query PK=UserId) e por VideoId (Query GSI1PK=VideoId)
-- [ ] Consumo de prefix e common_tags do foundation; terraform plan sem referências quebradas
+- [ ] Consumo de prefix e common_tags do foundation; terraform plan no root (`terraform/`) sem referências quebradas
 
 ## Checklist de Conclusão
 - [ ] Arquivos .tf do 20-data criados; nenhum aws_iam_* no módulo
-- [ ] terraform init e terraform validate em terraform/20-data com sucesso
-- [ ] terraform plan com prefix e common_tags fornecidos, sem erros de referência
+- [ ] terraform init e terraform validate no root (`terraform/`) com sucesso (módulo 20-data invocado pelo root)
+- [ ] terraform plan no root com variáveis em envs/dev.tfvars inclui 20-data e não apresenta erros de referência
 - [ ] README ou story documenta PK/SK, GSI e variáveis
