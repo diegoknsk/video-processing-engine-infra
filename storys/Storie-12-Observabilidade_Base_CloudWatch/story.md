@@ -4,6 +4,11 @@
 - **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026 (Brasília)
+- **Fim:** —
+- **Tempo total de desenvolvimento:** —
+
 ## Descrição
 Como desenvolvedor de infraestrutura, quero adicionar observabilidade base usando apenas CloudWatch Logs: Log Groups para as 5 Lambdas e para Step Functions com retenção configurável, padrão de naming (prefix + environment), e garantia de IAM para escrita em logs onde aplicável, para que após o apply seja possível validar que os logs aparecem ao invocar as funções e a state machine.
 
@@ -78,22 +83,22 @@ Após `terraform apply`, validar que os logs aparecem no CloudWatch:
 - **Naming:** Sempre prefix + sufixo; prefix já inclui environment.
 
 ## Subtasks
-- [Subtask 01: Variáveis (log_retention_days global, prefix, naming)](./subtask/Subtask-01-Variaveis_Naming.md)
-- [Subtask 02: Log Groups para as 5 Lambdas com retenção](./subtask/Subtask-02-Log_Groups_Lambdas.md)
-- [Subtask 03: Log Group Step Functions e alinhamento com 70-orchestration](./subtask/Subtask-03-Log_Group_SFN.md)
-- [Subtask 04: Garantir IAM para escrita em logs (onde aplicável)](./subtask/Subtask-04-IAM_Logs.md)
-- [Subtask 05: Checklist pós-apply e documentação](./subtask/Subtask-05-Checklist_Documentacao.md)
+- [x] [Subtask 01: Variáveis (log_retention_days global, prefix, naming)](./subtask/Subtask-01-Variaveis_Naming.md)
+- [x] [Subtask 02: Log Groups para as 5 Lambdas com retenção](./subtask/Subtask-02-Log_Groups_Lambdas.md)
+- [x] [Subtask 03: Log Group Step Functions e alinhamento com 70-orchestration](./subtask/Subtask-03-Log_Group_SFN.md)
+- [x] [Subtask 04: Garantir IAM para escrita em logs (onde aplicável)](./subtask/Subtask-04-IAM_Logs.md)
+- [x] [Subtask 05: Checklist pós-apply e documentação](./subtask/Subtask-05-Checklist_Documentacao.md)
 
 ## Critérios de Aceite da História
-- [ ] Existem Log Groups para as 5 Lambdas com retenção configurável (log_retention_days); nomes alinhados ao padrão prefix + environment (/aws/lambda/{prefix}-auth, etc.)
-- [ ] Log Group para Step Functions existe com retenção configurável (no 70-orchestration ou no módulo de observabilidade); padrão de naming respeitado
-- [ ] Variável global log_retention_days (ou equivalente) aplicada a todos os log groups; reter por X dias conforme variável
-- [ ] IAM para escrita em logs garantida onde aplicável (Lambda roles e SFN role com permissão nos respectivos log groups); documentado ou verificado
-- [ ] Sem ferramentas pagas; apenas CloudWatch
-- [ ] A story inclui checklist do que validar após apply (invocar cada Lambda e a Step Function e verificar que logs aparecem nos log groups corretos)
-- [ ] Consumo de prefix/common_tags; terraform plan sem referências quebradas
+- [x] Existem Log Groups para as 5 Lambdas com retenção configurável (log_retention_days); nomes alinhados ao padrão prefix + environment (/aws/lambda/{prefix}-auth, etc.)
+- [x] Log Group para Step Functions existe com retenção configurável (no 70-orchestration ou no módulo de observabilidade); padrão de naming respeitado
+- [x] Variável global log_retention_days (ou equivalente) aplicada a todos os log groups; reter por X dias conforme variável
+- [x] IAM para escrita em logs garantida onde aplicável (Lambda roles e SFN role com permissão nos respectivos log groups); documentado ou verificado
+- [x] Sem ferramentas pagas; apenas CloudWatch
+- [x] A story inclui checklist do que validar após apply (invocar cada Lambda e a Step Function e verificar que logs aparecem nos log groups corretos)
+- [x] Consumo de prefix/common_tags; terraform plan sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] 5 log groups para Lambdas + log group SFN (ou retenção alinhada no 70-orchestration) criados com retention_in_days
-- [ ] README ou story contém checklist pós-apply (invocar e validar logs)
-- [ ] terraform init, validate e plan passam
+- [x] 5 log groups para Lambdas + log group SFN (ou retenção alinhada no 70-orchestration) criados com retention_in_days
+- [x] README ou story contém checklist pós-apply (invocar e validar logs)
+- [x] terraform init, validate e plan passam

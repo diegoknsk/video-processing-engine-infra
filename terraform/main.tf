@@ -61,6 +61,15 @@ module "messaging" {
   dlq_message_retention_seconds = var.dlq_message_retention_seconds
 }
 
+# --- Observabilidade base — Log Groups CloudWatch para as 5 Lambdas (Storie-12) ---
+module "observability" {
+  source = "./75-observability"
+
+  prefix             = module.foundation.prefix
+  common_tags        = module.foundation.common_tags
+  log_retention_days = var.orchestration_log_retention_days
+}
+
 # --- Lambdas shell (Storie-08) ---
 module "lambdas" {
   source = "./50-lambdas-shell"
@@ -118,6 +127,15 @@ module "orchestration" {
   lab_role_arn = var.lab_role_arn
 }
 
+# --- Auth (Cognito User Pool e App Client — Storie-11) ---
+module "auth" {
+  source = "./40-auth"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+  region      = module.foundation.region
+}
+
 # --- API Gateway HTTP API (Storie-10) ---
 module "api" {
   source = "./60-api"
@@ -129,10 +147,7 @@ module "api" {
   lambda_video_management_arn = module.lambdas.lambda_video_management_arn
 
   enable_authorizer  = var.enable_api_authorizer
-  cognito_issuer_url = var.cognito_issuer_url
-  cognito_audience   = var.cognito_audience
+  cognito_issuer_url = module.auth.issuer
+  cognito_audience   = [module.auth.client_id]
   stage_name         = var.api_stage_name
 }
-
-# --- Demais módulos: incluir quando implementados ---
-# module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }

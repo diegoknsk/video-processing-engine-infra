@@ -4,6 +4,11 @@
 - **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026 (Brasília)
+- **Fim:** —
+- **Tempo total de desenvolvimento:** —
+
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/40-auth` provisione um User Pool e um App Client (public client, sem secret) no Amazon Cognito, com configurações mínimas seguras (política de senha, etc.) e parâmetros parametrizáveis, para que o API Gateway (módulo 60-api) possa usar o JWT authorizer com issuer e audience e o fluxo de autenticação do Processador Video MVP esteja pronto conforme desenho.
 
@@ -69,21 +74,21 @@ O módulo **60-api** (Storie-10) consome os outputs do 40-auth para configurar o
 - **Mínimo seguro:** Política de senha não trivial; sem expor dados sensíveis nos outputs; sem secret no client (public client é esperado para SPA/mobile).
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo (password policy, token validity, etc.)](./subtask/Subtask-01-Variaveis_Parametrizaveis.md)
-- [Subtask 02: User Pool com configurações mínimas seguras](./subtask/Subtask-02-User_Pool.md)
-- [Subtask 03: App Client público (sem secret)](./subtask/Subtask-03-App_Client_Publico.md)
-- [Subtask 04: Outputs (user_pool_id, client_id, issuer, jwks_url) e documentação para authorizer](./subtask/Subtask-04-Outputs_Authorizer.md)
-- [Subtask 05: Validação e documentação (pronto para API Gateway authorizer)](./subtask/Subtask-05-Validacao_Documentacao.md)
+- [x] [Subtask 01: Variáveis do módulo (password policy, token validity, etc.)](./subtask/Subtask-01-Variaveis_Parametrizaveis.md)
+- [x] [Subtask 02: User Pool com configurações mínimas seguras](./subtask/Subtask-02-User_Pool.md)
+- [x] [Subtask 03: App Client público (sem secret)](./subtask/Subtask-03-App_Client_Publico.md)
+- [x] [Subtask 04: Outputs (user_pool_id, client_id, issuer, jwks_url) e documentação para authorizer](./subtask/Subtask-04-Outputs_Authorizer.md)
+- [x] [Subtask 05: Validação e documentação (pronto para API Gateway authorizer)](./subtask/Subtask-05-Validacao_Documentacao.md)
 
 ## Critérios de Aceite da História
-- [ ] O módulo `terraform/40-auth` cria um Cognito User Pool com configurações mínimas seguras (política de senha parametrizável; atributos name e email conforme necessidade)
-- [ ] App Client sem secret (public client) está criado; generate_secret = false; fluxos adequados (ex.: USER_SRP_AUTH, REFRESH_TOKEN_AUTH)
-- [ ] Outputs obrigatórios expostos: user_pool_id, client_id, issuer, jwks_url (quando aplicável — jwks_url é construída a partir do user_pool_id e region)
-- [ ] Configurações parametrizáveis quando fizer sentido (password policy, token validity, etc.) sem exagero
-- [ ] A story deixa o Cognito pronto para o authorizer do API Gateway: issuer e client_id (audience) documentados para uso no módulo 60-api; README ou story descreve como conectar 40-auth ao 60-api (enable_authorizer = true, cognito_issuer_url = output issuer, cognito_audience = output client_id)
-- [ ] Consumo de prefix/common_tags do foundation; terraform plan sem referências quebradas
+- [x] O módulo `terraform/40-auth` cria um Cognito User Pool com configurações mínimas seguras (política de senha parametrizável; atributos name e email conforme necessidade)
+- [x] App Client sem secret (public client) está criado; generate_secret = false; fluxos adequados (ex.: USER_SRP_AUTH, REFRESH_TOKEN_AUTH)
+- [x] Outputs obrigatórios expostos: user_pool_id, client_id, issuer, jwks_url (quando aplicável — jwks_url é construída a partir do user_pool_id e region)
+- [x] Configurações parametrizáveis quando fizer sentido (password policy, token validity, etc.) sem exagero
+- [x] A story deixa o Cognito pronto para o authorizer do API Gateway: issuer e client_id (audience) documentados para uso no módulo 60-api; README ou story descreve como conectar 40-auth ao 60-api (enable_authorizer = true, cognito_issuer_url = output issuer, cognito_audience = output client_id)
+- [x] Consumo de prefix/common_tags do foundation; terraform plan sem referências quebradas
 
 ## Checklist de Conclusão
-- [ ] User Pool e App Client criados; outputs user_pool_id, client_id, issuer, jwks_url
-- [ ] README descreve uso dos outputs pelo API Gateway (JWT authorizer)
-- [ ] terraform init, validate e plan com variáveis fornecidas passam
+- [x] User Pool e App Client criados; outputs user_pool_id, client_id, issuer, jwks_url
+- [x] README descreve uso dos outputs pelo API Gateway (JWT authorizer)
+- [x] terraform init, validate e plan com variáveis fornecidas passam
