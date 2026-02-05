@@ -1,8 +1,13 @@
 # Storie-07: Integração do Evento "Upload Concluído" com o Desenho
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2026
+
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026, às 14:00 (Brasília)
+- **Fim:** dia 05/02/2026, às 15:45 (Brasília)
+- **Tempo total de desenvolvimento:** 1h 45min
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o fluxo "upload concluído" esteja integrado ao desenho do Processador Video MVP de forma parametrizável: ou (1) S3 bucket videos notifica o SNS topic-video-submitted quando um objeto for criado, ou (2) a Lambda Video Management publica no SNS após confirmação via API — com a escolha configurável por variável (trigger_mode = "s3_event" | "api_publish"), sem quebrar responsabilidades entre módulos storage e messaging.
@@ -70,11 +75,11 @@ Nenhum módulo "invade" o outro: storage só configura o bucket; messaging só c
 - **api_publish:** Nenhum recurso Terraform novo; README e story documentam que a Lambda Video Management deve publicar em topic_video_submitted_arn após confirmação de upload; outputs do módulo messaging já expõem o ARN.
 
 ## Subtasks
-- [Subtask 01: Variável trigger_mode e variáveis de integração (topic_arn / bucket_arn)](./subtask/Subtask-01-Variavel_Trigger_Integracao.md)
-- [Subtask 02: S3 bucket notification (storage) quando trigger_mode = s3_event](./subtask/Subtask-02-S3_Notification_Storage.md)
-- [Subtask 03: SNS topic policy (messaging) quando trigger_mode = s3_event](./subtask/Subtask-03-SNS_Topic_Policy_Messaging.md)
-- [Subtask 04: Documentar api_publish e garantir outputs/variáveis para Lambda](./subtask/Subtask-04-Documentar_Api_Publish_Outputs.md)
-- [Subtask 05: Documentar responsabilidades e validação (terraform plan)](./subtask/Subtask-05-Responsabilidades_Validacao.md)
+- [x] [Subtask 01: Variável trigger_mode e variáveis de integração (topic_arn / bucket_arn)](./subtask/Subtask-01-Variavel_Trigger_Integracao.md)
+- [x] [Subtask 02: S3 bucket notification (storage) quando trigger_mode = s3_event](./subtask/Subtask-02-S3_Notification_Storage.md)
+- [x] [Subtask 03: SNS topic policy (messaging) quando trigger_mode = s3_event](./subtask/Subtask-03-SNS_Topic_Policy_Messaging.md)
+- [x] [Subtask 04: Documentar api_publish e garantir outputs/variáveis para Lambda](./subtask/Subtask-04-Documentar_Api_Publish_Outputs.md)
+- [x] [Subtask 05: Documentar responsabilidades e validação (terraform plan)](./subtask/Subtask-05-Responsabilidades_Validacao.md)
 
 ## Critérios de Aceite da História
 - [ ] A escolha entre S3 event e API publish é parametrizável por variável (trigger_mode = "s3_event" | "api_publish") em storage e messaging (ou em um único lugar documentado para o root).

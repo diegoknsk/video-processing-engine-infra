@@ -25,6 +25,10 @@ module "storage" {
   enable_versioning           = var.enable_versioning
   retention_days              = var.retention_days
   enable_lifecycle_expiration = var.enable_lifecycle_expiration
+
+  # trigger_mode e topic_video_submitted_arn: usados pelo root em upload_integration.tf quando s3_event
+  trigger_mode              = var.trigger_mode
+  topic_video_submitted_arn = null
 }
 
 # --- Data (DynamoDB vídeos/processamento) ---
@@ -42,19 +46,57 @@ module "messaging" {
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
 
+  # trigger_mode e videos_bucket_arn: usados pelo root em upload_integration.tf quando s3_event
+  trigger_mode      = var.trigger_mode
+  videos_bucket_arn = null
+
   enable_email_subscription_completed  = var.enable_email_subscription_completed
-  email_endpoint                      = var.email_endpoint
+  email_endpoint                       = var.email_endpoint
   enable_lambda_subscription_completed = var.enable_lambda_subscription_completed
   lambda_subscription_arn              = var.lambda_subscription_arn
 
   visibility_timeout_seconds    = var.visibility_timeout_seconds
-  message_retention_seconds    = var.message_retention_seconds
-  max_receive_count            = var.max_receive_count
+  message_retention_seconds     = var.message_retention_seconds
+  max_receive_count             = var.max_receive_count
   dlq_message_retention_seconds = var.dlq_message_retention_seconds
+}
+
+# --- Lambdas shell (Storie-08) ---
+module "lambdas" {
+  source = "./50-lambdas-shell"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+
+  runtime       = var.lambda_runtime
+  handler       = var.lambda_handler
+  artifact_path = "${path.module}/../artifacts/empty.zip"
+
+  table_name = module.data.table_name
+  table_arn  = module.data.table_arn
+
+  videos_bucket_name = module.storage.videos_bucket_name
+  videos_bucket_arn  = module.storage.videos_bucket_arn
+  images_bucket_name = module.storage.images_bucket_name
+  images_bucket_arn  = module.storage.images_bucket_arn
+  zip_bucket_name    = module.storage.zip_bucket_name
+  zip_bucket_arn     = module.storage.zip_bucket_arn
+
+  q_video_process_url       = module.messaging.q_video_process_url
+  q_video_process_arn       = module.messaging.q_video_process_arn
+  q_video_status_update_url = module.messaging.q_video_status_update_url
+  q_video_status_update_arn = module.messaging.q_video_status_update_arn
+  q_video_zip_finalize_url  = module.messaging.q_video_zip_finalize_url
+  q_video_zip_finalize_arn  = module.messaging.q_video_zip_finalize_arn
+
+  topic_video_submitted_arn = module.messaging.topic_video_submitted_arn
+  topic_video_completed_arn = module.messaging.topic_video_completed_arn
+
+  step_function_arn             = var.step_function_arn
+  enable_status_update_consumer = var.enable_status_update_consumer
 }
 
 # --- Demais módulos: incluir quando implementados ---
 # module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
-# module "lambdas"    { source = "./50-lambdas-shell"; ... }
 # module "api"        { source = "./60-api"; ... }
 # module "orchestration" { source = "./70-orchestration"; ... }

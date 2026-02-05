@@ -96,3 +96,35 @@ variable "dlq_message_retention_seconds" {
   type        = number
   default     = 1209600
 }
+
+# --- Integração upload concluído (Storie-07) ---
+variable "trigger_mode" {
+  description = "Modo do evento upload concluído: s3_event (S3 notifica SNS) ou api_publish (Lambda publica no SNS)."
+  type        = string
+  default     = "api_publish"
+}
+
+# --- Lambdas (50-lambdas-shell, Storie-08) ---
+variable "lambda_runtime" {
+  description = "Runtime das Lambdas (ex.: python3.12)."
+  type        = string
+  default     = "python3.12"
+}
+
+variable "lambda_handler" {
+  description = "Handler placeholder das Lambdas."
+  type        = string
+  default     = "index.handler"
+}
+
+variable "step_function_arn" {
+  description = "ARN da Step Function (módulo 70-orchestration); vazio até Storie-09."
+  type        = string
+  default     = ""
+}
+
+variable "enable_status_update_consumer" {
+  description = "Mapeia Lambda Video Management à fila q-video-status-update quando true."
+  type        = bool
+  default     = true
+}

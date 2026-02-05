@@ -1,8 +1,13 @@
 # Storie-08: Implementar Módulo Terraform 50-Lambdas-Shell
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 05/02/2026
+
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026, às 14:00 (Brasília)
+- **Fim:** dia 05/02/2026, às 15:45 (Brasília)
+- **Tempo total de desenvolvimento:** 1h 45min
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/50-lambdas-shell` provisione as cinco Lambdas "casca" do Processador Video MVP (Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer) com runtime parametrizável, handler placeholder, artefato `artifacts/empty.zip`, IAM separado por função (least privilege), variáveis de ambiente por Lambda e event source mappings alinhados ao desenho, para que os repositórios de aplicação possam fazer deploy do código depois sem alterar a infra base.
@@ -91,11 +96,11 @@ Todas recebem valores via variáveis do módulo (outputs de storage, data, messa
 - **Variáveis de ambiente:** Injetadas por Terraform (var.*); sem segredos em texto plano (usar referência a Secret Manager ou variável de pipeline em story futura se necessário).
 
 ## Subtasks
-- [Subtask 01: Variáveis do módulo e consumo de outputs (table, buckets, queues, topics, stepfunction)](./subtask/Subtask-01-Variaveis_Outputs_Consumo.md)
-- [Subtask 02: IAM roles e políticas por Lambda (least privilege)](./subtask/Subtask-02-IAM_Roles_Policies.md)
-- [Subtask 03: Recursos Lambda (casca) com runtime, handler, empty.zip e env vars](./subtask/Subtask-03-Lambdas_Casca_Env.md)
-- [Subtask 04: Event source mappings (Orchestrator, Finalizer, status-update)](./subtask/Subtask-04-Event_Source_Mappings.md)
-- [Subtask 05: Outputs (lambda names, ARNs, role ARNs) e documentação de permissões](./subtask/Subtask-05-Outputs_Documentacao.md)
+- [x] [Subtask 01: Variáveis do módulo e consumo de outputs (table, buckets, queues, topics, stepfunction)](./subtask/Subtask-01-Variaveis_Outputs_Consumo.md)
+- [x] [Subtask 02: IAM roles e políticas por Lambda (least privilege)](./subtask/Subtask-02-IAM_Roles_Policies.md)
+- [x] [Subtask 03: Recursos Lambda (casca) com runtime, handler, empty.zip e env vars](./subtask/Subtask-03-Lambdas_Casca_Env.md)
+- [x] [Subtask 04: Event source mappings (Orchestrator, Finalizer, status-update)](./subtask/Subtask-04-Event_Source_Mappings.md)
+- [x] [Subtask 05: Outputs (lambda names, ARNs, role ARNs) e documentação de permissões](./subtask/Subtask-05-Outputs_Documentacao.md)
 
 ## Critérios de Aceite da História
 - [ ] O módulo `terraform/50-lambdas-shell` cria cinco Lambdas (Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer) com runtime parametrizável (default seguro), handler placeholder e artefato `artifacts/empty.zip`

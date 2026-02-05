@@ -40,3 +40,16 @@ variable "environment" {
   type        = string
   default     = null
 }
+
+# --- Integração evento upload concluído (Storie-07): variáveis opcionais para quando root repassa ---
+variable "trigger_mode" {
+  description = "Modo do evento upload concluído: s3_event = S3 notifica SNS ao criar objeto; api_publish = Lambda publica no SNS após confirmação."
+  type        = string
+  default     = "api_publish"
+}
+
+variable "topic_video_submitted_arn" {
+  description = "ARN do SNS topic-video-submitted; obrigatório quando trigger_mode = s3_event (output do módulo messaging)."
+  type        = string
+  default     = null
+}

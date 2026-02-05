@@ -9,6 +9,8 @@ Esta rule aplica-se **sempre** que estivermos desenvolvendo uma story (arquivos 
 
 **Fuso horário:** usar sempre **horário de Brasília** para início e fim.
 
+**⚠️ NUNCA inventar horários:** O agente **não** deve supor ou criar horários (ex.: 14:00, 15:45). Usar **sempre** o horário real: (1) quando o usuário informar início/fim explicitamente, usar esse valor; (2) quando o usuário disser "concluída"/"pronto", usar como **Fim** o horário da mensagem dele (ex.: "agora é 01:11" → Fim às 01:11); (3) para **Início**, usar o horário que o usuário indicar ou o horário da primeira mensagem da sessão de dev. Em dúvida, perguntar ao usuário: "Que horário (Brasília) devo anotar como início/fim?"
+
 ---
 
 ## Ao **iniciar** o desenvolvimento da story

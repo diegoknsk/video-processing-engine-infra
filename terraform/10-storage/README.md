@@ -13,6 +13,10 @@ Provisiona três buckets S3 para o Video Processing Engine MVP: **videos** (uplo
 | `retention_days` | number | não | `null` | Dias para expirar objetos via lifecycle; 0 ou null desabilita. |
 | `enable_lifecycle_expiration` | bool | não | `true` | Habilita regra de expiração quando `retention_days` > 0. |
 | `environment` | string | não | `null` | Ambiente (opcional, para consistência com foundation). |
+| `trigger_mode` | string | não | `api_publish` | Modo do evento upload concluído: `s3_event` (S3 notifica SNS ao criar objeto) ou `api_publish` (Lambda publica no SNS após confirmação). |
+| `topic_video_submitted_arn` | string | não | `null` | ARN do SNS topic-video-submitted; obrigatório quando `trigger_mode = s3_event` (output do módulo messaging). |
+
+Quando `trigger_mode = "api_publish"`, nenhuma notificação S3 é criada; o fluxo depende da aplicação (Lambda/API) publicar no SNS.
 
 ## Outputs
 
