@@ -38,7 +38,7 @@ resource "aws_s3_bucket_versioning" "videos" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "videos" {
-  count = var.enable_lifecycle_expiration && try(var.retention_days, 0) > 0 ? 1 : 0
+  count = var.enable_lifecycle_expiration && coalesce(var.retention_days, 0) > 0 ? 1 : 0
 
   bucket = aws_s3_bucket.videos.id
 
@@ -49,7 +49,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "videos" {
     filter {}
 
     expiration {
-      days = var.retention_days
+      days = coalesce(var.retention_days, 0)
     }
   }
 }
@@ -91,7 +91,7 @@ resource "aws_s3_bucket_versioning" "images" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "images" {
-  count = var.enable_lifecycle_expiration && try(var.retention_days, 0) > 0 ? 1 : 0
+  count = var.enable_lifecycle_expiration && coalesce(var.retention_days, 0) > 0 ? 1 : 0
 
   bucket = aws_s3_bucket.images.id
 
@@ -102,7 +102,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "images" {
     filter {}
 
     expiration {
-      days = var.retention_days
+      days = coalesce(var.retention_days, 0)
     }
   }
 }
@@ -144,7 +144,7 @@ resource "aws_s3_bucket_versioning" "zip" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "zip" {
-  count = var.enable_lifecycle_expiration && try(var.retention_days, 0) > 0 ? 1 : 0
+  count = var.enable_lifecycle_expiration && coalesce(var.retention_days, 0) > 0 ? 1 : 0
 
   bucket = aws_s3_bucket.zip.id
 
@@ -155,7 +155,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "zip" {
     filter {}
 
     expiration {
-      days = var.retention_days
+      days = coalesce(var.retention_days, 0)
     }
   }
 }

@@ -30,9 +30,9 @@ jobs:
           terraform_version: "1.5.0"
           terraform_wrapper: false
 
-      # Init/Validate em módulo foundation (placeholder; sem apply).
-      - name: Terraform Init - foundation
-        working-directory: terraform/00-foundation
+      # Root único (Storie-02-Parte2): init e validate a partir de terraform/
+      - name: Terraform Init (root)
+        working-directory: terraform
         run: terraform init -backend=false
         env:
           # Credenciais devem vir de GitHub Secrets em uso real
@@ -42,6 +42,6 @@ jobs:
           # AWS_REGION: ${{ secrets.AWS_REGION }}
           TF_INPUT: false
 
-      - name: Terraform Validate - foundation
-        working-directory: terraform/00-foundation
+      - name: Terraform Validate (root)
+        working-directory: terraform
         run: terraform validate

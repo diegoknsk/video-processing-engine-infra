@@ -1,8 +1,8 @@
 # Storie-02-Parte2: Root Terraform Único Orquestrando Todos os Módulos
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluído
+- **Data de Conclusão:** 05/02/2025
 
 ## Descrição
 Como desenvolvedor de infraestrutura, quero um **único root Terraform** que orquestre todos os módulos (00-foundation, 10-storage, 20-data, 30-messaging, 40-auth, 50-lambdas-shell, 60-api, 70-orchestration e observabilidade), para que init, plan e apply sejam executados **uma única vez** a partir de um único diretório (terraform/), com um único state e encadeamento correto de variáveis e outputs entre módulos.
@@ -41,15 +41,15 @@ Criar a configuração **root** em `terraform/` (main.tf ou arquivos modulares, 
 - [Subtask 05: Revisão de todas as stories 01 a 13 (root e módulos)](./subtask/Subtask-05-Revisao_Stories_01_a_13.md)
 
 ## Critérios de Aceite da História
-- [ ] Existe configuração root em `terraform/` (main.tf ou equivalente, variables.tf, outputs.tf, providers.tf, backend.tf) que invoca módulos 00-foundation e 10-storage (e demais quando implementados)
-- [ ] O root passa variáveis ao module "foundation" e recebe prefix e common_tags; repassa esses outputs aos módulos que os consomem (ex.: storage, data, messaging)
-- [ ] Um único `terraform init` e um único `terraform plan` (com -var-file ou -var) executados em `terraform/` geram plano coerente sem referências quebradas
-- [ ] Backend do root configurado (S3 e opcionalmente DynamoDB para lock); documentado como configurar ou usar -backend=false localmente
-- [ ] README ou documentação na story explicita: “Execução: cd terraform && terraform init && terraform plan -var-file=envs/dev.tfvars”
-- [ ] Todas as stories 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12 e 13 revisadas para indicar que os diretórios são módulos consumidos pelo root e que init/plan/apply são executados a partir de terraform/
+- [x] Existe configuração root em `terraform/` (main.tf ou equivalente, variables.tf, outputs.tf, providers.tf, backend.tf) que invoca módulos 00-foundation e 10-storage (e demais quando implementados)
+- [x] O root passa variáveis ao module "foundation" e recebe prefix e common_tags; repassa esses outputs aos módulos que os consomem (ex.: storage, data, messaging)
+- [x] Um único `terraform init` e um único `terraform plan` (com -var-file ou -var) executados em `terraform/` geram plano coerente sem referências quebradas
+- [x] Backend do root configurado (S3 e opcionalmente DynamoDB para lock); documentado como configurar ou usar -backend=false localmente
+- [x] README ou documentação na story explicita: “Execução: cd terraform && terraform init && terraform plan -var-file=envs/dev.tfvars”
+- [x] Todas as stories 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12 e 13 revisadas para indicar que os diretórios são módulos consumidos pelo root e que init/plan/apply são executados a partir de terraform/
 
 ## Checklist de Conclusão
-- [ ] Arquivos .tf do root criados em terraform/
-- [ ] terraform init (com backend ou -backend=false) e terraform validate executados com sucesso em terraform/
-- [ ] terraform plan em terraform/ com variáveis do foundation e storage não apresenta erros de referência
-- [ ] Stories 01 a 13 atualizadas com menção ao root e ao modelo de execução única
+- [x] Arquivos .tf do root criados em terraform/
+- [x] terraform init (com backend ou -backend=false) e terraform validate executados com sucesso em terraform/
+- [x] terraform plan em terraform/ com variáveis do foundation e storage não apresenta erros de referência
+- [x] Stories 01 a 13 atualizadas com menção ao root e ao modelo de execução única

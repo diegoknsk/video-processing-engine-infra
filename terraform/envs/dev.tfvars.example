@@ -2,9 +2,11 @@
 # Copie para dev.tfvars e preencha conforme seu ambiente.
 # Nunca commitar arquivos .tfvars com credenciais ou valores sensíveis.
 #
-# project_name                = "video-processing-engine"
-# environment                 = "dev"
-# region                      = "us-east-1"
-# owner                       = "sua-equipe"
-# retention_days              = 7
-# enable_cloudwatch_retention = true
+# project_name                 = "video-processing-engine"
+# environment                  = "dev"
+# region                       = "us-east-1"
+# owner                        = "sua-equipe"
+# retention_days               = 7
+# enable_cloudwatch_retention  = true
+# enable_versioning            = false
+# enable_lifecycle_expiration  = true

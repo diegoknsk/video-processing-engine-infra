@@ -11,19 +11,24 @@ Este repositório **cria recursos de infraestrutura** e não realiza deploy do c
 ```
 video-processing-engine-infra/
 ├── docs/                    # Documentação (contexto arquitetural)
-├── terraform/
-│   ├── 00-foundation/       # Providers, tags, variáveis globais, convenções
-│   ├── 10-storage/          # Buckets S3 (vídeos, imagens, zip)
-│   ├── 20-data/             # DynamoDB (metadados e status dos vídeos)
-│   ├── 30-messaging/        # SNS (tópicos) e SQS (filas + DLQs)
-│   ├── 40-auth/             # Cognito (User Pool, App Client)
-│   ├── 50-lambdas-shell/    # Lambdas em casca (Auth, Video Management, Orchestrator, Processor, Finalizer)
-│   ├── 60-api/              # API Gateway HTTP API
-│   ├── 70-orchestration/    # Step Functions (State Machine)
+├── terraform/               # Root Terraform (init/plan/apply a partir daqui)
+│   ├── *.tf                 # providers, backend, variables, main, outputs
+│   ├── 00-foundation/       # Módulo: convenções, tags, prefix
+│   ├── 10-storage/          # Módulo: buckets S3 (vídeos, imagens, zip)
+│   ├── 20-data/             # Módulo: DynamoDB (metadados e status dos vídeos)
+│   ├── 30-messaging/        # Módulo: SNS (tópicos) e SQS (filas + DLQs)
+│   ├── 40-auth/             # Módulo: Cognito (User Pool, App Client)
+│   ├── 50-lambdas-shell/    # Módulo: Lambdas em casca
+│   ├── 60-api/              # Módulo: API Gateway HTTP API
+│   ├── 70-orchestration/    # Módulo: Step Functions (State Machine)
 │   └── envs/                # Variáveis por ambiente (ex.: dev.tfvars)
 ├── .github/workflows/       # GitHub Actions (validate, plan, apply)
 ├── artifacts/               # Artefatos de build/deploy (ex.: empty.zip)
-└── Storie-01-Bootstrap_Repositorio_Infra/   # Stories e subtasks
+└── storys/                  # Stories e subtasks (Storie-01, Storie-02, …)
+    ├── Storie-01-Bootstrap_Repositorio_Infra/
+    ├── Storie-02-Implementar_Modulo_Foundation/
+    ├── Storie-02-Parte2-Root_Terraform_Orquestrador/
+    └── … (Storie-03 a Storie-13)
 ```
 
 ---
@@ -85,13 +90,31 @@ Cadastro e autenticação: **API Gateway** + **Lambda Auth** (Cognito) e **Lambd
 - **Credenciais AWS** via variáveis de ambiente ou perfil (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` quando aplicável, `AWS_REGION`)
 - Nenhuma credencial deve ser commitada; usar GitHub Secrets em CI/CD
 
-Exemplo de uso local (após Storie-02):
+### Execução do Terraform (root único)
+
+O diretório de trabalho para `terraform init`, `terraform plan` e `terraform apply` é **terraform/** (raiz dos módulos). Um único Terraform orquestra todos os módulos (00-foundation, 10-storage, etc.); não é necessário rodar init/plan/apply em cada subpasta para uso normal.
+
+**Comandos (Bash/WSL):**
 
 ```bash
-cd terraform/00-foundation
-terraform init
-terraform plan -var-file=../envs/dev.tfvars
+cd terraform
+terraform init -backend=false
+terraform plan -var-file=envs/dev.tfvars
+terraform apply -var-file=envs/dev.tfvars
 ```
+
+**No PowerShell (Windows)** use espaço entre `-var-file` e o caminho para evitar "Too many command line arguments":
+
+```powershell
+cd terraform
+terraform init -backend=false
+terraform plan -var-file envs\dev.tfvars
+terraform apply -var-file envs\dev.tfvars
+```
+
+- **Sem backend remoto (local):** use `terraform init -backend=false`. Com backend S3 (e opcionalmente DynamoDB para lock), configure via `-backend-config=backend.hcl` no `init`.
+- **Variáveis:** use `-var-file envs/dev.tfvars` (ou `envs\dev.tfvars` no Windows) ou `-var` para variáveis obrigatórias (ex.: `owner`).
+- Credenciais AWS devem estar configuradas (variáveis de ambiente ou perfil) para `plan`/`apply`.
 
 ---
 
@@ -99,3 +122,4 @@ terraform plan -var-file=../envs/dev.tfvars
 
 - [Contexto arquitetural](docs/contexto-arquitetural.md) — visão geral, fluxos e organização dos repositórios.
 - Regras de infraestrutura em `.cursor/rules/infrarules.mdc`.
+- **Stories e subtasks** — diretório `storys/` (Storie-01 a Storie-13).
