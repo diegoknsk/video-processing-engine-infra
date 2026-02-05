@@ -51,7 +51,7 @@ O repositório adota **um único root Terraform** em `terraform/` que orquestra 
 2. **Lista de recursos criados por módulo:** 00-foundation (providers, locals, variables, outputs, backend opcional); 10-storage (3 buckets S3); 20-data (tabela DynamoDB); 30-messaging (SNS topics, SQS + DLQs); 40-auth (User Pool, App Client); 50-lambdas-shell (5 Lambdas + IAM + event mappings); 60-api (HTTP API, stage, rotas, authorizer opcional); 70-orchestration (Step Functions, log group); 75-observability (log groups Lambdas/SFN). Resumo por módulo.
 3. **Como rodar apply/destroy:** localmente (terraform init, plan, apply com -var-file ou tfvars; credenciais via env); via GitHub Actions (terraform-apply.yml, terraform-destroy.yml; configurar secrets). Comandos mínimos e pré-requisitos.
 4. **Ordem recomendada:** (1) Provisionar infra (apply deste repo); (2) Deploy dos repositórios de Lambdas (fora deste repo); (3) Smoke tests. Documentar que este repo não faz deploy de código das Lambdas.
-5. **Variáveis importantes:** enable_stepfunctions, enable_authorizer, log_retention_days (ou retention_days), trigger_mode (s3_event | api_publish), finalization_mode (sqs | lambda), etc.; onde são usadas e impacto.
+5. **Variáveis importantes:** enable_stepfunctions, enable_authorizer, log_retention_days (ou retention_days), trigger_mode (s3_event | api_publish), finalization_mode (sqs | lambda), **lab_role_arn** (obrigatório em AWS Academy para Lambdas e Step Functions), etc.; onde são usadas e impacto.
 6. **Outputs/contratos consumidos pelos outros repos:** tabela ou lista com: Lambdas (ARNs, nomes, role ARNs); API URL (invoke URL da HTTP API); Cognito (user_pool_id, client_id, issuer, jwks_url); DynamoDB (table_name, table_arn); S3 (bucket names/ARNs para videos, images, zip); SQS (queue URLs/ARNs); SNS (topic ARNs); Step Functions (state_machine_arn). Para cada um: qual módulo expõe e qual repo de aplicação consome.
 
 ---
@@ -60,7 +60,7 @@ O repositório adota **um único root Terraform** em `terraform/` que orquestra 
 
 - [ ] Workflow terraform-apply.yml existe com trigger workflow_dispatch (e opcional push main), steps fmt, validate, plan, apply, e uso de secrets AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN, AWS_REGION.
 - [ ] Workflow terraform-destroy.yml existe com trigger workflow_dispatch e steps destroy; usa os mesmos secrets para autenticação.
-- [ ] README na raiz contém: visão geral da arquitetura (Processador Video MVP + Fan-out), lista de recursos por módulo, como rodar apply/destroy, ordem recomendada (1 infra, 2 deploy Lambdas, 3 smoke tests), variáveis importantes (enable_stepfunctions, enable_authorizer, retention_days), lista de outputs/contratos consumidos pelos outros repos (Lambdas, API URL, Cognito, DynamoDB, buckets, queues, topics, SFN).
+- [ ] README na raiz contém: visão geral da arquitetura (Processador Video MVP + Fan-out), lista de recursos por módulo, como rodar apply/destroy, ordem recomendada (1 infra, 2 deploy Lambdas, 3 smoke tests), variáveis importantes (enable_stepfunctions, enable_authorizer, retention_days, **lab_role_arn** para AWS Academy), lista de outputs/contratos consumidos pelos outros repos (Lambdas, API URL, Cognito, DynamoDB, buckets, queues, topics, SFN).
 - [ ] Nenhuma credencial commitada; apenas referência a GitHub Secrets.
 - [ ] Story inclui checklist final (abaixo) e DoD explícito.
 
@@ -86,6 +86,7 @@ O repositório adota **um único root Terraform** em `terraform/` que orquestra 
 | **log_retention_days** / **retention_days** | Foundation, 75-observability, 70-orchestration | Retenção em dias dos log groups e políticas de retenção. |
 | **trigger_mode** | 10-storage, 30-messaging | s3_event = S3 notifica SNS ao upload; api_publish = Lambda publica no SNS. |
 | **finalization_mode** | 70-orchestration | sqs = SFN envia para q-video-zip-finalize; lambda = SFN invoca Finalizer. |
+| **lab_role_arn** | Root (repassado a 50-lambdas-shell e 70-orchestration) | Obrigatório em AWS Academy (sem iam:CreateRole). ARN da Lab Role usada por todas as Lambdas e pela State Machine. Ex.: arn:aws:iam::ACCOUNT_ID:role/LabRole. |
 
 ---
 

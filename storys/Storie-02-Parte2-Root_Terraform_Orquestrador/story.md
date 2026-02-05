@@ -30,7 +30,7 @@ Criar a configuração **root** em `terraform/` (main.tf ou arquivos modulares, 
 ## Decisões Técnicas
 - **Root único:** O diretório de trabalho para `terraform init`, `terraform plan` e `terraform apply` é **terraform/** (raiz dos módulos). Não há “um Terraform por pasta” para execução padrão; cada pasta (00-foundation, 10-storage, …) é um **módulo** referenciado pelo root com `source = "./00-foundation"`, `source = "./10-storage"`, etc.
 - **State único:** Um único backend (ex.: S3 + DynamoDB lock) para o root; os módulos não possuem state próprio quando invocados pelo root.
-- **Variáveis e outputs:** O root declara variáveis globais (project_name, environment, region, owner, flags) e repassa aos módulos; recebe outputs (ex.: prefix, common_tags do foundation) e repassa a storage, data, messaging, etc.; reexporta outputs para pipelines e documentação.
+- **Variáveis e outputs:** O root declara variáveis globais (project_name, environment, region, owner, flags, **lab_role_arn** para AWS Academy) e repassa aos módulos; recebe outputs (ex.: prefix, common_tags do foundation) e repassa a storage, data, messaging, etc.; reexporta outputs para pipelines e documentação. Em **AWS Academy**, lab_role_arn é obrigatória e repassada a 50-lambdas-shell e 70-orchestration (evita iam:CreateRole).
 - **Ordem de aplicação:** Terraform resolve dependências entre módulos automaticamente (ex.: storage depende de foundation por causa de prefix/common_tags).
 
 ## Subtasks

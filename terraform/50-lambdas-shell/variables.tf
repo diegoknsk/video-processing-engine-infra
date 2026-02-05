@@ -124,3 +124,9 @@ variable "enable_status_update_consumer" {
   type        = bool
   default     = true
 }
+
+# --- Lab Role (AWS Academy): não criar IAM roles; usar role existente ---
+variable "lab_role_arn" {
+  description = "ARN da role existente (LabRole) assumida por todas as Lambdas. Obrigatório quando o executor do Terraform não tem iam:CreateRole (ex.: AWS Academy)."
+  type        = string
+}

@@ -44,9 +44,9 @@ O diretório `terraform/75-observability/` (ou extensão em 50-lambdas-shell/70-
 
 ## IAM para Escrita em Logs
 
-- **Lambdas (50-lambdas-shell):** As roles já possuem política para CloudWatch Logs (logs:CreateLogStream, logs:PutLogEvents). Garantir que o recurso da policy permita escrita nos log groups criados: resource "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${prefix}-*" ou equivalente. Se hoje for "*", está coberto; para least privilege, restringir ao ARN dos 5 log groups quando os nomes forem conhecidos (opcional nesta story).
-- **Step Functions (70-orchestration):** A role da SFN já possui permissão de logs no log group da SFN. Garantir que o log group usado pela SFN (logging_configuration) tenha retenção configurável e que a role tenha permissão nesse grupo.
-- **Onde aplicável:** Documentar que Lambda e SFN precisam de permissão de escrita nos respectivos log groups; validar que as políticas existentes cobrem os nomes/ARNs dos log groups criados.
+- **Lambdas (50-lambdas-shell):** As roles já possuem política para CloudWatch Logs (logs:CreateLogStream, logs:PutLogEvents). Garantir que o recurso da policy permita escrita nos log groups criados: resource "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${prefix}-*" ou equivalente. Se hoje for "*", está coberto; para least privilege, restringir ao ARN dos 5 log groups quando os nomes forem conhecidos (opcional nesta story). **Em AWS Academy:** as Lambdas usam **lab_role_arn** (role existente); a Lab Role deve ter permissão de escrita nos log groups das Lambdas (ex.: logs:CreateLogStream, logs:PutLogEvents em arn:aws:logs:...:log-group:/aws/lambda/${prefix}-*:*).
+- **Step Functions (70-orchestration):** A role da SFN já possui permissão de logs no log group da SFN. Garantir que o log group usado pela SFN (logging_configuration) tenha retenção configurável e que a role tenha permissão nesse grupo. **Em AWS Academy:** a SFN usa **lab_role_arn**; a Lab Role deve ter permissão de escrita no log group da Step Functions (/aws/stepfunctions/${prefix}-video-processing).
+- **Onde aplicável:** Documentar que Lambda e SFN precisam de permissão de escrita nos respectivos log groups; validar que as políticas existentes (ou a Lab Role, em Academy) cobrem os nomes/ARNs dos log groups criados.
 
 ---
 

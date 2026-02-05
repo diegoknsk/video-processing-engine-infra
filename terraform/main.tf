@@ -94,9 +94,30 @@ module "lambdas" {
 
   step_function_arn             = var.step_function_arn
   enable_status_update_consumer = var.enable_status_update_consumer
+
+  lab_role_arn = var.lab_role_arn
+}
+
+# --- Orchestration (Step Functions — Storie-09) ---
+module "orchestration" {
+  source = "./70-orchestration"
+
+  prefix      = module.foundation.prefix
+  common_tags = module.foundation.common_tags
+
+  enable_stepfunctions = var.enable_stepfunctions
+  log_retention_days   = var.orchestration_log_retention_days
+  finalization_mode    = var.finalization_mode
+
+  lambda_processor_arn = module.lambdas.lambda_video_processor_arn
+  lambda_finalizer_arn = module.lambdas.lambda_video_finalizer_arn
+
+  q_video_zip_finalize_arn = module.messaging.q_video_zip_finalize_arn
+  q_video_zip_finalize_url = module.messaging.q_video_zip_finalize_url
+
+  lab_role_arn = var.lab_role_arn
 }
 
 # --- Demais módulos: incluir quando implementados ---
 # module "auth"       { source = "./40-auth";       prefix = module.foundation.prefix; common_tags = module.foundation.common_tags; ... }
 # module "api"        { source = "./60-api"; ... }
-# module "orchestration" { source = "./70-orchestration"; ... }

@@ -15,6 +15,6 @@ Criar a role IAM da State Machine Step Functions no módulo `terraform/70-orches
 3. Buscar na policy por "lambda:*" ou "sqs:*" e confirmar que não existem; permissões granulares por recurso.
 
 ## Critérios de aceite da subtask
-- [ ] Existe aws_iam_role para a SFN com assume_role_policy para states.amazonaws.com; role criada apenas quando enable_stepfunctions = true.
-- [ ] A policy da role inclui: CloudWatch Logs no log group da SFN; lambda:InvokeFunction na Lambda Video Processor; e conforme finalization_mode: sqs:SendMessage em q-video-zip-finalize ou lambda:InvokeFunction na Lambda Video Finalizer.
+- [ ] Em ambiente com permissão IAM: existe aws_iam_role para a SFN com assume_role_policy para states.amazonaws.com; role criada apenas quando enable_stepfunctions = true. **Em AWS Academy:** o módulo usa **lab_role_arn** (role existente); nenhuma role é criada (ver story.md, seção "AWS Academy / Lab Role").
+- [ ] A policy da role (ou a Lab Role em Academy) inclui: CloudWatch Logs no log group da SFN; lambda:InvokeFunction na Lambda Video Processor; e conforme finalization_mode: sqs:SendMessage em q-video-zip-finalize ou lambda:InvokeFunction na Lambda Video Finalizer.
 - [ ] Nenhuma permissão ampla (lambda:*, sqs:*); terraform validate e plan passam.

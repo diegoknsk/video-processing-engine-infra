@@ -68,3 +68,14 @@ output "dynamodb_gsi1_name" {
   description = "Nome do GSI1 (consulta por VideoId)."
   value       = module.data.gsi1_name
 }
+
+# --- Orchestration (Step Functions — Storie-09) ---
+output "step_machine_arn" {
+  description = "ARN da State Machine Step Functions (video processing). Usar em step_function_arn (tfvars) para a Lambda Orchestrator invocar StartExecution."
+  value       = module.orchestration.state_machine_arn
+}
+
+output "step_machine_log_group_name" {
+  description = "Nome do log group CloudWatch da Step Functions."
+  value       = module.orchestration.log_group_name
+}

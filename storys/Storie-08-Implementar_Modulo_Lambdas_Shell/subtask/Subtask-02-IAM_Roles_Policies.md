@@ -15,6 +15,6 @@ Criar uma role IAM por Lambda (5 roles) e políticas mínimas (least privilege) 
 3. Executar `terraform plan` com variáveis preenchidas e verificar que as 5 roles e políticas são criadas sem erro.
 
 ## Critérios de aceite da subtask
-- [ ] Existem 5 aws_iam_role (uma por Lambda) com assume_role_policy para lambda.amazonaws.com.
-- [ ] Cada Lambda tem políticas IAM mínimas: CloudWatch Logs; S3/DynamoDB/SQS/SNS/StepFunctions conforme tabela da story (least privilege); nenhuma política s3:* ou dynamodb:*.
+- [ ] Em ambiente com permissão IAM: existem 5 aws_iam_role (uma por Lambda) com assume_role_policy para lambda.amazonaws.com. **Em AWS Academy:** o módulo usa **lab_role_arn** (uma role existente para todas as Lambdas); nenhuma role é criada (ver story.md, seção "AWS Academy / Lab Role").
+- [ ] Cada Lambda tem políticas IAM mínimas (ou a Lab Role em Academy deve tê-las): CloudWatch Logs; S3/DynamoDB/SQS/SNS/StepFunctions conforme tabela da story (least privilege); nenhuma política s3:* ou dynamodb:*.
 - [ ] Justificativa (least privilege) documentada no código ou README por Lambda; terraform validate e plan passam.

@@ -16,5 +16,5 @@ Garantir que as roles IAM das 5 Lambdas (50-lambdas-shell) e da Step Functions (
 3. Executar terraform plan e confirmar que não há remoção de permissões necessárias; terraform validate passa.
 
 ## Critérios de aceite da subtask
-- [ ] As 5 roles Lambda (50-lambdas-shell) possuem permissão de escrita (CreateLogStream, PutLogEvents) em log groups que cobrem /aws/lambda/{prefix}-auth, etc.; SFN role possui permissão no log group da SFN.
+- [ ] As 5 roles Lambda (50-lambdas-shell) possuem permissão de escrita (CreateLogStream, PutLogEvents) em log groups que cobrem /aws/lambda/{prefix}-auth, etc.; SFN role possui permissão no log group da SFN. **Em AWS Academy:** as Lambdas e a SFN usam **lab_role_arn**; a Lab Role deve ter essas permissões de logs (não criamos policies no Terraform; documentar requisito para a Lab Role).
 - [ ] Onde aplicável, policy ajustada ou documentada; nenhuma regressão (logs continuam sendo escritos após apply); terraform validate e plan passam.

@@ -3,7 +3,7 @@
 
 resource "aws_lambda_function" "auth" {
   function_name = "${var.prefix}-auth"
-  role          = aws_iam_role.lambda_auth.arn
+  role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -19,7 +19,7 @@ resource "aws_lambda_function" "auth" {
 
 resource "aws_lambda_function" "video_management" {
   function_name = "${var.prefix}-video-management"
-  role          = aws_iam_role.lambda_video_management.arn
+  role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -38,7 +38,7 @@ resource "aws_lambda_function" "video_management" {
 
 resource "aws_lambda_function" "video_orchestrator" {
   function_name = "${var.prefix}-video-orchestrator"
-  role          = aws_iam_role.lambda_video_orchestrator.arn
+  role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -55,7 +55,7 @@ resource "aws_lambda_function" "video_orchestrator" {
 
 resource "aws_lambda_function" "video_processor" {
   function_name = "${var.prefix}-video-processor"
-  role          = aws_iam_role.lambda_video_processor.arn
+  role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -75,7 +75,7 @@ resource "aws_lambda_function" "video_processor" {
 
 resource "aws_lambda_function" "video_finalizer" {
   function_name = "${var.prefix}-video-finalizer"
-  role          = aws_iam_role.lambda_video_finalizer.arn
+  role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path

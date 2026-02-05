@@ -4,6 +4,11 @@
 - **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026, às 01:13 (Brasília)
+- **Fim:** —
+- **Tempo total de desenvolvimento:** —
+
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o módulo `terraform/70-orchestration` provisione uma State Machine Step Functions inicial simples (sequencial, 1 processor), com estrutura preparada para evolução para Map State (fan-out), log group dedicado com retenção configurável e IAM com permissões mínimas para invocar LambdaVideoProcessor e encaminhar a finalização (SQS ou Lambda), para que o fluxo Orchestrator → SFN → Processor → finalização esteja alinhado ao desenho do Processador Video MVP.
 
@@ -109,11 +114,15 @@ Evolução futura: **Map State** para fan-out (múltiplos processamentos em para
 - **lambda_processor_arn**: ARN da Lambda Video Processor (módulo 50-lambdas-shell).
 - **lambda_finalizer_arn**: ARN da Lambda Video Finalizer (módulo 50-lambdas-shell).
 - **q_video_zip_finalize_arn** (ou URL): fila q-video-zip-finalize (obrigatório quando finalization_mode = "sqs").
+- **lab_role_arn** (string, obrigatório em AWS Academy): ARN da role existente (Lab Role) usada pela State Machine quando o Terraform não tem iam:CreateRole. A role deve permitir states.amazonaws.com no trust policy e as permissões (logs, lambda:InvokeFunction, sqs:SendMessage conforme modo).
+
+## AWS Academy / Lab Role
+Em ambiente **AWS Academy** o usuário não tem permissão `iam:CreateRole`. O módulo usa a **role existente** informada em **lab_role_arn** para a State Machine; nenhuma role nem policy é criada pelo Terraform. A Lab Role deve ter trust policy permitindo `states.amazonaws.com` e permissões para logs no log group da SFN, lambda:InvokeFunction (Processor e, se finalization_mode = "lambda", Finalizer) e sqs:SendMessage (q-video-zip-finalize quando finalization_mode = "sqs"). Definir lab_role_arn no root (ex.: envs/dev.tfvars).
 
 ## Decisões Técnicas
 - **State Machine:** Definição em JSON (inline ou arquivo) ou HCL (aws_sfn_state_machine com definition); fluxo simples: Process → Finalize (SQS ou Lambda) → End; estrutura de estados preparada para inserção de Map State (ex.: estado "Process" que pode ser substituído por Map sobre lista de itens).
 - **Log group:** Nome ex.: `/aws/stepfunctions/{prefix}-video-processing` ou equivalente; retenção = var.log_retention_days.
-- **IAM:** Role da SFN com policy: logs (CreateLogStream, PutLogEvents no log group da SFN), lambda:InvokeFunction para Processor; conforme finalization_mode: sqs:SendMessage para q-video-zip-finalize ou lambda:InvokeFunction para Finalizer.
+- **IAM:** Em ambiente padrão: role da SFN criada pelo módulo com policy (logs, lambda, sqs conforme modo). Em **AWS Academy**: uso de **lab_role_arn** (role existente); nenhuma criação de role nem policy no Terraform.
 - **enable_stepfunctions:** Quando false, não criar state machine nem log group (count = 0 ou conditional); outputs podem retornar string vazia ou placeholder.
 
 ## Subtasks
@@ -128,7 +137,7 @@ Evolução futura: **Map State** para fan-out (múltiplos processamentos em para
 - [ ] Estrutura da definição preparada para evolução para Map State (fan-out) conforme desenho (estados e pass-through de payload documentados ou organizados para inserção de Map)
 - [ ] enable_stepfunctions é parametrizável por variável; quando false, state machine e recursos opcionais não são criados (ou criados com count = 0)
 - [ ] Log group dedicado para SFN existe com retenção configurável (log_retention_days)
-- [ ] IAM role da SFN tem permissões mínimas: invocar LambdaVideoProcessor e encaminhar finalização (SQS SendMessage para q-video-zip-finalize ou Lambda Invoke Finalizer conforme finalization_mode)
+- [ ] IAM: em ambiente padrão, role da SFN com permissões mínimas; em **AWS Academy**, State Machine usa **lab_role_arn** (role existente) e nenhuma role é criada pelo Terraform
 - [ ] Decisão de finalização parametrizada: finalization_mode = "sqs" | "lambda"; implementação e IAM alinhadas ao modo
 - [ ] Outputs expõem state machine ARN e log group name
 - [ ] A story define o payload padrão de entrada (videoId, userId, s3Bucket, s3VideoKey, requestId opcional) e saída (videoId, userId, status, imagesPrefix, zipS3Key opcional)
@@ -136,6 +145,6 @@ Evolução futura: **Map State** para fan-out (múltiplos processamentos em para
 
 ## Checklist de Conclusão
 - [ ] State machine criada com definição simples (Processor → Finalização); enable_stepfunctions respeitado
-- [ ] Log group com retenção configurável; IAM com permissões mínimas (Processor + finalização)
+- [ ] Log group com retenção configurável; IAM via role própria ou lab_role_arn (Academy)
 - [ ] README ou story documenta payload de entrada/saída e finalization_mode
 - [ ] terraform init, validate e plan com variáveis fornecidas passam

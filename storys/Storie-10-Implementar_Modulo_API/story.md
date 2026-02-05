@@ -77,6 +77,7 @@ O diretório `terraform/60-api/` é um **módulo** consumido pelo **root** em `t
 
 ## Decisões Técnicas
 - **HTTP API:** aws_apigatewayv2_api com protocol_type = "HTTP"; sem API key nem usage plan nesta story.
+- **IAM:** Este módulo não cria IAM roles; apenas aws_lambda_permission (resource-based policy) para a API Gateway invocar as Lambdas. Compatível com uso de lab_role_arn nas Lambdas (50-lambdas-shell em AWS Academy).
 - **Stage:** aws_apigatewayv2_stage com name = var.stage_name (dev); auto_deploy opcional (true para simplicidade).
 - **Rotas:** aws_apigatewayv2_route para /auth/$proxy+ e /videos/$proxy+ (ou equivalente) com integração Lambda proxy; cada rota aponta para a integração da Lambda correspondente.
 - **Integrações:** aws_apigatewayv2_integration com integration_type = "AWS_PROXY", integration_uri = Lambda invoke ARN; aws_lambda_permission para api gateway invocar cada Lambda.

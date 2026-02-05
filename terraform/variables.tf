@@ -24,6 +24,12 @@ variable "owner" {
   type        = string
 }
 
+# --- Lab Role (AWS Academy): role existente para Lambdas e Step Functions; evita iam:CreateRole ---
+variable "lab_role_arn" {
+  description = "ARN da role existente (ex.: LabRole) usada por Lambdas e Step Functions. Obrigatório em AWS Academy (sem iam:CreateRole). Ex.: arn:aws:iam::ACCOUNT_ID:role/LabRole"
+  type        = string
+}
+
 variable "retention_days" {
   description = "Dias de retenção para logs/métricas e lifecycle S3 (opcional)."
   type        = number
@@ -118,9 +124,28 @@ variable "lambda_handler" {
 }
 
 variable "step_function_arn" {
-  description = "ARN da Step Function (módulo 70-orchestration); vazio até Storie-09."
+  description = "ARN da Step Function (módulo 70-orchestration); preencher com output step_machine_arn após primeiro apply (Lambda Orchestrator usa para StartExecution)."
   type        = string
   default     = ""
+}
+
+# --- Orchestration (70-orchestration, Storie-09) ---
+variable "enable_stepfunctions" {
+  description = "Habilita criação da State Machine Step Functions e recursos do módulo 70-orchestration."
+  type        = bool
+  default     = true
+}
+
+variable "orchestration_log_retention_days" {
+  description = "Retenção em dias do log group CloudWatch da Step Functions."
+  type        = number
+  default     = 14
+}
+
+variable "finalization_mode" {
+  description = "Finalização do fluxo: sqs = mensagem em q-video-zip-finalize; lambda = invocar Lambda Finalizer diretamente."
+  type        = string
+  default     = "sqs"
 }
 
 variable "enable_status_update_consumer" {

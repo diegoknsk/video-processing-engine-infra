@@ -88,10 +88,14 @@ Todas recebem valores via variáveis do módulo (outputs de storage, data, messa
 - **topic_video_submitted_arn**, **topic_video_completed_arn**: módulo messaging SNS.
 - **step_function_arn**: módulo 70-orchestration (ou placeholder).
 - **enable_status_update_consumer** (bool, opcional): se true, mapeia LambdaVideoManagement a q-video-status-update; se false, apenas documenta consumo futuro.
+- **lab_role_arn** (string, obrigatório em AWS Academy): ARN da role existente (Lab Role) usada por todas as Lambdas quando o executor do Terraform não tem iam:CreateRole. O root repassa var.lab_role_arn.
+
+## AWS Academy / Lab Role
+Em ambiente **AWS Academy** o usuário não tem permissão `iam:CreateRole`. O módulo foi adaptado para usar uma **role existente** (Lab Role) informada em **lab_role_arn**: todas as cinco Lambdas usam essa mesma role. A Lab Role deve ter trust policy permitindo `lambda.amazonaws.com` e as permissões necessárias (CloudWatch Logs, S3, DynamoDB, SQS, SNS, Step Functions conforme cada função). Sem `lab_role_arn` o apply falha; definir no root (ex.: em `envs/dev.tfvars`) com o ARN da Lab Role (ex.: `arn:aws:iam::ACCOUNT_ID:role/LabRole`).
 
 ## Decisões Técnicas
 - **Casca:** Lambdas criadas com empty.zip e handler placeholder; código real em repositórios de aplicação e deploy via pipeline.
-- **IAM:** Uma role por Lambda; políticas inline ou aws_iam_role_policy por função; nenhuma policy compartilhada ampla.
+- **IAM:** Em ambiente com permissão IAM: uma role por Lambda com políticas mínimas. Em **AWS Academy**: uso de **lab_role_arn** (uma role existente para todas as Lambdas); nenhuma criação de role nem policy no Terraform.
 - **Event source:** aws_lambda_event_source_mapping para SQS; aws_lambda_permission para permitir que SQS invoque a Lambda.
 - **Variáveis de ambiente:** Injetadas por Terraform (var.*); sem segredos em texto plano (usar referência a Secret Manager ou variável de pipeline em story futura se necessário).
 
@@ -104,10 +108,10 @@ Todas recebem valores via variáveis do módulo (outputs de storage, data, messa
 
 ## Critérios de Aceite da História
 - [ ] O módulo `terraform/50-lambdas-shell` cria cinco Lambdas (Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer) com runtime parametrizável (default seguro), handler placeholder e artefato `artifacts/empty.zip`
-- [ ] IAM separado por função (least privilege): cada Lambda tem sua role com políticas mínimas (CloudWatch Logs; S3/DynamoDB/SQS/SNS/StepFunctions conforme tabela de permissões)
+- [ ] IAM: em ambiente padrão, role por Lambda com políticas mínimas; em **AWS Academy**, todas as Lambdas usam **lab_role_arn** (role existente) e nenhuma role é criada pelo Terraform
 - [ ] Variáveis de ambiente por Lambda incluem table, buckets, queue urls, topic arns e stepfunction arn conforme necessidade de cada uma
 - [ ] Event source mappings implementados: Orchestrator acionada por SQS q-video-process; Finalizer acionada por SQS q-video-zip-finalize; estratégia para q-video-status-update definida e implementada (preferir mapear LambdaVideoManagement) ou documentada
-- [ ] Outputs expõem lambda names, lambda ARNs e role ARNs
+- [ ] Outputs expõem lambda names, lambda ARNs e role ARNs (em Academy, role ARN = lab_role_arn)
 - [ ] A story lista as permissões por Lambda e justifica (least privilege) na tabela e no README
 - [ ] Consumo de prefix/common_tags e dos outputs dos módulos storage, data, messaging (e orchestration quando existir); terraform plan sem referências quebradas
 

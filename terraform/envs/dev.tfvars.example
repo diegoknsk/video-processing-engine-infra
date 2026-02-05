@@ -10,3 +10,6 @@
 # enable_cloudwatch_retention  = true
 # enable_versioning            = false
 # enable_lifecycle_expiration  = true
+#
+# --- AWS Academy: obrigatório quando não há permissão iam:CreateRole ---
+# lab_role_arn                 = "arn:aws:iam::804879632477:role/LabRole"
