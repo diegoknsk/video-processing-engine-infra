@@ -1,0 +1,10 @@
+# Exemplo de variáveis por ambiente (dev).
+# Copie para dev.tfvars e preencha conforme seu ambiente.
+# Nunca commitar arquivos .tfvars com credenciais ou valores sensíveis.
+#
+# project_name                = "video-processing-engine"
+# environment                 = "dev"
+# region                      = "us-east-1"
+# owner                       = "sua-equipe"
+# retention_days              = 7
+# enable_cloudwatch_retention = true

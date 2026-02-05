@@ -1,8 +1,8 @@
 # Storie-01: Bootstrap do Repositório de Infraestrutura
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluído
+- **Data de Conclusão:** 02/02/2025
 
 ## Descrição
 Como arquiteto/DevOps, quero que o repositório `video-processing-engine-infra` tenha estrutura de diretórios, padrões, placeholders e pipelines base definidos, para que as próximas stories possam provisionar módulos de forma consistente sem criar recursos AWS nesta etapa.
@@ -36,11 +36,11 @@ A ordem planejada dos módulos, alinhada ao desenho **Processador Video MVP + Fa
 - [Subtask 05: Documentar ordem de execução das stories e conexão dos módulos ao Processador Video MVP + Fan-out](./subtask/Subtask-05-Documentacao_Ordem_Modulos.md)
 
 ## Critérios de Aceite da História
-- [ ] Existe a árvore completa `terraform/00-foundation/` até `70-orchestration/` e `terraform/envs/dev.tfvars`, cada módulo com pelo menos um arquivo `.tf` ou placeholder conforme infrarules
-- [ ] Padrão de naming `video-processing-engine-{env}-*` e tags padrão (Project, Environment, ManagedBy, Owner) definidos em locals no foundation (placeholder ou arquivo de convenção)
-- [ ] Variáveis globais e convenções de outputs documentadas ou declaradas no foundation (variables.tf/outputs.tf ou README do módulo)
-- [ ] `.github/workflows/` contém pelo menos um workflow placeholder (ex.: terraform-plan.yml ou bootstrap.yml) sem apply real
-- [ ] `artifacts/empty.zip` existe no repositório (ou placeholder que indique uso futuro)
-- [ ] README.md na raiz contém visão geral do repo e plano de evolução com lista das stories e ordem de execução
-- [ ] Documentação descreve como cada módulo (00 a 70) se conecta ao desenho Processador Video MVP + Fan-out do contexto arquitetural
-- [ ] `terraform validate` não é obrigatório nesta story (estrutura pode ter apenas placeholders); nenhum recurso AWS é provisionado
+- [x] Existe a árvore completa `terraform/00-foundation/` até `70-orchestration/` e `terraform/envs/dev.tfvars`, cada módulo com pelo menos um arquivo `.tf` ou placeholder conforme infrarules
+- [x] Padrão de naming `video-processing-engine-{env}-*` e tags padrão (Project, Environment, ManagedBy, Owner) definidos em locals no foundation (placeholder ou arquivo de convenção)
+- [x] Variáveis globais e convenções de outputs documentadas ou declaradas no foundation (variables.tf/outputs.tf ou README do módulo)
+- [x] `.github/workflows/` contém pelo menos um workflow placeholder (ex.: terraform-plan.yml ou bootstrap.yml) sem apply real
+- [x] `artifacts/empty.zip` existe no repositório (ou placeholder que indique uso futuro)
+- [x] README.md na raiz contém visão geral do repo e plano de evolução com lista das stories e ordem de execução
+- [x] Documentação descreve como cada módulo (00 a 70) se conecta ao desenho Processador Video MVP + Fan-out do contexto arquitetural
+- [x] `terraform validate` não é obrigatório nesta story (estrutura pode ter apenas placeholders); nenhum recurso AWS é provisionado
