@@ -6,6 +6,21 @@ Este repositório **cria recursos de infraestrutura** e não realiza deploy do c
 
 ---
 
+## Visão geral da arquitetura (Processador Video MVP + Fan-out)
+
+A arquitetura segue o desenho **Processador Video MVP + Fan-out**:
+
+- **Entrada:** usuário autentica via **Cognito** e acessa a **API Gateway (HTTP API)**; upload de vídeo é feito via **Lambda Video Management** (URL pré-assinada S3).
+- **Upload:** vídeo vai para o **bucket S3 (vídeos)**; ao concluir, o evento é publicado no **SNS (topic-video-submitted)** e consumido pela fila **SQS (q-video-process)**.
+- **Orquestração:** a **Lambda Orchestrator** consome a fila, inicia a **Step Functions** (State Machine), que invoca a **Lambda Processor** (extração de frames → bucket S3 imagens) e em seguida a **Lambda Finalizer** (zip → bucket S3 zip).
+- **Finalização:** ao concluir, o fluxo publica no **SNS (topic-video-completed)**; **DynamoDB** armazena metadados e status dos vídeos durante todo o processo.
+
+Resumo do fluxo: **API Gateway + Cognito** → upload **S3** → **SNS** → **SQS** → **Orchestrator** → **Step Functions** → **Processor** → **Finalizer** → **SNS completed**; estado em **DynamoDB**; artefatos em **S3** (vídeos, imagens, zip).
+
+Para detalhes, fluxos e organização dos repositórios, veja [docs/contexto-arquitetural.md](docs/contexto-arquitetural.md).
+
+---
+
 ## Visão geral da estrutura
 
 ```
@@ -30,6 +45,22 @@ video-processing-engine-infra/
     ├── Storie-02-Parte2-Root_Terraform_Orquestrador/
     └── … (Storie-03 a Storie-13)
 ```
+
+---
+
+## Recursos criados por módulo
+
+| Módulo | Recursos / responsabilidade |
+|--------|-----------------------------|
+| **00-foundation** | Providers, backend (opcional), locals, variables, outputs base; convenções de naming e tags. |
+| **10-storage** | 3 buckets S3: vídeos (upload), imagens (frames), zip (resultado final). |
+| **20-data** | Tabela DynamoDB para metadados e status dos vídeos; GSI para consulta por VideoId. |
+| **30-messaging** | SNS: topic-video-submitted, topic-video-completed; SQS: q-video-process, q-video-status-update, q-video-zip-finalize + DLQs. |
+| **40-auth** | Cognito User Pool e App Client (autenticação JWT para a API). |
+| **50-lambdas-shell** | 5 Lambdas em casca (Auth, Video Management, Orchestrator, Processor, Finalizer), IAM (Lab Role), event source mappings. |
+| **60-api** | API Gateway HTTP API, stage, rotas (/auth/*, /videos/*), authorizer Cognito (opcional). |
+| **70-orchestration** | Step Functions (State Machine do processamento), log group CloudWatch. |
+| **75-observability** | Log groups CloudWatch para as Lambdas e suporte a retenção. |
 
 ---
 
@@ -84,17 +115,21 @@ Cadastro e autenticação: **API Gateway** + **Lambda Auth** (Cognito) e **Lambd
 
 ---
 
-## Pré-requisitos e uso
+## Como rodar apply/destroy
+
+### Pré-requisitos
 
 - **Terraform** >= 1.0
 - **Credenciais AWS** via variáveis de ambiente ou perfil (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` quando aplicável, `AWS_REGION`)
-- Nenhuma credencial deve ser commitada; usar GitHub Secrets em CI/CD
+- **Nunca commitar credenciais**; em CI/CD usar apenas GitHub Secrets.
 
-### Execução do Terraform (root único)
+### Root único (terraform/)
 
-O diretório de trabalho para `terraform init`, `terraform plan` e `terraform apply` é **terraform/** (raiz dos módulos). Um único Terraform orquestra todos os módulos (00-foundation, 10-storage, etc.); não é necessário rodar init/plan/apply em cada subpasta para uso normal.
+O diretório de trabalho é **terraform/**. Um único Terraform orquestra todos os módulos; não é necessário rodar init/plan/apply em cada subpasta.
 
-**Comandos (Bash/WSL):**
+### Localmente
+
+**Bash/WSL:**
 
 ```bash
 cd terraform
@@ -103,7 +138,7 @@ terraform plan -var-file=envs/dev.tfvars
 terraform apply -var-file=envs/dev.tfvars
 ```
 
-**No PowerShell (Windows)** use espaço entre `-var-file` e o caminho para evitar "Too many command line arguments":
+**PowerShell (Windows)** — use espaço entre `-var-file` e o caminho:
 
 ```powershell
 cd terraform
@@ -112,9 +147,78 @@ terraform plan -var-file envs\dev.tfvars
 terraform apply -var-file envs\dev.tfvars
 ```
 
-- **Sem backend remoto (local):** use `terraform init -backend=false`. Com backend S3 (e opcionalmente DynamoDB para lock), configure via `-backend-config=backend.hcl` no `init`.
-- **Variáveis:** use `-var-file envs/dev.tfvars` (ou `envs\dev.tfvars` no Windows) ou `-var` para variáveis obrigatórias (ex.: `owner`).
-- Credenciais AWS devem estar configuradas (variáveis de ambiente ou perfil) para `plan`/`apply`.
+**Destroy:**
+
+```bash
+cd terraform
+terraform destroy -var-file=envs/dev.tfvars
+```
+
+- **Backend:** sem backend remoto use `terraform init -backend=false`. Com S3 (e opcional DynamoDB lock), use `-backend-config=backend.hcl` no `init`.
+- **Variáveis:** use `-var-file envs/dev.tfvars` ou `-var` para obrigatórias (ex.: `owner`, `lab_role_arn`).
+
+### Via GitHub Actions
+
+1. **Configurar secrets** no repositório (Settings → Secrets and variables → Actions): `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION`. Em credenciais temporárias (ex.: AWS Academy), o `AWS_SESSION_TOKEN` é obrigatório.
+2. **Apply:** acionar o workflow **Terraform Apply** manualmente (Actions → Terraform Apply → Run workflow) ou, se configurado, ele pode rodar em push na `main` (apenas quando há alterações em `terraform/`).
+3. **Destroy:** acionar o workflow **Terraform Destroy** apenas manualmente (workflow_dispatch); não é disparado em push.
+
+Os workflows usam `working-directory: terraform` e, por padrão, `-var-file=envs/dev.tfvars`. Garanta que o arquivo exista no branch ou ajuste o workflow para usar variáveis injetadas por secrets.
+
+---
+
+## Ordem recomendada de execução
+
+1. **Provisionar a infraestrutura:** executar `terraform apply` neste repositório (local ou via workflow **Terraform Apply**) para criar todos os recursos AWS (S3, DynamoDB, SNS, SQS, Cognito, Lambdas em casca, API Gateway, Step Functions, etc.).
+2. **Deploy dos repositórios de Lambdas:** cada Lambda tem seu próprio repositório de código; fazer o deploy do código das Lambdas nesses repos **fora deste repo de infra**. Este repositório apenas cria a “casca” (função, IAM, integrações); não faz deploy de código de aplicação.
+3. **Smoke tests:** validar que a API responde, que o fluxo de upload e processamento funciona ponta a ponta.
+
+---
+
+## Variáveis importantes
+
+| Variável | Onde | Impacto |
+|----------|------|---------|
+| **enable_stepfunctions** | 70-orchestration | Habilita ou desabilita a criação da State Machine e do log group da Step Functions. |
+| **enable_api_authorizer** | 60-api | Habilita o JWT authorizer Cognito nas rotas protegidas (ex.: /videos/*). |
+| **retention_days** / **orchestration_log_retention_days** | Foundation, 75-observability, 70-orchestration | Retenção em dias dos log groups e políticas de retenção. |
+| **trigger_mode** | 10-storage, 30-messaging | `s3_event` = S3 notifica SNS ao upload; `api_publish` = Lambda publica no SNS. |
+| **finalization_mode** | 70-orchestration | `sqs` = Step Functions envia para q-video-zip-finalize; `lambda` = Step Functions invoca a Lambda Finalizer. |
+| **lab_role_arn** | Root (repassado a 50-lambdas-shell e 70-orchestration) | Obrigatório em AWS Academy (sem permissão iam:CreateRole). ARN da Lab Role usada por todas as Lambdas e pela State Machine. Ex.: `arn:aws:iam::ACCOUNT_ID:role/LabRole`. |
+
+---
+
+## Outputs e contratos para outros repositórios
+
+Os outputs do root Terraform (e dos módulos) são consumidos por outros repos (Lambdas, frontend, pipelines). Resumo:
+
+| Consumidor | Output / contrato | Módulo origem |
+|------------|-------------------|----------------|
+| Repos Lambdas | Lambda ARNs, nomes, role ARNs | 50-lambdas-shell |
+| Frontend / API client | API invoke URL (`api_invoke_url`, `api_id`) | 60-api |
+| Auth / Login | `user_pool_id`, `client_id`, `issuer`, `jwks_url` | 40-auth |
+| Lambdas (DynamoDB) | `dynamodb_table_name`, `dynamodb_table_arn`, `dynamodb_gsi1_name` | 20-data (root outputs) |
+| Lambdas (S3) | Bucket names/ARNs: vídeos, imagens, zip | 10-storage (root outputs) |
+| Lambdas (SQS) | Queue URLs/ARNs: q-video-process, q-video-status-update, q-video-zip-finalize (+ DLQs) | 30-messaging |
+| Lambdas (SNS) | Topic ARNs: topic-video-submitted, topic-video-completed | 30-messaging |
+| Lambda Orchestrator | `step_machine_arn` (State Machine) | 70-orchestration (root output `step_machine_arn`) |
+
+Os outputs do root estão em `terraform/outputs.tf`; módulos 40-auth e 30-messaging expõem seus outputs (podem ser reexportados no root conforme necessidade).
+
+---
+
+## Secrets do repositório (GitHub Actions)
+
+Para os workflows **Terraform Apply** e **Terraform Destroy** funcionarem, configure no repositório (Settings → Secrets and variables → Actions) os seguintes secrets — **nunca commitar os valores**:
+
+| Secret | Uso |
+|--------|-----|
+| `AWS_ACCESS_KEY_ID` | Identificador da credencial AWS. |
+| `AWS_SECRET_ACCESS_KEY` | Chave secreta AWS. |
+| `AWS_SESSION_TOKEN` | Obrigatório quando as credenciais são temporárias (ex.: AWS Academy, SSO). |
+| `AWS_REGION` | Região AWS (ex.: us-east-1). |
+
+Credenciais temporárias (AWS Academy) expiram; é necessário renová-las no portal e atualizar os secrets antes de rodar apply/destroy no CI.
 
 ---
 

@@ -4,6 +4,11 @@
 - **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
+## Rastreamento (dev tracking)
+- **Início:** dia 05/02/2026, início da sessão (horário Brasília a confirmar pelo usuário)
+- **Fim:** —
+- **Tempo total de desenvolvimento:** —
+
 ## Descrição
 Como desenvolvedor de infraestrutura, quero que o repositório `video-processing-engine-infra` tenha CI/CD finalizado (workflows terraform-apply e terraform-destroy) e README completo com visão geral da arquitetura alinhada ao desenho "Processador Video MVP + Fan-out", lista de recursos por módulo, como rodar apply/destroy, ordem recomendada de execução, variáveis importantes e outputs/contratos consumidos pelos outros repositórios (Lambdas, API URL, Cognito, DynamoDB, buckets, queues, topics, SFN), para que o repo esteja pronto para uso em equipe e integração com os repositórios de aplicação.
 
