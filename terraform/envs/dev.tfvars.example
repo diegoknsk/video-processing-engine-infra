@@ -1,0 +1,27 @@
+# Exemplo de variáveis por ambiente (dev).
+# Copie para dev.tfvars e preencha conforme seu ambiente.
+# Nunca commitar arquivos .tfvars com credenciais ou valores sensíveis.
+#
+# project_name                 = "video-processing-engine"
+# environment                  = "dev"
+# region                       = "us-east-1"
+# owner                        = "sua-equipe"
+# retention_days               = 7
+# enable_cloudwatch_retention  = true
+# enable_versioning            = false
+# enable_lifecycle_expiration  = true
+#
+# --- AWS Academy: obrigatório quando não há permissão iam:CreateRole ---
+# lab_role_arn                 = "arn:aws:iam::804879632477:role/LabRole"
+#
+# --- Auth / Cognito (modo dev - Storie-15) ---
+# Modo dev: sem confirmação de email e senhas fáceis
+# auth_auto_verified_attributes = []  # [] = não exige confirmação de email
+# auth_password_min_length       = 6   # Senha mínima de 6 caracteres (padrão: 8)
+# auth_password_require_symbols = false # Não exige símbolos (padrão: true)
+#
+# Usuário inicial de desenvolvimento (opcional, apenas dev/lab)
+# auth_create_initial_user      = true
+# auth_initial_user_email       = "dev@example.com"  # NÃO commitar senha real
+# auth_initial_user_password    = "Senha123"         # Definir em dev.tfvars local (não versionado) ou via TF_VAR_auth_initial_user_password
+# auth_initial_user_name        = "Dev User"

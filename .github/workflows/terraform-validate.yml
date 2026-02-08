@@ -1,0 +1,47 @@
+# Workflow placeholder para Terraform (Bootstrap - Storie-01).
+# Não executa terraform apply; apenas checkout e preparação para futuros steps de plan/apply.
+#
+# Credenciais AWS: injetar via GitHub Secrets (Settings > Secrets and variables > Actions):
+#   - AWS_ACCESS_KEY_ID
+#   - AWS_SECRET_ACCESS_KEY
+#   - AWS_SESSION_TOKEN (obrigatório quando usar credenciais temporárias, ex.: AWS Academy)
+#   - AWS_REGION (opcional; pode ser definido no job)
+# Nunca commitar credenciais no repositório.
+
+name: Terraform Validate
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  validate:
+    name: Terraform Validate (placeholder)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.0"
+          terraform_wrapper: false
+
+      # Root único (Storie-02-Parte2): init e validate a partir de terraform/
+      - name: Terraform Init (root)
+        working-directory: terraform
+        run: terraform init -backend=false
+        env:
+          # Credenciais devem vir de GitHub Secrets em uso real
+          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          # AWS_REGION: ${{ secrets.AWS_REGION }}
+          TF_INPUT: false
+
+      - name: Terraform Validate (root)
+        working-directory: terraform
+        run: terraform validate

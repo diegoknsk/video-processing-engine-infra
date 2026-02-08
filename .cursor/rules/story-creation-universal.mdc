@@ -1,0 +1,401 @@
+---
+alwaysApply: false
+description: "Guia universal para criação de histórias técnicas — evolução da especificação, estimativas robustas, análise detalhada e desenvolvimento assertivo."
+---
+
+# Criação de Histórias Técnicas — Guia Universal
+
+## Objetivo
+
+Este documento define o padrão para **criação de histórias técnicas** reutilizável em qualquer projeto. As histórias são tratadas como **evolução da especificação técnica**: refinam requisitos, habilitam **estimativas mais robustas**, **análise extremamente detalhada** e **desenvolvimento mais assertivo**. Unifica visão de arquitetura e de desenvolvedores seniores para qualidade e rastreabilidade.
+
+---
+
+## 1. Histórias como Evolução da Especificação Técnica
+
+### 1.1 Papel das Histórias
+
+- As histórias **derivam e refinam** a especificação técnica (documento de requisitos, contrato de API, decisões de arquitetura).
+- Cada história deve ser **detalhada o suficiente** para:
+  - **Estimativa:** permitir estimativas por subtask (esforço, dependências, riscos).
+  - **Análise:** cobrir cenários, edge cases, invariantes e contratos (API, domínio).
+  - **Desenvolvimento:** guiar implementação passo a passo, com critérios de aceite testáveis e rastreáveis.
+
+### 1.2 Ciclo Especificação → História → Desenvolvimento
+
+```
+Especificação técnica (requisitos, contrato, arquitetura)
+  → Refinamento em histórias (escopo, subtasks, critérios de aceite)
+  → Estimativa por história/subtask (esforço, dependências, riscos)
+  → Análise detalhada (edge cases, validações, testes)
+  → Desenvolvimento assertivo (seguir subtasks, validar critérios, testes)
+```
+
+### 1.3 Regra Crítica: Separação Criação vs. Desenvolvimento
+
+- **Quando o usuário pedir para criar uma story:**  
+  - ✅ **Apenas criar** a story (arquivo `story.md` e subtasks).  
+  - ❌ **Não desenvolver/implementar** em seguida.  
+  - ❌ **Não executar** subtasks automaticamente.  
+  - ⏸️ **Aguardar** solicitação explícita para desenvolver.
+
+- **Quando o usuário pedir para desenvolver/implementar:**  
+  - ✅ **Aí sim** executar o desenvolvimento seguindo as subtasks.  
+  - ✅ Seguir a ordem das subtasks.  
+  - ✅ Atualizar status da story conforme o progresso.
+
+- **Regra de conclusão:** Quando o usuário solicitar o commit das mudanças de uma história, a story deve ser marcada como **✅ Concluída** com a **data de conclusão** preenchida (DD/MM/AAAA).
+
+---
+
+## 2. Estrutura de Pastas e Nomenclatura
+
+### 2.1 Nomenclatura da Pasta da História
+
+**Formato obrigatório:**
+
+```
+Storie-XX-Descricao_Breve_Da_Historia
+```
+
+**Regras:**
+
+- Prefixo `Storie-` + número com **2 dígitos** (01, 02, 03…), sequencial e único.
+- Descrição **curta** (máximo 5–6 palavras), com **underscore** (`_`) entre palavras.
+- Descrição **clara**: permitir identificar o conteúdo pelo nome da pasta.
+- Primeira letra de cada palavra em maiúscula (PascalCase por palavra, separação por underscore).
+
+**Exemplos corretos:**
+
+- `Storie-01-Implementar_Autenticacao_Usuario`
+- `Storie-05-Criar_API_Endpoints_Produto`
+- `Storie-12-Integracao_Sistema_Pagamento`
+- `Storie-15-Refatoracao_Camada_Application`
+
+**Exemplos incorretos:**
+
+- `Storie-1-Backend` (número sem zero à esquerda)
+- `Storie-01-backend-api` (hífen em vez de underscore)
+- `Storie-01-BackendAPI` (sem separação, difícil de ler)
+
+### 2.2 Estrutura Interna da Pasta
+
+```
+Storie-XX-Descricao/
+├── story.md              # Arquivo principal da história
+└── subtask/              # Pasta com todas as subtasks
+    ├── Subtask-01-Nome.md
+    ├── Subtask-02-Nome.md
+    └── Subtask-03-Nome.md
+```
+
+**Regras:**
+
+- Sempre um arquivo `story.md` na raiz da pasta da história.
+- Sempre uma pasta `subtask/` (pode estar vazia no início).
+- Nenhum outro arquivo na raiz da pasta da história.
+
+---
+
+## 3. Formato do Arquivo story.md
+
+### 3.1 Estrutura Obrigatória
+
+```markdown
+# Storie-XX: Título da História
+
+## Status
+- **Estado:** 🔄 Em desenvolvimento | ✅ Concluída | ⏸️ Pausada
+- **Data de Conclusão:** [DD/MM/AAAA] (preencher quando concluída)
+
+## Descrição
+Como [papel], quero [ação], para [benefício].
+
+## Objetivo
+[Descrição clara e objetiva do que será entregue]
+
+## Escopo Técnico
+- Tecnologias: [Lista de tecnologias e versões]
+- Arquivos afetados: [Lista de arquivos/caminhos]
+- Componentes/Recursos: [Componentes, módulos ou recursos criados/modificados]
+- Pacotes/Dependências: [Nome e versão de cada pacote externo]
+
+## Dependências e Riscos (para estimativa)
+- Dependências: [Outras stories, APIs, serviços]
+- Riscos/Pré-condições: [Riscos técnicos ou de negócio; pré-condições]
+
+## Subtasks
+- [Subtask 01: Nome](./subtask/Subtask-01-Nome.md)
+- [Subtask 02: Nome](./subtask/Subtask-02-Nome.md)
+- [Subtask 03: Nome](./subtask/Subtask-03-Nome.md)
+
+## Critérios de Aceite da História
+- [ ] Critério 1 (específico e mensurável)
+- [ ] Critério 2 (específico e mensurável)
+- [ ] ...
+```
+
+### 3.2 Regras de Escrita do story.md
+
+1. **Status**  
+   - Obrigatório. Estados: 🔄 Em desenvolvimento | ✅ Concluída | ⏸️ Pausada.  
+   - Ao concluir: estado "✅ Concluída" e data de conclusão (DD/MM/AAAA).  
+   - Atualizar sempre que o status mudar.
+
+2. **Título**  
+   - Formato: `# Storie-XX: Título da História`.  
+   - Claro e descritivo; máximo ~10 palavras.
+
+3. **Descrição**  
+   - Formato "Como [papel], quero [ação], para [benefício]".  
+   - Papel específico (ex.: desenvolvedor, usuário final, administrador).  
+   - Ação clara; benefício mensurável ou observável.
+
+4. **Objetivo**  
+   - Uma frase ou parágrafo curto.  
+   - Explicar **O QUE** será entregue, não **COMO**.  
+   - Foco no resultado final.
+
+5. **Escopo Técnico**  
+   - Tecnologias com versões quando relevante.  
+   - Arquivos/caminhos criados ou modificados.  
+   - Componentes, módulos ou recursos afetados.  
+   - **Obrigatório:** listar **todos os pacotes/dependências externas** (NuGet, npm, pip, etc.) com **nome e versão** para revisão antes da finalização.  
+   - Ser específico, não genérico.
+
+6. **Dependências e Riscos (para estimativa)**  
+   - Outras stories, APIs ou serviços dos quais esta história depende.  
+   - Riscos técnicos ou de negócio; pré-condições.  
+   - Facilita estimativa e planejamento.
+
+7. **Subtasks**  
+   - Mínimo 3, máximo 8.  
+   - Cada uma: ação específica e testável; ordem lógica (dependências).  
+   - Links relativos: `./subtask/Subtask-XX-Nome.md`.
+
+8. **Critérios de Aceite**  
+   - Mínimo 5 critérios; ideal 7–10.  
+   - Cada critério: **específico**, **mensurável** e **testável**.  
+   - Formato checklist: `- [ ]`.  
+   - Incluir: funcionalidade, qualidade (validações, testes), documentação (se aplicável).  
+   - **Obrigatório para stories com código:** critérios de aceite relacionados a **testes unitários** (e cobertura quando aplicável).
+
+---
+
+## 4. Requisitos Obrigatórios
+
+### 4.1 Testes Unitários
+
+- **Regra:** Todas as stories que **criam ou modificam código** devem incluir testes unitários.
+- Incluir: subtask(s) para testes e critérios de aceite que validem testes (ex.: "Testes unitários criados e passando", "Cobertura mínima de 80%").
+- **Exceções:** stories apenas de configuração, documentação ou reorganização de estrutura sem lógica de negócio.
+
+### 4.2 Registro de Pacotes/Dependências
+
+- **Regra:** Todos os pacotes externos (NuGet, npm, pip, etc.) adicionados ao projeto devem ser **registrados na story** (Escopo Técnico ou seção "Pacotes/Dependências") com **nome e versão**, para revisão antes da finalização.
+- Benefícios: revisão de dependências, controle de versões, compatibilidade e identificação de vulnerabilidades.
+
+---
+
+## 5. Análise Detalhada para Desenvolvimento Assertivo
+
+### 5.1 O que a História Deve Permitir Analisar
+
+Para **estimativas robustas** e **desenvolvimento assertivo**, cada história (e subtask) deve permitir:
+
+- **Contratos:** entrada/saída de APIs, DTOs, validações (ex.: FluentValidation).
+- **Invariantes de domínio:** regras que sempre devem ser verdadeiras (entidades, value objects).
+- **Edge cases:** cenários de borda (valores nulos, listas vazias, limites, erros de integração).
+- **Dependências:** ordem de implementação, impacto em outras camadas ou serviços.
+- **Riscos:** integrações externas, mudanças de contrato, performance.
+
+### 5.2 Nível de Detalhe nas Subtasks
+
+- Cada subtask deve ser **analisável** antes do desenvolvimento: escopo claro, passos de implementação, formas de teste e critérios de aceite.
+- Se uma subtask for grande demais para estimar ou implementar com segurança, **quebrar em subtasks menores**.
+- Incluir, quando fizer sentido:
+  - Contratos (ex.: "InputModel X com propriedades A, B; validação Y").
+  - Cenários de teste esperados (sucesso, validação, erro externo).
+  - Referência a arquivos ou componentes afetados.
+
+### 5.3 Critérios de Aceite: Específicos e Mensuráveis
+
+- Evitar critérios vagos ("código funciona", "está correto").  
+- Preferir critérios **executáveis** (ex.: "Executar `dotnet test` e verificar que todos passam", "Cobertura ≥ 80%", "Endpoint retorna 400 quando InputModel inválido").
+
+---
+
+## 6. Princípios de Qualidade
+
+### 6.1 Simplicidade das Subtasks
+
+- Cada subtask deve ser:
+  - Implementável em **1–2 horas** (ideal).
+  - **Testável** de forma independente.
+  - Com **critérios de aceite** claros e objetivos.
+  - Validável sem depender de outras subtasks, quando possível.
+- Se uma subtask fizer "muitas coisas ao mesmo tempo", **quebrar em várias subtasks**.
+
+### 6.2 Consistência
+
+- **Nomenclatura:** seguir o padrão (Storie-XX, Subtask-XX, underscore na descrição).
+- **Formato:** usar sempre a estrutura obrigatória do `story.md` e do template de subtask.
+- **Linguagem:** português brasileiro; claro e objetivo; termos técnicos quando apropriado.
+
+### 6.3 Rastreabilidade
+
+- **Links:** sempre relativos; formato `./subtask/Subtask-XX-Nome.md`.
+- **Referências:** a outras histórias ou arquivos do projeto usando caminhos relativos (ex.: `src/Application/UseCases/User/CreateUserUseCase.cs`).
+
+---
+
+## 7. Formato das Subtasks
+
+Cada arquivo de subtask deve conter:
+
+- **Descrição** clara do que será feito.
+- **Passos de implementação** (mínimo 3): ordem lógica e verificável.
+- **Formas de teste** (mínimo 3): como validar (testes unitários, manual, integração).
+- **Critérios de aceite da subtask** (mínimo 3): específicos e mensuráveis.
+- Se envolve código: **incluir criação/atualização de testes unitários** nos passos ou nos critérios.
+
+---
+
+## 8. Checklist de Criação de História
+
+Antes de considerar uma história completa:
+
+### Estrutura
+
+- [ ] Pasta no formato `Storie-XX-Descricao_Breve`
+- [ ] Arquivo `story.md` na raiz da pasta
+- [ ] Pasta `subtask/` criada
+- [ ] Todas as subtasks criadas em `subtask/`
+
+### Conteúdo do story.md
+
+- [ ] Status preenchido (estado e data de conclusão quando aplicável)
+- [ ] Título no formato correto
+- [ ] Descrição no formato "Como... quero... para..."
+- [ ] Objetivo claro
+- [ ] Escopo técnico completo (tecnologias, arquivos, componentes)
+- [ ] **Todos os pacotes/dependências externas registrados com nome e versão**
+- [ ] Dependências e riscos descritos (para estimativa)
+- [ ] Mínimo 3 subtasks listadas; links funcionando
+- [ ] Mínimo 5 critérios de aceite; todos específicos e mensuráveis
+- [ ] **Se envolve código: critérios de aceite incluem testes unitários**
+
+### Conteúdo das Subtasks
+
+- [ ] Descrição clara; mínimo 3 passos de implementação
+- [ ] Mínimo 3 formas de teste; mínimo 3 critérios de aceite por subtask
+- [ ] Subtasks simples e testáveis individualmente; ordem lógica
+- [ ] **Se envolve código: subtasks incluem criação/atualização de testes unitários**
+
+### Qualidade
+
+- [ ] Nomenclatura e formatação consistentes
+- [ ] Sem erros de ortografia; linguagem clara; termos técnicos corretos
+
+---
+
+## 9. Exemplo Resumido (story.md)
+
+```markdown
+# Storie-05: Implementar Autenticação de Usuário
+
+## Status
+- **Estado:** 🔄 Em desenvolvimento
+- **Data de Conclusão:** [DD/MM/AAAA]
+
+## Descrição
+Como usuário do sistema, quero fazer login com email e senha, para acessar funcionalidades restritas da aplicação.
+
+## Objetivo
+Implementar fluxo completo de autenticação: endpoint de login, validação de credenciais, emissão de token e proteção de rotas que exigem autenticação.
+
+## Escopo Técnico
+- Tecnologias: .NET 8, ASP.NET Core, JWT
+- Arquivos afetados: `src/Api/Controllers/AuthController.cs`, `src/Application/UseCases/Auth/`, `src/Infra/Services/TokenService.cs`
+- Componentes: AuthController, LoginUseCase, ITokenService, RequireAuth filter
+- Pacotes/Dependências:
+  - Microsoft.AspNetCore.Authentication.JwtBearer (8.0.0)
+  - System.IdentityModel.Tokens.Jwt (7.0.0)
+
+## Dependências e Riscos (para estimativa)
+- Dependências: Nenhuma outra story; depende de especificação do contrato de login (request/response).
+- Riscos: Nenhum crítico; pré-condição: contrato de API definido.
+
+## Subtasks
+- [Subtask 01: Criar InputModel e validator de login](./subtask/Subtask-01-InputModel_Validator_Login.md)
+- [Subtask 02: Implementar UseCase e integração com serviço de token](./subtask/Subtask-02-UseCase_Login.md)
+- [Subtask 03: Criar endpoint e filter de autenticação](./subtask/Subtask-03-Endpoint_Filter_Auth.md)
+- [Subtask 04: Testes unitários e critérios de aceite](./subtask/Subtask-04-Testes_Unitarios_Auth.md)
+
+## Critérios de Aceite da História
+- [ ] Endpoint POST /auth/login aceita email e senha e retorna token JWT
+- [ ] Validação de input (FluentValidation) retorna 400 com mensagens claras quando inválido
+- [ ] Token JWT contém claims esperados (sub, exp, etc.)
+- [ ] Rotas protegidas retornam 401 sem token válido
+- [ ] Testes unitários cobrindo UseCase, Validator e Controller; cobertura mínima 80%
+- [ ] Documentação Swagger atualizada para o endpoint de login
+- [ ] Tratamento de erro para credenciais inválidas (401) e servidor indisponível (503)
+```
+
+---
+
+## 10. Erros Comuns a Evitar
+
+1. **Subtasks muito complexas:** quebrar em várias (ex.: "Implementar autenticação completa" → InputModel/Validator, UseCase, Endpoint/Filter, Testes).
+2. **Critérios de aceite vagos:** preferir "Testes unitários passam com cobertura ≥ 80%" em vez de "Código funciona".
+3. **Falta de testabilidade:** incluir formas concretas de teste (comando, cenários, resultados esperados).
+4. **Nomenclatura inconsistente:** usar sempre `Storie-XX-Descricao_Com_Underscore` e `Subtask-XX-Nome`.
+5. **Links quebrados:** usar caminho relativo correto `./subtask/Subtask-XX-Nome.md`.
+6. **Escopo técnico genérico:** listar tecnologias e versões, arquivos e pacotes com nome e versão.
+7. **História sem foco em especificação:** garantir que contratos, edge cases e dependências estejam refletidos no escopo e nas subtasks para estimativa e desenvolvimento assertivo.
+
+---
+
+## 11. Referências
+
+- Histórias existentes no repositório servem como exemplos.
+- Manter consistência com padrões já estabelecidos.
+- Alinhar com o guia de arquitetura e o guia de desenvolvimento do projeto quando existirem.
+
+---
+
+## Validação por Três Perspectivas
+
+### Revisor 1 — Arquiteto (Especificação e Estimativa)
+
+**Aprovação:** ✅ Documento adequado para evolução da especificação e estimativas.
+
+**Pontos fortes:** Histórias tratadas como refinamento da especificação; seção "Dependências e Riscos" favorece estimativa; escopo técnico com pacotes e versões permite revisão de dependências; critérios de aceite acionáveis melhoram a previsibilidade.
+
+**Sugestão:** Em projetos com contrato de API formal (OpenAPI), considerar referenciar o contrato na story (ex.: "Conforme spec OpenAPI v1.2 - /auth/login").
+
+**Conclusão:** Recomendado como guia para criação de histórias que evoluem a especificação e suportam estimativas robustas.
+
+---
+
+### Revisor 2 — Desenvolvedor Sênior (Análise e Desenvolvimento Assertivo)
+
+**Aprovação:** ✅ Utilizável no dia a dia para análise detalhada e implementação.
+
+**Pontos fortes:** Ênfase em contratos, invariantes e edge cases torna a análise antes do desenvolvimento mais eficaz; subtasks com passos e formas de teste reduzem ambiguidade; critérios de aceite mensuráveis e obrigatoriedade de testes unitários aumentam a assertividade do desenvolvimento; checklist evita histórias incompletas.
+
+**Sugestão:** Manter exemplos de critérios "executáveis" (comandos, cobertura, códigos HTTP) para replicar em novas stories.
+
+**Conclusão:** Aprovado para uso como padrão de criação de histórias com foco em desenvolvimento assertivo.
+
+---
+
+### Revisor 3 — Líder Técnico (Rastreabilidade e Qualidade)
+
+**Aprovação:** ✅ Alinhado a rastreabilidade e qualidade.
+
+**Pontos fortes:** Separação explícita entre "criar story" e "desenvolver" evita execução prematura; regra de marcar story como concluída com data ao solicitar commit mantém rastreabilidade; registro de pacotes e dependências facilita revisão e segurança; requisitos obrigatórios de testes e critérios de aceite reforçam qualidade; estrutura de pastas e nomenclatura padronizadas ajudam na consistência entre times.
+
+**Sugestão:** Em ambientes com backlog externo (Jira, Azure DevOps), considerar campo opcional "ID externo" na story para link bidirecional.
+
+**Conclusão:** Aprovado como guia universal de criação de histórias técnicas com foco em rastreabilidade e qualidade.
