@@ -39,6 +39,16 @@ Ao configurar o root com o módulo `auth` e `enable_authorizer = true`, passar:
 
 ---
 
+## Modo dev — sem confirmação de email (Storie-15)
+
+**Uso apenas em dev/lab. Não usar em produção.**
+
+- **Sem confirmação de email (default):** o User Pool usa `auto_verified_attributes = []` por padrão. Não exige verificação de email; usuários podem fazer login logo após serem criados (via console, CLI ou aplicação).
+- **Política de senha relaxada:** em dev, passe nos tfvars valores como `auth_password_min_length = 6`, `auth_password_require_symbols = false` (via variáveis do root).
+- **Usuários:** criar manualmente no console Cognito, via AWS CLI ou pelo fluxo de sign-up da aplicação. Não há criação automática de usuário pelo Terraform.
+
+---
+
 ## Variáveis parametrizáveis
 
 | Variável | Descrição | Default |
@@ -50,6 +60,7 @@ Ao configurar o root com o módulo `auth` e `enable_authorizer = true`, passar:
 | id_token_validity | Validade do ID token (horas) | 1 |
 | refresh_token_validity | Validade do refresh token (dias) | 30 |
 | region | Região para issuer/jwks_url (null = região do provider) | null |
+| auto_verified_attributes | Atributos verificados (ex.: email). Default [] = sem confirmação de email | [] |
 
 ---
 
@@ -60,7 +71,7 @@ O root deve passar:
 - **prefix**, **common_tags**: do módulo `foundation`.
 - Opcionalmente: variáveis de política de senha e token validity; **region** (se null, usa a região do provider).
 
-Exemplo de invocação no root:
+Exemplo de invocação no root (modo dev: sem confirmação de email):
 
 ```hcl
 module "auth" {
@@ -68,6 +79,11 @@ module "auth" {
 
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
+  region      = module.foundation.region
+
+  auto_verified_attributes = var.auth_auto_verified_attributes  # [] = sem confirmação de email (default)
+  password_min_length       = coalesce(var.auth_password_min_length, 6)
+  password_require_symbols  = coalesce(var.auth_password_require_symbols, false)
 }
 
 # No module "api":
@@ -75,3 +91,5 @@ module "auth" {
 #   cognito_issuer_url = module.auth.issuer
 #   cognito_audience   = [module.auth.client_id]
 ```
+
+Exemplo de tfvars para dev: `auth_auto_verified_attributes = []`, `auth_password_min_length = 6`, `auth_password_require_symbols = false`.

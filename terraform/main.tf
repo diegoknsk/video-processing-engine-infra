@@ -127,13 +127,22 @@ module "orchestration" {
   lab_role_arn = var.lab_role_arn
 }
 
-# --- Auth (Cognito User Pool e App Client — Storie-11) ---
+# --- Auth (Cognito User Pool e App Client — Storie-11; Storie-15: modo dev e usuário inicial) ---
 module "auth" {
   source = "./40-auth"
 
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
   region      = module.foundation.region
+
+  auto_verified_attributes = var.auth_auto_verified_attributes
+  create_initial_user      = var.auth_create_initial_user
+  initial_user_email       = var.auth_initial_user_email
+  initial_user_password    = var.auth_initial_user_password
+  initial_user_name        = var.auth_initial_user_name
+
+  password_min_length      = coalesce(var.auth_password_min_length, 6)
+  password_require_symbols = coalesce(var.auth_password_require_symbols, false)
 }
 
 # --- API Gateway HTTP API (Storie-10) ---

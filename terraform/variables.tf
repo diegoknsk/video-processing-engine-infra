@@ -178,3 +178,48 @@ variable "api_stage_name" {
   type        = string
   default     = "dev"
 }
+
+# --- Auth / Cognito (40-auth, Storie-15: modo dev e usuário inicial) ---
+variable "auth_auto_verified_attributes" {
+  description = "Atributos verificados pelo Cognito. Use [] em dev para não exigir confirmação de email."
+  type        = list(string)
+  default     = []  # Modo dev: sem confirmação de email por padrão
+}
+
+variable "auth_create_initial_user" {
+  description = "Cria usuário inicial no User Pool (apenas dev/lab). Requer auth_initial_user_email e auth_initial_user_password."
+  type        = bool
+  default     = false
+}
+
+variable "auth_initial_user_email" {
+  description = "Email do usuário inicial quando auth_create_initial_user = true. Não commitar em tfvars versionado."
+  type        = string
+  default     = null
+}
+
+variable "auth_initial_user_password" {
+  description = "Senha do usuário inicial (apenas dev/lab). Usar tfvars não versionado ou TF_VAR_auth_initial_user_password."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "auth_initial_user_name" {
+  description = "Nome do usuário inicial quando auth_create_initial_user = true."
+  type        = string
+  default     = "DevUser"
+}
+
+# Política de senha do Cognito (repassada ao 40-auth; modo dev com senha facilitada por padrão)
+variable "auth_password_min_length" {
+  description = "Comprimento mínimo da senha no User Pool. Em dev pode usar 6."
+  type        = number
+  default     = 6  # Modo dev: senha mínima de 6 dígitos por padrão
+}
+
+variable "auth_password_require_symbols" {
+  description = "Exigir símbolo na senha. Em dev pode usar false para senha simples."
+  type        = bool
+  default     = false  # Modo dev: não exige símbolos por padrão
+}

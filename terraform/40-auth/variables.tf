@@ -67,3 +67,35 @@ variable "region" {
   type        = string
   default     = null
 }
+
+# --- Modo dev e usuário inicial (Storie-15): uso apenas em dev/lab; não usar em produção ---
+variable "auto_verified_attributes" {
+  description = "Atributos que o Cognito verifica (ex.: email). Use [] para dev e não exigir confirmação de email. Default: [] (sem confirmação de email)."
+  type        = list(string)
+  default     = [] # Modo dev: sem confirmação de email por padrão
+}
+
+variable "create_initial_user" {
+  description = "Se true, cria um usuário inicial no User Pool via admin (apenas dev/lab). Requer initial_user_email e initial_user_password."
+  type        = bool
+  default     = false
+}
+
+variable "initial_user_email" {
+  description = "Email (username) do usuário inicial quando create_initial_user = true. Não commitar em tfvars versionado."
+  type        = string
+  default     = null
+}
+
+variable "initial_user_password" {
+  description = "Senha do usuário inicial quando create_initial_user = true. Definir via tfvars não versionado ou TF_VAR_initial_user_password. Uso apenas dev/lab."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "initial_user_name" {
+  description = "Nome (atributo name) do usuário inicial quando create_initial_user = true."
+  type        = string
+  default     = "DevUser"
+}

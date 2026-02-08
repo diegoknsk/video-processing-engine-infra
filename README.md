@@ -196,14 +196,14 @@ Os outputs do root Terraform (e dos módulos) são consumidos por outros repos (
 |------------|-------------------|----------------|
 | Repos Lambdas | Lambda ARNs, nomes, role ARNs | 50-lambdas-shell |
 | Frontend / API client | API invoke URL (`api_invoke_url`, `api_id`) | 60-api |
-| Auth / Login | `user_pool_id`, `client_id`, `issuer`, `jwks_url` | 40-auth |
+| Auth / Login | `cognito_user_pool_id`, `cognito_client_id`, `cognito_issuer`, `cognito_jwks_url` | 40-auth (root outputs) |
 | Lambdas (DynamoDB) | `dynamodb_table_name`, `dynamodb_table_arn`, `dynamodb_gsi1_name` | 20-data (root outputs) |
 | Lambdas (S3) | Bucket names/ARNs: vídeos, imagens, zip | 10-storage (root outputs) |
 | Lambdas (SQS) | Queue URLs/ARNs: q-video-process, q-video-status-update, q-video-zip-finalize (+ DLQs) | 30-messaging |
 | Lambdas (SNS) | Topic ARNs: topic-video-submitted, topic-video-completed | 30-messaging |
 | Lambda Orchestrator | `step_machine_arn` (State Machine) | 70-orchestration (root output `step_machine_arn`) |
 
-Os outputs do root estão em `terraform/outputs.tf`; módulos 40-auth e 30-messaging expõem seus outputs (podem ser reexportados no root conforme necessidade).
+Os outputs do root estão em `terraform/outputs.tf`; módulos 40-auth (Cognito) e 30-messaging expõem seus outputs. Os outputs do Cognito (`cognito_user_pool_id`, `cognito_client_id`, `cognito_issuer`, `cognito_jwks_url`) estão reexportados no root para consumo por CI/CD, pipelines e configuração da API.
 
 ---
 

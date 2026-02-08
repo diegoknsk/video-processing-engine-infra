@@ -1,5 +1,5 @@
 # Root Terraform — Video Processing Engine Infra
-# required_version e provider AWS; execução padrão a partir de terraform/
+# required_version e provider AWS; execução a partir de terraform/
 
 terraform {
   required_version = ">= 1.0"
