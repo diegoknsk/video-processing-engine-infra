@@ -17,7 +17,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
 jobs:
   apply:
@@ -47,12 +47,26 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: |
-          terraform plan -var-file=envs/dev.tfvars -no-color -out=tfplan
+        run: terraform plan -var-file=envs/dev.tfvars -no-color -input=false
         env:
           TF_INPUT: false
 
       - name: Terraform Apply
-        run: terraform apply -no-color -auto-approve tfplan
+        run: terraform apply -var-file=envs/dev.tfvars -no-color -auto-approve -input=false
         env:
           TF_INPUT: false
+
+      - name: Cognito outputs
+        run: |
+          echo "cognito_user_pool_id = $(terraform output -raw cognito_user_pool_id)"
+          echo "cognito_client_id = $(terraform output -raw cognito_client_id)"
+
+      - name: Export outputs para artifact
+        run: |
+          printf '%s\n' "{\"cognito_user_pool_id\": \"$(terraform output -raw cognito_user_pool_id)\", \"cognito_client_id\": \"$(terraform output -raw cognito_client_id)\", \"cognito_issuer\": \"$(terraform output -raw cognito_issuer)\", \"cognito_jwks_url\": \"$(terraform output -raw cognito_jwks_url)\"}" > cognito-outputs.json
+
+      - name: Upload artifact (outputs Cognito)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cognito-outputs
+          path: terraform/cognito-outputs.json

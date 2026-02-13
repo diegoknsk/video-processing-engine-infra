@@ -17,7 +17,7 @@ resource "aws_sns_topic" "topic_video_completed" {
 # --- Subscriptions no topic-video-completed (nenhuma no topic-video-submitted; SQS em outra story) ---
 # Ativo agora: email para notificação
 resource "aws_sns_topic_subscription" "completed_email" {
-  count     = var.enable_email_subscription_completed && coalesce(var.email_endpoint, "") != "" ? 1 : 0
+  count     = var.enable_email_subscription_completed && var.email_endpoint != null && var.email_endpoint != "" ? 1 : 0
   topic_arn = aws_sns_topic.topic_video_completed.arn
   protocol  = "email"
   endpoint  = var.email_endpoint
@@ -25,7 +25,7 @@ resource "aws_sns_topic_subscription" "completed_email" {
 
 # Preparado para depois: Lambda placeholder
 resource "aws_sns_topic_subscription" "completed_lambda" {
-  count     = var.enable_lambda_subscription_completed && coalesce(var.lambda_subscription_arn, "") != "" ? 1 : 0
+  count     = var.enable_lambda_subscription_completed && var.lambda_subscription_arn != null && var.lambda_subscription_arn != "" ? 1 : 0
   topic_arn = aws_sns_topic.topic_video_completed.arn
   protocol  = "lambda"
   endpoint  = var.lambda_subscription_arn
