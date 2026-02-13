@@ -95,20 +95,20 @@ output "api_id" {
 # Outputs reexportados para CI/CD, pipelines (ex.: GitHub Actions) e configuração do JWT authorizer da API.
 output "cognito_user_pool_id" {
   description = "ID do Cognito User Pool. Consumido por CI/CD e aplicações para autenticação."
-  value       = module.auth.user_pool_id
+  value       = nonsensitive(module.auth.user_pool_id)
 }
 
 output "cognito_client_id" {
   description = "ID do App Client Cognito (audience do JWT). Usado pelo JWT authorizer da API e por frontends."
-  value       = module.auth.client_id
+  value       = nonsensitive(module.auth.client_id)
 }
 
 output "cognito_issuer" {
   description = "URL do issuer do User Pool para o JWT authorizer. Formato: https://cognito-idp.{region}.amazonaws.com/{user_pool_id}"
-  value       = module.auth.issuer
+  value       = nonsensitive(module.auth.issuer)
 }
 
 output "cognito_jwks_url" {
   description = "URL do JWKS do User Pool (referência ou validação custom). Consumido por pipelines e documentação."
-  value       = module.auth.jwks_url
+  value       = nonsensitive(module.auth.jwks_url)
 }
