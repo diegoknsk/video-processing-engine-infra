@@ -183,7 +183,7 @@ variable "api_stage_name" {
 variable "auth_auto_verified_attributes" {
   description = "Atributos verificados pelo Cognito. Use [] em dev para não exigir confirmação de email."
   type        = list(string)
-  default     = []  # Modo dev: sem confirmação de email por padrão
+  default     = [] # Modo dev: sem confirmação de email por padrão
 }
 
 variable "auth_create_initial_user" {
@@ -215,11 +215,11 @@ variable "auth_initial_user_name" {
 variable "auth_password_min_length" {
   description = "Comprimento mínimo da senha no User Pool. Em dev pode usar 6."
   type        = number
-  default     = 6  # Modo dev: senha mínima de 6 dígitos por padrão
+  default     = 6 # Modo dev: senha mínima de 6 dígitos por padrão
 }
 
 variable "auth_password_require_symbols" {
   description = "Exigir símbolo na senha. Em dev pode usar false para senha simples."
   type        = bool
-  default     = false  # Modo dev: não exige símbolos por padrão
+  default     = false # Modo dev: não exige símbolos por padrão
 }

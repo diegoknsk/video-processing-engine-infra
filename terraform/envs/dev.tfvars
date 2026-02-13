@@ -12,6 +12,6 @@ enable_cloudwatch_retention = true
 lab_role_arn = "arn:aws:iam::804879632477:role/LabRole"
 
 # Cognito: sem confirmação de email (default); política de senha relaxada em dev
-auth_password_min_length       = 6
-auth_password_require_symbols  = false
-auth_auto_verified_attributes  = []
+auth_password_min_length      = 6
+auth_password_require_symbols = false
+auth_auto_verified_attributes = []
