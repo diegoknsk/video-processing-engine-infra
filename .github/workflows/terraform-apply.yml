@@ -61,6 +61,21 @@ jobs:
           echo "cognito_user_pool_id = $(terraform output -raw cognito_user_pool_id)"
           echo "cognito_client_id = $(terraform output -raw cognito_client_id)"
 
+      # Job Summary pode exibir valores sem mascaramento (depende do GitHub).
+      # Se ainda aparecer ***, use o artifact "cognito-outputs".
+      - name: Cognito no Job Summary
+        run: |
+          {
+            echo "## Cognito (Auth)"
+            echo ""
+            echo "| Output | Valor |"
+            echo "|--------|-------|"
+            echo "| \`cognito_user_pool_id\` | \`$(terraform output -raw cognito_user_pool_id)\` |"
+            echo "| \`cognito_client_id\` | \`$(terraform output -raw cognito_client_id)\` |"
+            echo "| \`cognito_issuer\` | \`$(terraform output -raw cognito_issuer)\` |"
+            echo "| \`cognito_jwks_url\` | \`$(terraform output -raw cognito_jwks_url)\` |"
+          } >> $GITHUB_STEP_SUMMARY
+
       - name: Export outputs para artifact
         run: |
           printf '%s\n' "{\"cognito_user_pool_id\": \"$(terraform output -raw cognito_user_pool_id)\", \"cognito_client_id\": \"$(terraform output -raw cognito_client_id)\", \"cognito_issuer\": \"$(terraform output -raw cognito_issuer)\", \"cognito_jwks_url\": \"$(terraform output -raw cognito_jwks_url)\"}" > cognito-outputs.json
