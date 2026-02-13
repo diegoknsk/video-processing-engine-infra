@@ -41,7 +41,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init -reconfigure -input=false
 
       - name: Terraform Validate
         run: terraform validate
