@@ -112,15 +112,15 @@ variable "trigger_mode" {
 
 # --- Lambdas (50-lambdas-shell, Storie-08) ---
 variable "lambda_runtime" {
-  description = "Runtime das Lambdas (ex.: python3.12)."
+  description = "Runtime das Lambdas (ex.: dotnet10)."
   type        = string
-  default     = "python3.12"
+  default     = "dotnet10"
 }
 
 variable "lambda_handler" {
-  description = "Handler placeholder das Lambdas."
+  description = "Handler placeholder das Lambdas. Para .NET: Assembly::Namespace.Class::Method."
   type        = string
-  default     = "index.handler"
+  default     = "Lambda::Lambda.Function::FunctionHandler"
 }
 
 variable "step_function_arn" {

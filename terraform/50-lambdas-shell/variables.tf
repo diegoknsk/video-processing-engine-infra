@@ -11,15 +11,15 @@ variable "common_tags" {
 }
 
 variable "runtime" {
-  description = "Runtime das Lambdas (ex.: python3.12, nodejs20.x)."
+  description = "Runtime das Lambdas (ex.: dotnet10, python3.12, nodejs20.x)."
   type        = string
-  default     = "python3.12"
+  default     = "dotnet10"
 }
 
 variable "handler" {
-  description = "Handler placeholder; aplicação substitui no deploy."
+  description = "Handler placeholder; aplicação substitui no deploy. Para .NET: Assembly::Namespace.Class::Method."
   type        = string
-  default     = "index.handler"
+  default     = "Lambda::Lambda.Function::FunctionHandler"
 }
 
 variable "artifact_path" {
