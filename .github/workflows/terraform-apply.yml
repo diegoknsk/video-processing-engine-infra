@@ -55,3 +55,8 @@ jobs:
         run: terraform apply -var-file=envs/dev.tfvars -no-color -auto-approve -input=false
         env:
           TF_INPUT: false
+
+      - name: Cognito outputs
+        run: |
+          echo "cognito_user_pool_id = $(terraform output -raw cognito_user_pool_id)"
+          echo "cognito_client_id = $(terraform output -raw cognito_client_id)"
