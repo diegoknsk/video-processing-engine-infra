@@ -5,8 +5,9 @@ resource "aws_lambda_function" "auth" {
   function_name = "${var.prefix}-auth"
   role          = var.lab_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = var.auth_handler
   filename      = var.artifact_path
+  timeout       = 900
 
   environment {
     variables = {
@@ -23,6 +24,7 @@ resource "aws_lambda_function" "video_management" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  timeout       = 900
 
   environment {
     variables = {
@@ -42,6 +44,7 @@ resource "aws_lambda_function" "video_orchestrator" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  timeout       = 900
 
   environment {
     variables = {
@@ -59,6 +62,7 @@ resource "aws_lambda_function" "video_processor" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  timeout       = 900
 
   environment {
     variables = {
@@ -79,6 +83,7 @@ resource "aws_lambda_function" "video_finalizer" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  timeout       = 900
 
   environment {
     variables = {
