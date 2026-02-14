@@ -5,7 +5,7 @@ resource "aws_lambda_function" "auth" {
   function_name = "${var.prefix}-auth"
   role          = var.lab_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = var.auth_handler
   filename      = var.artifact_path
 
   environment {

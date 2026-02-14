@@ -22,6 +22,12 @@ variable "handler" {
   default     = "Lambda::Lambda.Function::FunctionHandler"
 }
 
+variable "auth_handler" {
+  description = "Handler da Lambda de autenticação. Para .NET: Assembly::Namespace.Class::Method."
+  type        = string
+  default     = "VideoProcessing.Auth.Api"
+}
+
 variable "artifact_path" {
   description = "Caminho do zip da casca (ex.: artifacts/empty.zip). Caller deve passar path válido (ex.: path.root/artifacts/empty.zip)."
   type        = string
