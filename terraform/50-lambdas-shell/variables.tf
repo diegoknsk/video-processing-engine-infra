@@ -11,7 +11,7 @@ variable "common_tags" {
 }
 
 variable "runtime" {
-  description = "Runtime das Lambdas (ex.: dotnet10, python3.12, nodejs20.x)."
+  description = "Runtime das Lambdas (ex.: dotnet10, dotnet8, python3.12)."
   type        = string
   default     = "dotnet10"
 }
