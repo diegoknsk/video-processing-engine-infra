@@ -40,9 +40,9 @@ variable "lambda_subscription_arn" {
 
 # --- SQS: parâmetros essenciais para resiliência e DLQ (Storie-06) ---
 variable "visibility_timeout_seconds" {
-  description = "Tempo de visibilidade da mensagem após recebimento (segundos); tempo para processar sem ficar visível para outros consumidores."
+  description = "Tempo de visibilidade da mensagem após recebimento (segundos); deve ser >= timeout das Lambdas consumidoras (900s); AWS recomenda 6x o timeout para retries."
   type        = number
-  default     = 300
+  default     = 960
 }
 
 variable "message_retention_seconds" {

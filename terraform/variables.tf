@@ -80,9 +80,9 @@ variable "lambda_subscription_arn" {
 }
 
 variable "visibility_timeout_seconds" {
-  description = "SQS: tempo de visibilidade da mensagem após recebimento (segundos)."
+  description = "SQS: tempo de visibilidade da mensagem após recebimento (segundos). Deve ser >= timeout das Lambdas consumidoras (900s); AWS recomenda 6x o timeout para retries."
   type        = number
-  default     = 300
+  default     = 960
 }
 
 variable "message_retention_seconds" {
