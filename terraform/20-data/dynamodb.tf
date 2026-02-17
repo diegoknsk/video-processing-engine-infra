@@ -1,39 +1,39 @@
 # Tabela DynamoDB para metadados e status dos vídeos (Video Processing MVP).
-# Tabela principal: PK = UserId, SK = VideoId → Query(PK=UserId) lista vídeos; GetItem(PK, SK) obtém um vídeo.
-# GSI1: GSI1PK = VideoId, GSI1SK = UserId → Query(GSI1PK=VideoId) busca por VideoId (atualização de status/ZipS3Key/ErrorMessage).
-# Atributos não-chave (Status, CreatedAt, UpdatedAt, ZipS3Key, ErrorMessage, UserId, VideoId) são definidos pela aplicação.
+# Tabela principal: pk = USER#{userId}, sk = VIDEO#{videoId} → Query(pk=USER#{userId}) lista vídeos; GetItem(pk, sk) obtém um vídeo.
+# GSI1: gsi1pk = VIDEO#{videoId}, gsi1sk = USER#{userId} → Query(gsi1pk=VIDEO#{videoId}) busca por VideoId (atualização de status/ZipS3Key/ErrorMessage).
+# Atributos não-chave (status, createdAt, updatedAt, zipS3Key, errorMessage, userId, videoId) são definidos pela aplicação.
 
 resource "aws_dynamodb_table" "videos" {
   name         = "${var.prefix}-videos"
   billing_mode = var.billing_mode
 
-  hash_key  = "PK"
-  range_key = "SK"
+  hash_key  = "pk"
+  range_key = "sk"
 
   attribute {
-    name = "PK"
+    name = "pk"
     type = "S"
   }
 
   attribute {
-    name = "SK"
+    name = "sk"
     type = "S"
   }
 
   attribute {
-    name = "GSI1PK"
+    name = "gsi1pk"
     type = "S"
   }
 
   attribute {
-    name = "GSI1SK"
+    name = "gsi1sk"
     type = "S"
   }
 
   global_secondary_index {
     name            = "GSI1"
-    hash_key        = "GSI1PK"
-    range_key       = "GSI1SK"
+    hash_key        = "gsi1pk"
+    range_key       = "gsi1sk"
     projection_type = "ALL"
   }
 
