@@ -3,7 +3,8 @@
 
 # --- Bucket videos (upload pelo usuário) ---
 resource "aws_s3_bucket" "videos" {
-  bucket = "${var.prefix}-videos"
+  bucket        = "${var.prefix}-videos"
+  force_destroy = true
 
   tags = merge(var.common_tags, {
     Name = "${var.prefix}-videos"
@@ -56,7 +57,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "videos" {
 
 # --- Bucket images (frames extraídos) ---
 resource "aws_s3_bucket" "images" {
-  bucket = "${var.prefix}-images"
+  bucket        = "${var.prefix}-images"
+  force_destroy = true
 
   tags = merge(var.common_tags, {
     Name = "${var.prefix}-images"
@@ -109,7 +111,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "images" {
 
 # --- Bucket zip (resultado final) ---
 resource "aws_s3_bucket" "zip" {
-  bucket = "${var.prefix}-zip"
+  bucket        = "${var.prefix}-zip"
+  force_destroy = true
 
   tags = merge(var.common_tags, {
     Name = "${var.prefix}-zip"

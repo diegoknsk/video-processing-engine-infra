@@ -3,5 +3,5 @@
 data "aws_region" "current" {}
 
 locals {
-  region = coalesce(var.region, data.aws_region.current.name)
+  region = coalesce(var.region, data.aws_region.current.id)
 }
