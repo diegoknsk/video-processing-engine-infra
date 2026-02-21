@@ -7,14 +7,8 @@ resource "aws_dynamodb_table" "videos" {
   name         = "${var.prefix}-videos"
   billing_mode = var.billing_mode
 
-  key_schema {
-    attribute_name = "pk"
-    key_type       = "HASH"
-  }
-  key_schema {
-    attribute_name = "sk"
-    key_type       = "RANGE"
-  }
+  hash_key  = "pk"
+  range_key = "sk"
 
   attribute {
     name = "pk"
@@ -38,16 +32,9 @@ resource "aws_dynamodb_table" "videos" {
 
   global_secondary_index {
     name            = "GSI1"
+    hash_key        = "gsi1pk"
+    range_key       = "gsi1sk"
     projection_type = "ALL"
-
-    key_schema {
-      attribute_name = "gsi1pk"
-      key_type       = "HASH"
-    }
-    key_schema {
-      attribute_name = "gsi1sk"
-      key_type       = "RANGE"
-    }
   }
 
   ttl {
