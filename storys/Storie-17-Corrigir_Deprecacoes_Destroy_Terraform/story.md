@@ -5,15 +5,15 @@
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Descrição
-Como engenheiro de infraestrutura, quero corrigir os warnings de deprecação do provider AWS e o erro de `BucketNotEmpty` durante o `terraform destroy`, para que o ciclo completo de apply/destroy funcione sem erros ou avisos e o código esteja alinhado com o provider AWS ~5.x. É necessário criar e destruir recursos com liberdade, fazendo `destroy` ao terminar o uso (lab/dev).
+Como engenheiro de infraestrutura, quero corrigir os warnings de deprecação do provider AWS e o erro de `BucketNotEmpty` durante o `terraform destroy`, para que o ciclo completo de apply/destroy funcione sem erros ou avisos e o código esteja alinhado com o provider AWS em uso (projeto: ~> 6.0). É necessário criar e destruir recursos com liberdade, fazendo `destroy` ao terminar o uso (lab/dev).
 
 ## Objetivo
-Eliminar três categorias de problemas encontrados durante `terraform destroy`: (1) atributos `range_key`/`hash_key` deprecated no recurso `aws_dynamodb_table` — migrar para `key_schema`; (2) buckets S3 sem `force_destroy`, causando falha ao destruir buckets com objetos versionados; (3) atributo `.name` deprecated no data source `aws_region` — substituir pelo atributo correto segundo o provider 5.x.
+Eliminar três categorias de problemas encontrados durante `terraform destroy`: (1) atributos `range_key`/`hash_key` no `aws_dynamodb_table` — no provider **~> 6.0** o recurso continua usando `hash_key`/`range_key` (blocos `key_schema` não são suportados; ver Subtask 01); (2) buckets S3 sem `force_destroy`, causando falha ao destruir buckets com objetos versionados; (3) atributo `.name` deprecated no data source `aws_region` — substituir pelo atributo correto segundo o provider 5.x.
 
 ## Escopo Técnico
-- **Tecnologias:** Terraform ≥ 1.0, provider AWS ~> 5.0
+- **Tecnologias:** Terraform ≥ 1.0, provider AWS ~> 6.0 (definido em `terraform/providers.tf`)
 - **Arquivos afetados:**
-  - `terraform/20-data/dynamodb.tf` — substituir `hash_key`/`range_key` top-level e `range_key` do GSI por blocos `key_schema`
+  - `terraform/20-data/dynamodb.tf` — com provider 6.x mantém `hash_key`/`range_key` (key_schema não aplicável)
   - `terraform/10-storage/buckets.tf` — adicionar `force_destroy = true` nos três recursos `aws_s3_bucket` (videos, images, zip)
   - `terraform/40-auth/datasource.tf` — substituir `data.aws_region.current.name` pelo atributo não-deprecated
   - `terraform/50-lambdas-shell/datasource.tf` — idem ao anterior
@@ -40,14 +40,14 @@ Eliminar três categorias de problemas encontrados durante `terraform destroy`: 
 - [ ] `terraform destroy` executa sem erros (sem `BucketNotEmpty`) nos três buckets S3
 - [ ] `terraform plan` não exibe nenhum warning de `range_key is deprecated` ou `hash_key is deprecated`
 - [ ] `terraform plan` não exibe warning de `The attribute "name" is deprecated` nos módulos `40-auth` e `50-lambdas-shell`
-- [ ] A tabela DynamoDB mantém as mesmas chaves (PK `pk`, SK `sk`) e o GSI `GSI1` (hash `gsi1pk`, range `gsi1sk`) após a migração para `key_schema`
+- [ ] A tabela DynamoDB mantém as mesmas chaves (PK `pk`, SK `sk`) e o GSI `GSI1` (hash `gsi1pk`, range `gsi1sk`); com provider 6.x usa-se `hash_key`/`range_key` (sem migração para key_schema)
 - [ ] `terraform fmt -recursive` executado sem diferenças de formatação
 - [ ] `terraform validate` retorna "Success! The configuration is valid." em todos os módulos alterados
 - [ ] Nenhuma credencial ou ARN hardcoded introduzido nos arquivos alterados
-- [ ] `terraform plan` revisado para confirmar que a mudança no DynamoDB não causa replace inesperado (ou o impacto documentado e aceito)
+- [ ] Com provider 6.x, DynamoDB permanece com `hash_key`/`range_key`; não há mudança de schema (replace) por esta story
 
 ## Implementação (registro)
-- **Subtask 01 (DynamoDB key_schema):** `terraform/20-data/dynamodb.tf` — `hash_key`/`range_key` substituídos por blocos `key_schema` na tabela e no GSI1.
+- **Subtask 01 (DynamoDB):** N/A para provider ~> 6.0 — o recurso `aws_dynamodb_table` **não** aceita blocos `key_schema`; a configuração correta é `hash_key`/`range_key` (mantido em `terraform/20-data/dynamodb.tf`).
 - **Subtask 02 (force_destroy S3):** `terraform/10-storage/buckets.tf` — `force_destroy = true` nos três buckets (videos, images, zip) para permitir destroy sem erro BucketNotEmpty.
 - **Subtask 03 (aws_region):** `terraform/40-auth/datasource.tf` e `terraform/50-lambdas-shell/datasource.tf` — `data.aws_region.current.name` substituído por `data.aws_region.current.id`.
 - **Subtask 04:** Pendente — executar `terraform fmt -recursive`, `terraform validate` e `terraform plan` para validação final.
