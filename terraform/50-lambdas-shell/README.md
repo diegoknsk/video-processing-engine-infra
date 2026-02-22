@@ -22,9 +22,55 @@ Nenhuma política ampla (`s3:*`, `dynamodb:*`); cada função recebe apenas os r
 
 | Fila SQS | Lambda | Observação |
 |----------|--------|------------|
-| **q-video-process** | Lambda Video Orchestrator | Desenho: mensagem de vídeo enviado → orquestrador inicia Step Functions. |
+| **q-video-process** | Lambda Video Dispatcher | Desenho (Storie-18): S3 notifica SQS direto; dispatcher recebe evento e despacha o pipeline. |
 | **q-video-zip-finalize** | Lambda Video Finalizer | Desenho: sinal de conclusão → finalizador gera zip e publica SNS completed. |
 | **q-video-status-update** | Lambda Video Management | Quando `enable_status_update_consumer = true`; mesma Lambda que atualiza DynamoDB. |
+
+---
+
+## Contrato de entrada — LambdaVideoDispatcher
+
+**Origem:** SQS `q-video-process`, populada por notificação de evento S3 (upload no bucket videos com prefix `videos/` e suffix `original`).
+
+**Estrutura do Body (mensagem SQS):** O `Body` é um JSON com o envelope de evento S3 padrão:
+
+```json
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "us-east-1",
+      "eventName": "ObjectCreated:Put",
+      "s3": {
+        "bucket": { "name": "<bucket-name>", "arn": "arn:aws:s3:::..." },
+        "object": {
+          "key": "videos/USER%23abc123/VIDEO%23xyz456/original",
+          "size": 104857600
+        }
+      }
+    }
+  ]
+}
+```
+
+**Campos obrigatórios para o consumer:**
+
+| Campo | Caminho no JSON | Observação |
+|-------|-----------------|------------|
+| **bucket** | `Records[0].s3.bucket.name` | Nome do bucket (sem prefixo ARN). |
+| **key (raw)** | `Records[0].s3.object.key` | **URL-encoded**: `#` → `%23`; o consumer **deve** aplicar URL-decode antes de usar. |
+| **key (decodificado)** | `urldecode(Records[0].s3.object.key)` | Ex.: `videos/USER#abc123/VIDEO#xyz456/original`. |
+
+**Edge cases:**
+
+| Situação | Comportamento esperado |
+|----------|------------------------|
+| `Records` vazio ou nulo | Rejeitar mensagem (log de erro; não deletar da fila para DLQ). |
+| `Records` com mais de 1 item | Processar cada record individualmente. |
+| `key` com caracteres especiais | Aplicar URL-decode completo (RFC 3986) antes de usar. |
+| `eventName` diferente de `ObjectCreated:*` | Ignorar; logar como warning. |
+| `s3.object.size` igual a 0 | Logar warning. |
 
 ---
 

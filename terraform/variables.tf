@@ -103,13 +103,6 @@ variable "dlq_message_retention_seconds" {
   default     = 1209600
 }
 
-# --- Integração upload concluído (Storie-07) ---
-variable "trigger_mode" {
-  description = "Modo do evento upload concluído: s3_event (S3 notifica SNS) ou api_publish (Lambda publica no SNS)."
-  type        = string
-  default     = "api_publish"
-}
-
 # --- Lambdas (50-lambdas-shell, Storie-08) ---
 variable "lambda_runtime" {
   description = "Runtime das Lambdas (ex.: dotnet10)."

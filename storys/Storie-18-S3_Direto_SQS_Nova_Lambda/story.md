@@ -1,11 +1,11 @@
 # Storie-18: S3 Direto para SQS e Nova Lambda Dispatcher
 
 ## Status
-- **Estado:** ⏸️ Aguardando desenvolvimento
+- **Estado:** 🔄 Em desenvolvimento
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Rastreamento (dev tracking)
-- **Início:** —
+- **Início:** dia 22/02/2025 (Brasília) — horário a confirmar pelo usuário
 - **Fim:** —
 - **Tempo total de desenvolvimento:** —
 
@@ -148,12 +148,12 @@ Quando o S3 publica diretamente em uma fila SQS, o corpo da mensagem (`body`) é
 
 ## Subtasks
 
-- [ ] [Subtask 01: Remover recursos SNS do fluxo de upload (upload_integration.tf)](./subtask/Subtask-01-Remover_SNS_Fluxo_Upload.md)
-- [ ] [Subtask 02: Criar SQS queue policy e S3 bucket notification direto para SQS](./subtask/Subtask-02-S3_Notification_SQS_Policy.md)
-- [ ] [Subtask 03: Documentar formato de mensagem S3 e extração de bucket/key pelo consumer](./subtask/Subtask-03-Formato_Mensagem_Consumer.md)
-- [ ] [Subtask 04: Criar Lambda casca LambdaVideoDispatcher no módulo 50-lambdas-shell](./subtask/Subtask-04-Lambda_Casca_VideoDispatcher.md)
-- [ ] [Subtask 05: Migrar event source mapping q-video-process para LambdaVideoDispatcher](./subtask/Subtask-05-Migrar_Event_Source_Mapping.md)
-- [ ] [Subtask 06: Ajustar variáveis, root module (main.tf) e validação Terraform](./subtask/Subtask-06-Variaveis_Root_Validacao.md)
+- [x] [Subtask 01: Remover recursos SNS do fluxo de upload (upload_integration.tf)](./subtask/Subtask-01-Remover_SNS_Fluxo_Upload.md)
+- [x] [Subtask 02: Criar SQS queue policy e S3 bucket notification direto para SQS](./subtask/Subtask-02-S3_Notification_SQS_Policy.md)
+- [x] [Subtask 03: Documentar formato de mensagem S3 e extração de bucket/key pelo consumer](./subtask/Subtask-03-Formato_Mensagem_Consumer.md)
+- [x] [Subtask 04: Criar Lambda casca LambdaVideoDispatcher no módulo 50-lambdas-shell](./subtask/Subtask-04-Lambda_Casca_VideoDispatcher.md)
+- [x] [Subtask 05: Migrar event source mapping q-video-process para LambdaVideoDispatcher](./subtask/Subtask-05-Migrar_Event_Source_Mapping.md)
+- [x] [Subtask 06: Ajustar variáveis, root module (main.tf) e validação Terraform](./subtask/Subtask-06-Variaveis_Root_Validacao.md)
 
 ---
 

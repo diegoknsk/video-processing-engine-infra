@@ -62,16 +62,3 @@ variable "dlq_message_retention_seconds" {
   type        = number
   default     = 1209600
 }
-
-# --- Integração evento upload concluído (Storie-07) ---
-variable "trigger_mode" {
-  description = "Modo do evento upload concluído: s3_event = S3 notifica SNS ao criar objeto; api_publish = Lambda publica no SNS após confirmação."
-  type        = string
-  default     = "api_publish"
-}
-
-variable "videos_bucket_arn" {
-  description = "ARN do bucket S3 videos; obrigatório quando trigger_mode = s3_event para policy SNS (output do módulo storage)."
-  type        = string
-  default     = null
-}

@@ -1,4 +1,4 @@
-# Cinco Lambdas em casca: Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer.
+# Seis Lambdas em casca: Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer, VideoDispatcher (Storie-18).
 # Runtime e handler parametrizáveis; artefato empty.zip; variáveis de ambiente por função.
 
 resource "aws_lambda_function" "auth" {
@@ -91,6 +91,25 @@ resource "aws_lambda_function" "video_finalizer" {
       IMAGES_BUCKET             = var.images_bucket_name
       ZIP_BUCKET                = var.zip_bucket_name
       TOPIC_VIDEO_COMPLETED_ARN = var.topic_video_completed_arn
+    }
+  }
+
+  tags = var.common_tags
+}
+
+resource "aws_lambda_function" "video_dispatcher" {
+  function_name = "${var.prefix}-video-dispatcher"
+  role          = var.lab_role_arn
+  runtime       = var.runtime
+  handler       = var.handler
+  filename      = var.artifact_path
+  timeout       = 900
+
+  environment {
+    variables = {
+      TABLE_NAME              = var.table_name
+      VIDEOS_BUCKET           = var.videos_bucket_name
+      QUEUE_VIDEO_PROCESS_URL = var.q_video_process_url
     }
   }
 
