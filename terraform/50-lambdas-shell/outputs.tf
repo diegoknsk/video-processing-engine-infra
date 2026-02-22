@@ -74,3 +74,13 @@ output "lambda_video_finalizer_role_arn" {
   description = "ARN da role IAM da Lambda Video Finalizer (Lab Role quando em AWS Academy)."
   value       = var.lab_role_arn
 }
+
+output "lambda_video_dispatcher_name" {
+  description = "Nome da Lambda LambdaVideoDispatcher."
+  value       = aws_lambda_function.video_dispatcher.function_name
+}
+
+output "lambda_video_dispatcher_arn" {
+  description = "ARN da Lambda LambdaVideoDispatcher."
+  value       = aws_lambda_function.video_dispatcher.arn
+}

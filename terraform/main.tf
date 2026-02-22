@@ -25,10 +25,6 @@ module "storage" {
   enable_versioning           = var.enable_versioning
   retention_days              = var.retention_days
   enable_lifecycle_expiration = var.enable_lifecycle_expiration
-
-  # trigger_mode e topic_video_submitted_arn: usados pelo root em upload_integration.tf quando s3_event
-  trigger_mode              = var.trigger_mode
-  topic_video_submitted_arn = null
 }
 
 # --- Data (DynamoDB vídeos/processamento) ---
@@ -45,10 +41,6 @@ module "messaging" {
 
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
-
-  # trigger_mode e videos_bucket_arn: usados pelo root em upload_integration.tf quando s3_event
-  trigger_mode      = var.trigger_mode
-  videos_bucket_arn = null
 
   enable_email_subscription_completed  = var.enable_email_subscription_completed
   email_endpoint                       = var.email_endpoint

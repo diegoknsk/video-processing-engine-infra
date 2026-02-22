@@ -15,7 +15,7 @@ Módulo Terraform que provisiona **SNS** (tópicos e subscriptions) e **SQS** (f
 
 #### Modo api_publish (upload concluído)
 
-Quando `trigger_mode = "api_publish"`, o evento de upload concluído não é disparado pelo S3. A **Lambda Video Management** (ou API) deve publicar uma mensagem no SNS topic-video-submitted após confirmar que o upload foi concluído (ex.: após callback ou polling). A Lambda usa o ARN do tópico (output **topic_video_submitted_arn**) para publicar; o código da Lambda fica no repositório de aplicação, não neste repo de infra. Injete `topic_video_submitted_arn` na Lambda como variável de ambiente ou parâmetro.
+Quando o upload é confirmado pela API/Lambda (modo api_publish), a **Lambda Video Management** publica no SNS topic-video-submitted; o ARN do tópico (output **topic_video_submitted_arn**) é injetado na Lambda. Desde a Storie-18, o fluxo principal de upload concluído é **S3 → SQS q-video-process** (direto), configurado no root; o tópico SNS continua disponível para publicações da aplicação.
 
 ### topic-video-completed
 
@@ -44,11 +44,11 @@ Fluxo ponta a ponta: upload → S3 → SNS video-submitted → SQS process → o
 
 | Fila principal        | Origem (quem publica)                    | Consumidor (quem processa)              | DLQ                    |
 |------------------------|------------------------------------------|-----------------------------------------|------------------------|
-| **q-video-process**    | SNS topic-video-submitted (após upload S3)| Lambda Video Orchestrator (inicia SFN)  | dlq-video-process       |
+| **q-video-process**    | S3 (notificação direta; prefix `videos/`, suffix `original`) | Lambda Video Dispatcher (Storie-18)    | dlq-video-process       |
 | **q-video-status-update** | Lambda Processor / Step Functions       | Lambda/worker que atualiza DynamoDB      | dlq-video-status-update |
 | **q-video-zip-finalize** | Step Functions ou Lambda Processor      | Lambda Video Finalizer (zip, publica SNS)| dlq-video-zip-finalize  |
 
-- **SNS video-submitted → SQS q-video-process:** o tópico SNS encaminha mensagens para esta fila; a subscription SNS→SQS é configurada em story de integração. Este módulo apenas cria a fila e a DLQ.
+- **S3 → SQS q-video-process (Storie-18):** o bucket videos notifica diretamente esta fila (queue policy e bucket notification no root). Este módulo apenas cria a fila e a DLQ.
 - **q-video-status-update:** atualização de status do processamento (ex.: "processing", "extracting frames").
 - **q-video-zip-finalize:** dispara a Lambda Video Finalizer para consolidar imagens, gerar zip e publicar em topic-video-completed.
 
@@ -65,21 +65,15 @@ Todas as filas principais possuem **redrive_policy** apontando para a DLQ corres
 
 ---
 
-## Integração upload concluído – responsabilidades (Storie-07)
+## Integração upload concluído (Storie-18: S3 → SQS)
 
-| Módulo        | Responsabilidade |
-|---------------|------------------|
-| **10-storage** | Dono do bucket videos. Quando `trigger_mode = "s3_event"`, configura a notificação do bucket para o SNS (recebe `topic_video_submitted_arn` do messaging). |
-| **30-messaging** | Dono do tópico topic-video-submitted. Quando `trigger_mode = "s3_event"`, configura a policy do tópico permitindo o bucket publicar (recebe `videos_bucket_arn` do storage). |
-| **Root/Caller** | Deve passar `topic_video_submitted_arn` (output de messaging) para o módulo storage e `videos_bucket_arn` (output de storage) para o módulo messaging quando `trigger_mode = "s3_event"`, em um único apply. |
-
-Fluxo alinhado ao desenho: upload concluído → SNS topic-video-submitted → SQS q-video-process. Storage não cria SNS; messaging não cria bucket.
+Desde a Storie-18, o fluxo de upload concluído é **S3 bucket videos → SQS q-video-process** (direto), configurado no **root** (`upload_integration.tf`): queue policy na fila (permite S3 publicar com `aws:SourceArn`) e bucket notification com filtro `prefix = "videos/"`, `suffix = "original"`. Os módulos 10-storage e 30-messaging não recebem mais variáveis de integração (`trigger_mode`, `videos_bucket_arn`, `topic_video_submitted_arn`) para esse fluxo; o root usa os outputs `videos_bucket_name`, `videos_bucket_arn`, `q_video_process_arn` e `q_video_process_url` para configurar os recursos.
 
 ---
 
 ## Uso pelo caller (root)
 
-O root deve passar `prefix` e `common_tags` (ex.: do output do módulo `00-foundation`) e, opcionalmente, variáveis de subscription SNS, parâmetros SQS e integração upload (`trigger_mode`, `videos_bucket_arn` quando s3_event):
+O root deve passar `prefix` e `common_tags` (ex.: do output do módulo `00-foundation`) e, opcionalmente, variáveis de subscription SNS e parâmetros SQS:
 
 ```hcl
 module "messaging" {
@@ -87,10 +81,6 @@ module "messaging" {
 
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
-
-  # Integração upload concluído (Storie-07): s3_event ou api_publish
-  trigger_mode       = "s3_event"  # ou "api_publish"
-  videos_bucket_arn  = module.storage.videos_bucket_arn  # obrigatório quando s3_event
 
   # SNS (opcional)
   enable_email_subscription_completed  = false
