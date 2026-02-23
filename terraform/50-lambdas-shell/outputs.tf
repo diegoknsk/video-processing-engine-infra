@@ -75,12 +75,12 @@ output "lambda_video_finalizer_role_arn" {
   value       = var.lab_role_arn
 }
 
-output "lambda_video_dispatcher_name" {
-  description = "Nome da Lambda LambdaVideoDispatcher."
-  value       = aws_lambda_function.video_dispatcher.function_name
+output "lambda_update_status_video_name" {
+  description = "Nome da Lambda LambdaUpdateStatusVideo (responsável exclusiva por atualizar status)."
+  value       = aws_lambda_function.update_status_video.function_name
 }
 
-output "lambda_video_dispatcher_arn" {
-  description = "ARN da Lambda LambdaVideoDispatcher."
-  value       = aws_lambda_function.video_dispatcher.arn
+output "lambda_update_status_video_arn" {
+  description = "ARN da Lambda LambdaUpdateStatusVideo."
+  value       = aws_lambda_function.update_status_video.arn
 }

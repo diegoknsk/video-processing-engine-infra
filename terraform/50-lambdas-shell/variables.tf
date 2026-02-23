@@ -108,11 +108,6 @@ variable "q_video_zip_finalize_arn" {
 }
 
 # --- SNS (módulo messaging) ---
-variable "topic_video_submitted_arn" {
-  description = "ARN do tópico SNS topic-video-submitted (output do módulo messaging)."
-  type        = string
-}
-
 variable "topic_video_completed_arn" {
   description = "ARN do tópico SNS topic-video-completed (output do módulo messaging)."
   type        = string
@@ -123,12 +118,6 @@ variable "step_function_arn" {
   description = "ARN da Step Function de orquestração (output do módulo 70-orchestration ou placeholder)."
   type        = string
   default     = ""
-}
-
-variable "enable_status_update_consumer" {
-  description = "Se true, mapeia LambdaVideoManagement à fila q-video-status-update; se false, consumo futuro."
-  type        = bool
-  default     = true
 }
 
 # --- Lab Role (AWS Academy): não criar IAM roles; usar role existente ---

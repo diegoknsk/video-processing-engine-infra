@@ -90,11 +90,9 @@ module "lambdas" {
   q_video_zip_finalize_url  = module.messaging.q_video_zip_finalize_url
   q_video_zip_finalize_arn  = module.messaging.q_video_zip_finalize_arn
 
-  topic_video_submitted_arn = module.messaging.topic_video_submitted_arn
   topic_video_completed_arn = module.messaging.topic_video_completed_arn
 
-  step_function_arn             = var.step_function_arn
-  enable_status_update_consumer = var.enable_status_update_consumer
+  step_function_arn = var.step_function_arn
 
   lab_role_arn = var.lab_role_arn
 }

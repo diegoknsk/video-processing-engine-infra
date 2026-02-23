@@ -32,8 +32,8 @@ resource "aws_cloudwatch_log_group" "lambda_video_finalizer" {
   tags              = var.common_tags
 }
 
-resource "aws_cloudwatch_log_group" "lambda_video_dispatcher" {
-  name              = "/aws/lambda/${var.prefix}-video-dispatcher"
+resource "aws_cloudwatch_log_group" "lambda_update_status_video" {
+  name              = "/aws/lambda/${var.prefix}-update-status-video"
   retention_in_days = var.log_retention_days
   tags              = var.common_tags
 }
