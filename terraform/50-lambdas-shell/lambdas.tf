@@ -1,4 +1,4 @@
-# Seis Lambdas em casca: Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer, VideoDispatcher (Storie-18).
+# Lambdas em casca: Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer, UpdateStatusVideo (Storie-18.1).
 # Runtime e handler parametrizáveis; artefato empty.zip; variáveis de ambiente por função.
 
 resource "aws_lambda_function" "auth" {
@@ -28,10 +28,9 @@ resource "aws_lambda_function" "video_management" {
 
   environment {
     variables = {
-      TABLE_NAME                = var.table_name
-      VIDEOS_BUCKET             = var.videos_bucket_name
-      TOPIC_VIDEO_SUBMITTED_ARN = var.topic_video_submitted_arn
-      QUEUE_STATUS_UPDATE_URL   = var.q_video_status_update_url
+      TABLE_NAME              = var.table_name
+      VIDEOS_BUCKET           = var.videos_bucket_name
+      QUEUE_STATUS_UPDATE_URL = var.q_video_status_update_url
     }
   }
 
@@ -97,8 +96,8 @@ resource "aws_lambda_function" "video_finalizer" {
   tags = var.common_tags
 }
 
-resource "aws_lambda_function" "video_dispatcher" {
-  function_name = "${var.prefix}-video-dispatcher"
+resource "aws_lambda_function" "update_status_video" {
+  function_name = "${var.prefix}-update-status-video"
   role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
@@ -108,8 +107,7 @@ resource "aws_lambda_function" "video_dispatcher" {
   environment {
     variables = {
       TABLE_NAME              = var.table_name
-      VIDEOS_BUCKET           = var.videos_bucket_name
-      QUEUE_VIDEO_PROCESS_URL = var.q_video_process_url
+      QUEUE_STATUS_UPDATE_URL = var.q_video_status_update_url
     }
   }
 

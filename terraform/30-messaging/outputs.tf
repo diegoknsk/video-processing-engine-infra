@@ -1,11 +1,6 @@
-# Outputs do módulo 30-messaging — SNS (Storie-05) e SQS (Storie-06).
+# Outputs do módulo 30-messaging — SNS (Storie-05; Storie-18.1) e SQS (Storie-06).
 
 # --- SNS: ARNs dos tópicos ---
-output "topic_video_submitted_arn" {
-  description = "ARN do tópico SNS topic-video-submitted (evento de vídeo enviado)."
-  value       = aws_sns_topic.topic_video_submitted.arn
-}
-
 output "topic_video_completed_arn" {
   description = "ARN do tópico SNS topic-video-completed (evento de processamento concluído)."
   value       = aws_sns_topic.topic_video_completed.arn

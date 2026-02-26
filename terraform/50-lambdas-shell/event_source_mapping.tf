@@ -1,19 +1,19 @@
-# Event source mappings: SQS → Lambda. Dispatcher ← q-video-process (Storie-18); Finalizer ← q-video-zip-finalize;
-# VideoManagement ← q-video-status-update (quando enable_status_update_consumer = true).
+# Event source mappings: SQS → Lambda. Orchestrator ← q-video-process (Storie-18.1); Finalizer ← q-video-zip-finalize;
+# UpdateStatusVideo ← q-video-status-update (Storie-18.1).
 # aws_lambda_permission permite que SQS invoque a Lambda.
 
-# --- q-video-process → LambdaVideoDispatcher (Storie-18) ---
-resource "aws_lambda_permission" "sqs_invoke_video_dispatcher" {
+# --- q-video-process → LambdaVideoOrchestrator (Storie-18.1) ---
+resource "aws_lambda_permission" "sqs_invoke_orchestrator" {
   statement_id  = "AllowExecutionFromSQS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.video_dispatcher.function_name
+  function_name = aws_lambda_function.video_orchestrator.function_name
   principal     = "sqs.amazonaws.com"
   source_arn    = var.q_video_process_arn
 }
 
-resource "aws_lambda_event_source_mapping" "video_dispatcher_q_video_process" {
+resource "aws_lambda_event_source_mapping" "orchestrator_q_video_process" {
   event_source_arn = var.q_video_process_arn
-  function_name    = aws_lambda_function.video_dispatcher.function_name
+  function_name    = aws_lambda_function.video_orchestrator.function_name
   batch_size       = 1
 }
 
@@ -32,21 +32,17 @@ resource "aws_lambda_event_source_mapping" "finalizer_q_video_zip_finalize" {
   batch_size       = 1
 }
 
-# --- q-video-status-update → LambdaVideoManagement (quando enable_status_update_consumer) ---
-resource "aws_lambda_permission" "sqs_invoke_video_management" {
-  count = var.enable_status_update_consumer ? 1 : 0
-
+# --- q-video-status-update → LambdaUpdateStatusVideo (Storie-18.1) ---
+resource "aws_lambda_permission" "sqs_invoke_update_status_video" {
   statement_id  = "AllowExecutionFromSQS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.video_management.function_name
+  function_name = aws_lambda_function.update_status_video.function_name
   principal     = "sqs.amazonaws.com"
   source_arn    = var.q_video_status_update_arn
 }
 
-resource "aws_lambda_event_source_mapping" "video_management_q_video_status_update" {
-  count = var.enable_status_update_consumer ? 1 : 0
-
+resource "aws_lambda_event_source_mapping" "update_status_video_q_video_status_update" {
   event_source_arn = var.q_video_status_update_arn
-  function_name    = aws_lambda_function.video_management.function_name
+  function_name    = aws_lambda_function.update_status_video.function_name
   batch_size       = 1
 }

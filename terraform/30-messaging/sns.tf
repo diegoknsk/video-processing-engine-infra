@@ -1,14 +1,8 @@
-# Módulo 30-messaging — Parte SNS (Storie-05).
-# Tópicos: topic-video-submitted e topic-video-completed.
-# Subscriptions: email (ativo agora) e Lambda (preparado para depois) apenas no topic-video-completed.
-# Subscription SQS no topic-video-submitted = outra story (integração).
+# Módulo 30-messaging — Parte SNS (Storie-05; Storie-18.1: topic-video-submitted removido).
+# Tópico: topic-video-completed.
+# Subscriptions: email (ativo agora) e Lambda (preparado para depois) no topic-video-completed.
 
 # --- Tópicos SNS ---
-resource "aws_sns_topic" "topic_video_submitted" {
-  name = "${var.prefix}-topic-video-submitted"
-  tags = var.common_tags
-}
-
 resource "aws_sns_topic" "topic_video_completed" {
   name = "${var.prefix}-topic-video-completed"
   tags = var.common_tags

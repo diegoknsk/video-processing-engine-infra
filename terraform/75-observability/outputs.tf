@@ -24,3 +24,8 @@ output "log_group_lambda_video_finalizer" {
   description = "Nome do log group da Lambda Video Finalizer."
   value       = aws_cloudwatch_log_group.lambda_video_finalizer.name
 }
+
+output "log_group_lambda_update_status_video" {
+  description = "Nome do log group da Lambda UpdateStatusVideo."
+  value       = aws_cloudwatch_log_group.lambda_update_status_video.name
+}

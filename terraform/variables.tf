@@ -141,12 +141,6 @@ variable "finalization_mode" {
   default     = "sqs"
 }
 
-variable "enable_status_update_consumer" {
-  description = "Mapeia Lambda Video Management à fila q-video-status-update quando true."
-  type        = bool
-  default     = true
-}
-
 # --- API Gateway (60-api, Storie-10) ---
 variable "enable_api_authorizer" {
   description = "Habilita JWT authorizer Cognito na API Gateway. Quando false ou quando 40-auth não existir, rotas ficam acessíveis sem token (bootstrap)."
