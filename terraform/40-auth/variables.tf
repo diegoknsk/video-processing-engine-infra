@@ -99,3 +99,34 @@ variable "initial_user_name" {
   type        = string
   default     = "DevUser"
 }
+
+# --- App Client M2M (OAuth2 client_credentials — Storie-19) ---
+variable "enable_m2m_client" {
+  description = "Habilita criação do App Client M2M e do Resource Server no User Pool (fluxo OAuth2 client_credentials para Lambdas/serviços internos)."
+  type        = bool
+  default     = true
+}
+
+variable "m2m_resource_server_identifier" {
+  description = "Identifier do Resource Server Cognito (ex.: video-processing-engine). Usado no formato scope identifier/scope_name."
+  type        = string
+  default     = "video-processing-engine"
+}
+
+variable "m2m_scopes" {
+  description = "Lista de scopes do Resource Server para o fluxo client_credentials. Cada item: name (ex.: analyze:run) e description."
+  type = list(object({
+    name        = string
+    description = string
+  }))
+  default = [
+    { name = "analyze:run", description = "Run analyze job" },
+    { name = "videos:update_status", description = "Update video status" }
+  ]
+}
+
+variable "m2m_secret_ssm_parameter_name" {
+  description = "Path do SSM Parameter Store onde o pipeline/operador gravará o client_secret após o primeiro apply. Placeholder para as Lambdas lerem o secret (ex.: /video-processing-engine/dev/cognito-m2m-client-secret). Terraform não grava o secret no SSM."
+  type        = string
+  default     = null
+}
