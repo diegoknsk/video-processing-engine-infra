@@ -126,7 +126,15 @@ variable "m2m_scopes" {
 }
 
 variable "m2m_secret_ssm_parameter_name" {
-  description = "Path do SSM Parameter Store onde o pipeline/operador gravará o client_secret após o primeiro apply. Placeholder para as Lambdas lerem o secret (ex.: /video-processing-engine/dev/cognito-m2m-client-secret). Terraform não grava o secret no SSM."
+  description = "Path do SSM Parameter Store onde o pipeline/operador gravará o client_secret após o primeiro apply. Placeholder para as Lambdas lerem o secret (ex.: /video-processing-engine/dev/cognito-m2m-client-secret). Quando m2m_expose_credentials_in_ssm = true, o Terraform cria o parâmetro."
   type        = string
   default     = null
+}
+
+# Apenas ambiente acadêmico/projetinho: Terraform grava client_id e client_secret no SSM (evitar passo manual).
+# Em produção recomenda-se false e gravar o secret fora do Terraform (secret não fica no state).
+variable "m2m_expose_credentials_in_ssm" {
+  description = "Se true, cria parâmetros SSM com client_id e client_secret do M2M para Lambdas lerem em runtime. Conveniente para projetinho/faculdade; em prod use false e grave o secret no SSM fora do Terraform."
+  type        = bool
+  default     = true
 }

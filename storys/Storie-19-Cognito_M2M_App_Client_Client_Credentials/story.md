@@ -86,6 +86,8 @@ Criar no módulo `terraform/40-auth` (ou em arquivos incrementais no root que re
 - [x] [Subtask 04: App Client M2M (client_credentials + client_secret)](./subtask/Subtask-04-App_Client_M2M.md)
 - [x] [Subtask 05: Outputs M2M (client_id, client_secret, scopes, token_endpoint)](./subtask/Subtask-05-Outputs_M2M.md)
 - [x] [Subtask 06: Documentação e critérios de aceite (README, obtenção de token, SSM)](./subtask/Subtask-06-Documentacao_Obtencao_Token_SSM.md)
+- [x] [Subtask 07: Expor client_id do App Client M2M em SSM](./subtask/Subtask-07-SSM_Client_Id_M2M.md)
+- [x] [Subtask 08: Expor client_secret do App Client M2M em SSM (SecureString)](./subtask/Subtask-08-SSM_Client_Secret_M2M.md)
 
 ---
 
@@ -98,3 +100,4 @@ Criar no módulo `terraform/40-auth` (ou em arquivos incrementais no root que re
 - [x] Documentação no README (ou story): como as Lambdas obtêm o token (URL, body, scope), e onde armazenar o client_secret (SSM Parameter Store recomendado, com path/placeholder `m2m_secret_ssm_parameter_name`); decisão SSM vs Secrets Manager justificada
 - [x] `terraform fmt -recursive` e `terraform validate` executam sem erros; `terraform plan` não mostra destruição ou alteração indesejada do App Client público existente
 - [x] Nenhuma credencial ou client_secret hardcoded em arquivos `.tf` ou tfvars versionados; client_secret apenas em output sensível e (após apply) em SSM pelo pipeline/operador
+- [x] (Subtask-07/08) Opcional para projetinho: parâmetros SSM com client_id e client_secret do M2M (`m2m_expose_credentials_in_ssm`); paths `/${prefix}/cognito-m2m-client-id` e `/${prefix}/cognito-m2m-client-secret`; em prod usar `false`

@@ -27,7 +27,7 @@ output "cognito_m2m_client_id" {
 }
 
 output "cognito_m2m_client_secret" {
-  description = "Client secret do App Client M2M; armazenar em SSM/Secrets Manager; não commitar."
+  description = "Client secret do App Client M2M. (Usado somente para desenvolvimento; em ambiente real nunca expor esta informação.) Exposto no output para permitir automação via Git/CI."
   value       = try(aws_cognito_user_pool_client.m2m[0].client_secret, null)
   sensitive   = true
 }
@@ -45,4 +45,15 @@ output "cognito_m2m_scopes" {
 output "cognito_m2m_token_endpoint" {
   description = "URL do endpoint OAuth2 token para grant_type=client_credentials."
   value       = try("https://${aws_cognito_user_pool_domain.auth_domain[0].domain}.auth.${local.region}.amazonaws.com/oauth2/token", null)
+}
+
+# Paths SSM para Lambdas (quando m2m_expose_credentials_in_ssm = true — Subtask-07/08)
+output "cognito_m2m_client_id_ssm_parameter_name" {
+  description = "Nome do parâmetro SSM onde está o client_id do M2M (ex.: /prefix/cognito-m2m-client-id). null se m2m_expose_credentials_in_ssm = false."
+  value       = try(aws_ssm_parameter.m2m_client_id[0].name, null)
+}
+
+output "cognito_m2m_client_secret_ssm_parameter_name" {
+  description = "Nome do parâmetro SSM SecureString onde está o client_secret do M2M (ex.: /prefix/cognito-m2m-client-secret). null se m2m_expose_credentials_in_ssm = false."
+  value       = try(aws_ssm_parameter.m2m_client_secret[0].name, null)
 }
