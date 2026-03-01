@@ -112,3 +112,30 @@ output "cognito_jwks_url" {
   description = "URL do JWKS do User Pool (referência ou validação custom). Consumido por pipelines e documentação."
   value       = module.auth.jwks_url
 }
+
+# --- Auth M2M (Storie-19: client_credentials) ---
+output "cognito_m2m_client_id" {
+  description = "App Client M2M client_id para OAuth2 client_credentials."
+  value       = module.auth.cognito_m2m_client_id
+}
+
+output "cognito_m2m_client_secret" {
+  description = "Client secret do App Client M2M; armazenar em SSM; não commitar."
+  value       = module.auth.cognito_m2m_client_secret
+  sensitive   = true
+}
+
+output "cognito_m2m_resource_server_identifier" {
+  description = "Identifier do Resource Server (scope: identifier/scope_name)."
+  value       = module.auth.cognito_m2m_resource_server_identifier
+}
+
+output "cognito_m2m_scopes" {
+  description = "Lista de scopes para o parâmetro scope no token request."
+  value       = module.auth.cognito_m2m_scopes
+}
+
+output "cognito_m2m_token_endpoint" {
+  description = "URL do endpoint OAuth2 token (client_credentials)."
+  value       = module.auth.cognito_m2m_token_endpoint
+}

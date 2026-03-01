@@ -210,3 +210,10 @@ variable "auth_password_require_symbols" {
   type        = bool
   default     = false # Modo dev: não exige símbolos por padrão
 }
+
+# --- Auth M2M (40-auth, Storie-19: App Client client_credentials) ---
+variable "enable_m2m_client" {
+  description = "Habilita App Client M2M e Resource Server no Cognito (OAuth2 client_credentials para Lambdas/APIs internas)."
+  type        = bool
+  default     = true
+}

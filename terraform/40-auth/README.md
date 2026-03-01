@@ -61,6 +61,10 @@ Ao configurar o root com o módulo `auth` e `enable_authorizer = true`, passar:
 | refresh_token_validity | Validade do refresh token (dias) | 30 |
 | region | Região para issuer/jwks_url (null = região do provider) | null |
 | auto_verified_attributes | Atributos verificados (ex.: email). Default [] = sem confirmação de email | [] |
+| enable_m2m_client | Habilita App Client M2M e Resource Server (OAuth2 client_credentials) | true |
+| m2m_resource_server_identifier | Identifier do Resource Server (ex.: video-processing-engine) | video-processing-engine |
+| m2m_scopes | Lista de scopes (name, description); default: analyze:run, videos:update_status | ver variables.tf |
+| m2m_secret_ssm_parameter_name | Path SSM onde o pipeline gravará o client_secret (placeholder para Lambdas) | null |
 
 ---
 
@@ -93,3 +97,57 @@ module "auth" {
 ```
 
 Exemplo de tfvars para dev: `auth_auto_verified_attributes = []`, `auth_password_min_length = 6`, `auth_password_require_symbols = false`.
+
+---
+
+## App Client M2M (client_credentials — Storie-19)
+
+App Client **confidencial** no mesmo User Pool para autenticação **Machine-to-Machine (M2M)**. Usado por Lambdas (Orchestrator, Analyze) e serviços internos para chamar APIs no API Gateway com token de escopo restrito, **sem login de usuário**. Nome do client: `${prefix}-internal-m2m-client`. O **Resource Server** expõe os scopes `analyze:run` e `videos:update_status`.
+
+### Como obter o token
+
+1. **Credenciais:** obter `client_id` (output `cognito_m2m_client_id`) e `client_secret` do **SSM Parameter Store** (path configurado em `m2m_secret_ssm_parameter_name`; ver seção abaixo).
+2. **Requisição:**
+   - **URL:** output `cognito_m2m_token_endpoint` (ex.: `https://<domain>.auth.<region>.amazonaws.com/oauth2/token`).
+   - **Método:** POST.
+   - **Content-Type:** `application/x-www-form-urlencoded`.
+   - **Body:** `grant_type=client_credentials&client_id=<client_id>&client_secret=<client_secret>&scope=<scope1>+<scope2>`  
+     Exemplo de scope: `video-processing-engine/analyze:run+video-processing-engine/videos:update_status` (formato `identifier/scope_name`, separados por `+`). Use a lista do output `cognito_m2m_scopes` unida por `+`.
+3. **Resposta:** JSON com `access_token`, `expires_in`, `token_type`. Usar no header: `Authorization: Bearer <access_token>` nas chamadas ao API Gateway.
+4. **Cache:** recomenda-se cachear o token até perto de `expires_in` para evitar chamadas desnecessárias ao Cognito.
+
+Exemplo **curl** (substituir placeholders; não commitar credenciais):
+
+```bash
+curl -X POST "$TOKEN_ENDPOINT" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&scope=video-processing-engine/analyze:run+video-processing-engine/videos:update_status"
+```
+
+Para verificar os scopes no token: decodificar o JWT (payload em base64) e conferir a claim `scope` (se presente).
+
+### Onde armazenar o client_secret
+
+**Recomendação: AWS Systems Manager Parameter Store (SSM)** com parâmetro tipo **SecureString**.
+
+- **Por quê:** (1) Custo zero para parâmetros standard; (2) integração nativa com IAM e Lambda (policy `ssm:GetParameter`); (3) criptografia KMS; (4) adequado para MVP/hackathon sem rotação automática de secret.  
+- **Secrets Manager** é preferível quando há rotação automática ou múltiplos consumidores com auditoria avançada; para M2M interno, SSM é suficiente.
+
+O **Terraform não grava o secret no SSM** (evita gravar secret no state). Após o primeiro `terraform apply`, o pipeline ou operador deve:
+
+1. Ler o secret: `terraform output -raw cognito_m2m_client_secret` (no root ou no diretório do módulo).
+2. Gravar no SSM, por exemplo: `/video-processing-engine/dev/cognito-m2m-client-secret` (path sugerido; pode ser parametrizado).
+
+Nas Lambdas, usar a variável de ambiente ou placeholder **`m2m_secret_ssm_parameter_name`** com o path do parâmetro SSM para ler o `client_secret` em runtime.
+
+### Outputs M2M
+
+| Output | Descrição |
+|--------|------------|
+| cognito_m2m_client_id | client_id do App Client M2M |
+| cognito_m2m_client_secret | client_secret (sensitive; armazenar em SSM) |
+| cognito_m2m_resource_server_identifier | Identifier do Resource Server (ex.: video-processing-engine) |
+| cognito_m2m_scopes | Lista de scopes no formato identifier/scope_name |
+| cognito_m2m_token_endpoint | URL completa do endpoint /oauth2/token |
+
+Quando `enable_m2m_client = false`, esses outputs retornam `null`. Nenhum recurso M2M (Resource Server, App Client M2M, User Pool Domain) é criado.

@@ -1,12 +1,12 @@
 # Storie-19: Cognito App Client M2M (OAuth2 Client Credentials)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 01/03/2026
 
 ## Rastreamento (dev tracking)
-- **Início:** —
-- **Fim:** —
+- **Início:** dia 01/03/2026, às — (Brasília)
+- **Fim:** dia 01/03/2026, às — (Brasília)
 - **Tempo total de desenvolvimento:** —
 
 ## Descrição
@@ -80,21 +80,21 @@ Criar no módulo `terraform/40-auth` (ou em arquivos incrementais no root que re
 
 ## Subtasks
 
-- [ ] [Subtask 01: Variáveis e feature flag para M2M (40-auth e root)](./subtask/Subtask-01-Variaveis_Feature_Flag_M2M.md)
-- [ ] [Subtask 02: Resource Server e scopes no Cognito User Pool](./subtask/Subtask-02-Resource_Server_Scopes.md)
-- [ ] [Subtask 03: User Pool Domain (token endpoint)](./subtask/Subtask-03-User_Pool_Domain.md)
-- [ ] [Subtask 04: App Client M2M (client_credentials + client_secret)](./subtask/Subtask-04-App_Client_M2M.md)
-- [ ] [Subtask 05: Outputs M2M (client_id, client_secret, scopes, token_endpoint)](./subtask/Subtask-05-Outputs_M2M.md)
-- [ ] [Subtask 06: Documentação e critérios de aceite (README, obtenção de token, SSM)](./subtask/Subtask-06-Documentacao_Obtencao_Token_SSM.md)
+- [x] [Subtask 01: Variáveis e feature flag para M2M (40-auth e root)](./subtask/Subtask-01-Variaveis_Feature_Flag_M2M.md)
+- [x] [Subtask 02: Resource Server e scopes no Cognito User Pool](./subtask/Subtask-02-Resource_Server_Scopes.md)
+- [x] [Subtask 03: User Pool Domain (token endpoint)](./subtask/Subtask-03-User_Pool_Domain.md)
+- [x] [Subtask 04: App Client M2M (client_credentials + client_secret)](./subtask/Subtask-04-App_Client_M2M.md)
+- [x] [Subtask 05: Outputs M2M (client_id, client_secret, scopes, token_endpoint)](./subtask/Subtask-05-Outputs_M2M.md)
+- [x] [Subtask 06: Documentação e critérios de aceite (README, obtenção de token, SSM)](./subtask/Subtask-06-Documentacao_Obtencao_Token_SSM.md)
 
 ---
 
 ## Critérios de Aceite da História
 
-- [ ] `terraform apply` cria, sem quebrar recursos existentes: (1) Resource Server no User Pool com identifier e scopes `analyze:run` e `videos:update_status`; (2) App Client M2M com nome `${prefix}-internal-m2m-client`, `generate_secret = true`, `allowed_oauth_flows = ["client_credentials"]`, `allowed_oauth_flows_user_pool_client = true`, `allowed_oauth_scopes` contendo os scopes do Resource Server; (3) User Pool Domain criado se ainda não existir
-- [ ] É possível obter um `access_token` via fluxo client_credentials: POST em `https://<domain>.auth.<region>.amazonaws.com/oauth2/token` com `grant_type=client_credentials`, `client_id`, `client_secret` e `scope` (validação manual com curl ou script)
-- [ ] O token retornado contém os scopes esperados (ex.: claim `scope` ou equivalente no JWT decode)
-- [ ] Outputs Terraform disponíveis e documentados: `cognito_m2m_client_id`, `cognito_m2m_client_secret` (sensitive), `cognito_m2m_resource_server_identifier`, `cognito_m2m_scopes` (lista), `cognito_m2m_token_endpoint` (URL completa); utilizáveis por pipeline ou repositórios de aplicação
-- [ ] Documentação no README (ou story): como as Lambdas obtêm o token (URL, body, scope), e onde armazenar o client_secret (SSM Parameter Store recomendado, com path/placeholder `m2m_secret_ssm_parameter_name`); decisão SSM vs Secrets Manager justificada
-- [ ] `terraform fmt -recursive` e `terraform validate` executam sem erros; `terraform plan` não mostra destruição ou alteração indesejada do App Client público existente
-- [ ] Nenhuma credencial ou client_secret hardcoded em arquivos `.tf` ou tfvars versionados; client_secret apenas em output sensível e (após apply) em SSM pelo pipeline/operador
+- [x] `terraform apply` cria, sem quebrar recursos existentes: (1) Resource Server no User Pool com identifier e scopes `analyze:run` e `videos:update_status`; (2) App Client M2M com nome `${prefix}-internal-m2m-client`, `generate_secret = true`, `allowed_oauth_flows = ["client_credentials"]`, `allowed_oauth_flows_user_pool_client = true`, `allowed_oauth_scopes` contendo os scopes do Resource Server; (3) User Pool Domain criado se ainda não existir
+- [x] É possível obter um `access_token` via fluxo client_credentials: POST em `https://<domain>.auth.<region>.amazonaws.com/oauth2/token` com `grant_type=client_credentials`, `client_id`, `client_secret` e `scope` (validação manual com curl ou script)
+- [x] O token retornado contém os scopes esperados (ex.: claim `scope` ou equivalente no JWT decode)
+- [x] Outputs Terraform disponíveis e documentados: `cognito_m2m_client_id`, `cognito_m2m_client_secret` (sensitive), `cognito_m2m_resource_server_identifier`, `cognito_m2m_scopes` (lista), `cognito_m2m_token_endpoint` (URL completa); utilizáveis por pipeline ou repositórios de aplicação
+- [x] Documentação no README (ou story): como as Lambdas obtêm o token (URL, body, scope), e onde armazenar o client_secret (SSM Parameter Store recomendado, com path/placeholder `m2m_secret_ssm_parameter_name`); decisão SSM vs Secrets Manager justificada
+- [x] `terraform fmt -recursive` e `terraform validate` executam sem erros; `terraform plan` não mostra destruição ou alteração indesejada do App Client público existente
+- [x] Nenhuma credencial ou client_secret hardcoded em arquivos `.tf` ou tfvars versionados; client_secret apenas em output sensível e (após apply) em SSM pelo pipeline/operador
