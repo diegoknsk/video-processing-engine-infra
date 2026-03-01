@@ -65,6 +65,7 @@ Ao configurar o root com o módulo `auth` e `enable_authorizer = true`, passar:
 | m2m_resource_server_identifier | Identifier do Resource Server (ex.: video-processing-engine) | video-processing-engine |
 | m2m_scopes | Lista de scopes (name, description); default: analyze:run, videos:update_status | ver variables.tf |
 | m2m_secret_ssm_parameter_name | Path SSM onde o pipeline gravará o client_secret (placeholder para Lambdas) | null |
+| m2m_expose_credentials_in_ssm | Se true, cria parâmetros SSM com client_id e client_secret (projetinho; em prod use false) | true |
 
 ---
 
@@ -149,5 +150,17 @@ Nas Lambdas, usar a variável de ambiente ou placeholder **`m2m_secret_ssm_param
 | cognito_m2m_resource_server_identifier | Identifier do Resource Server (ex.: video-processing-engine) |
 | cognito_m2m_scopes | Lista de scopes no formato identifier/scope_name |
 | cognito_m2m_token_endpoint | URL completa do endpoint /oauth2/token |
+| cognito_m2m_client_id_ssm_parameter_name | Path do parâmetro SSM do client_id (quando m2m_expose_credentials_in_ssm = true) |
+| cognito_m2m_client_secret_ssm_parameter_name | Path do parâmetro SSM do client_secret (quando m2m_expose_credentials_in_ssm = true) |
 
 Quando `enable_m2m_client = false`, esses outputs retornam `null`. Nenhum recurso M2M (Resource Server, App Client M2M, User Pool Domain) é criado.
+
+### Expor client_id e client_secret no SSM (projetinho/faculdade — Subtask-07/08)
+
+Para facilitar o uso no projetinho, o Terraform pode criar **parâmetros SSM** com o client_id e o client_secret do M2M, para as Lambdas lerem em runtime via `ssm:GetParameter`.
+
+- **Variável:** `m2m_expose_credentials_in_ssm` (default `true`). Quando `true`, são criados:
+  - **`/${prefix}/cognito-m2m-client-id`** (String) — client_id
+  - **`/${prefix}/cognito-m2m-client-secret`** (SecureString) — client_secret
+- **Outputs:** `cognito_m2m_client_id_ssm_parameter_name` e `cognito_m2m_client_secret_ssm_parameter_name` com os paths para as Lambdas.
+- **Segurança:** Em **produção** recomenda-se `m2m_expose_credentials_in_ssm = false` e gravar o secret no SSM fora do Terraform (o valor ficaria no state). Para ambiente acadêmico/projetinho, `true` é aceitável.

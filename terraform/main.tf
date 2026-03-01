@@ -134,7 +134,8 @@ module "auth" {
   password_min_length      = coalesce(var.auth_password_min_length, 6)
   password_require_symbols = coalesce(var.auth_password_require_symbols, false)
 
-  enable_m2m_client = var.enable_m2m_client
+  enable_m2m_client             = var.enable_m2m_client
+  m2m_expose_credentials_in_ssm = var.m2m_expose_credentials_in_ssm
 }
 
 # --- API Gateway HTTP API (Storie-10) ---

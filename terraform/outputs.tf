@@ -120,7 +120,7 @@ output "cognito_m2m_client_id" {
 }
 
 output "cognito_m2m_client_secret" {
-  description = "Client secret do App Client M2M; armazenar em SSM; não commitar."
+  description = "Client secret do App Client M2M. (Usado somente para desenvolvimento; em ambiente real nunca expor esta informação.) Exposto no output para automação via Git/CI."
   value       = module.auth.cognito_m2m_client_secret
   sensitive   = true
 }
@@ -138,4 +138,14 @@ output "cognito_m2m_scopes" {
 output "cognito_m2m_token_endpoint" {
   description = "URL do endpoint OAuth2 token (client_credentials)."
   value       = module.auth.cognito_m2m_token_endpoint
+}
+
+output "cognito_m2m_client_id_ssm_parameter_name" {
+  description = "Path do parâmetro SSM do client_id M2M (para Lambdas)."
+  value       = module.auth.cognito_m2m_client_id_ssm_parameter_name
+}
+
+output "cognito_m2m_client_secret_ssm_parameter_name" {
+  description = "Path do parâmetro SSM SecureString do client_secret M2M (para Lambdas)."
+  value       = module.auth.cognito_m2m_client_secret_ssm_parameter_name
 }

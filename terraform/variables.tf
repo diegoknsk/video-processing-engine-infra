@@ -217,3 +217,9 @@ variable "enable_m2m_client" {
   type        = bool
   default     = true
 }
+
+variable "m2m_expose_credentials_in_ssm" {
+  description = "Se true, Terraform cria parâmetros SSM com client_id e client_secret do M2M (projetinho/faculdade). Em prod use false."
+  type        = bool
+  default     = true
+}
