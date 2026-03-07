@@ -10,14 +10,16 @@ Provisiona as seis Lambdas **em casca** do Processador Video MVP: **Auth**, **Vi
 
 **Importante:** Os valores de memória, armazenamento efêmero e timeout abaixo são para **teste e validação técnica do MVP**, não representam a configuração final de produção.
 
+Com **SnapStart** habilitado, a AWS limita o armazenamento efêmero a **512 MB**; por isso as demais Lambdas usam 512 MB de `/tmp` para manter cold start rápido.
+
 | Lambda | Memory (MB) | Ephemeral storage (MB) | Timeout | SnapStart |
 |--------|-------------|------------------------|---------|-----------|
 | **Video Processor** | 3072 | 8192 | 15 min (900 s) | None |
-| Auth | 512 | 1024 | 15 min | PublishedVersions |
-| Video Management | 512 | 1024 | 15 min | PublishedVersions |
-| Video Orchestrator | 512 | 1024 | 15 min | PublishedVersions |
-| Video Finalizer | 1024 | 2048 | 15 min | PublishedVersions |
-| UpdateStatusVideo | 512 | 1024 | 15 min | PublishedVersions |
+| Auth | 512 | 512 | 15 min | PublishedVersions |
+| Video Management | 512 | 512 | 15 min | PublishedVersions |
+| Video Orchestrator | 512 | 512 | 15 min | PublishedVersions |
+| Video Finalizer | 1024 | 512 | 15 min | PublishedVersions |
+| UpdateStatusVideo | 512 | 512 | 15 min | PublishedVersions |
 
 O **Video Processor** está dimensionado para **permitir** testes com vídeos grandes (ex.: 1 GB até aproximadamente 1,2 GB em cenário controlado). Isso não constitui garantia absoluta para qualquer tamanho ou cenário; a configuração visa viabilizar benchmark e validação do pipeline.
 

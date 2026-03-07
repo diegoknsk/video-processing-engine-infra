@@ -12,7 +12,7 @@ resource "aws_lambda_function" "auth" {
   publish       = true
 
   ephemeral_storage {
-    size = 1024
+    size = 512
   }
 
   snap_start {
@@ -39,7 +39,7 @@ resource "aws_lambda_function" "video_management" {
   publish       = true
 
   ephemeral_storage {
-    size = 1024
+    size = 512
   }
 
   snap_start {
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "video_orchestrator" {
   publish       = true
 
   ephemeral_storage {
-    size = 1024
+    size = 512
   }
 
   snap_start {
@@ -123,7 +123,7 @@ resource "aws_lambda_function" "video_finalizer" {
   publish       = true
 
   ephemeral_storage {
-    size = 2048
+    size = 512
   }
 
   snap_start {
@@ -153,7 +153,7 @@ resource "aws_lambda_function" "update_status_video" {
   publish       = true
 
   ephemeral_storage {
-    size = 1024
+    size = 512
   }
 
   snap_start {
