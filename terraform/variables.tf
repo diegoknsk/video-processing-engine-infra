@@ -111,7 +111,7 @@ variable "lambda_runtime" {
 }
 
 variable "lambda_snap_start_enabled" {
-  description = "Habilita SnapStart apenas em auth, video_management, video_orchestrator, video_finalizer, update_status_video (video_processor fica sempre sem SnapStart). Default false para desenvolvimento."
+  description = "Habilita SnapStart em auth, video_management, video_orchestrator, update_status_video. video_processor e video_finalizer ficam sempre sem SnapStart. Default false para desenvolvimento."
   type        = bool
   default     = false
 }

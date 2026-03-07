@@ -35,7 +35,7 @@ variable "artifact_path" {
 }
 
 variable "snap_start_enabled" {
-  description = "Habilita Lambda SnapStart apenas em: auth, video_management, video_orchestrator, video_finalizer, update_status_video. O video_processor nunca usa SnapStart. Default false para desenvolvimento."
+  description = "Habilita Lambda SnapStart apenas em: auth, video_management, video_orchestrator, update_status_video. video_processor e video_finalizer nunca usam SnapStart (processamento pesado). Default false para desenvolvimento."
   type        = bool
   default     = false
 }

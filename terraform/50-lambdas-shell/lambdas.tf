@@ -1,6 +1,6 @@
 # Lambdas em casca: Auth, VideoManagement, VideoOrchestrator, VideoProcessor, VideoFinalizer, UpdateStatusVideo (Storie-18.1).
 # Runtime e handler parametrizáveis; artefato empty.zip; variáveis de ambiente por função.
-# SnapStart (var.snap_start_enabled) aplica-se apenas a auth, video_management, video_orchestrator, video_finalizer, update_status_video — video_processor nunca usa SnapStart.
+# SnapStart (var.snap_start_enabled) aplica-se apenas a auth, video_management, video_orchestrator, update_status_video. video_processor e video_finalizer nunca usam SnapStart (processamento pesado: vídeos/zip).
 
 resource "aws_lambda_function" "auth" {
   function_name = "${var.prefix}-auth"
@@ -144,32 +144,19 @@ resource "aws_lambda_function" "video_processor" {
   tags = var.common_tags
 }
 
+# Video Finalizer: sem SnapStart; mesma configuração robusta do Processor (monta zip com todas as imagens, processo pesado).
 resource "aws_lambda_function" "video_finalizer" {
   function_name = "${var.prefix}-video-finalizer"
   role          = var.lab_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
-  memory_size   = 1024
+  memory_size   = 3072
   timeout       = 900
   publish       = true
 
   ephemeral_storage {
-    size = 512
-  }
-
-  dynamic "snap_start" {
-    for_each = var.snap_start_enabled ? [1] : []
-    content {
-      apply_on = "PublishedVersions"
-    }
-  }
-
-  dynamic "timeouts" {
-    for_each = var.snap_start_enabled ? [1] : []
-    content {
-      update = "25m"
-    }
+    size = 8192
   }
 
   environment {
