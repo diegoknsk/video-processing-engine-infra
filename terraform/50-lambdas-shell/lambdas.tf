@@ -7,8 +7,13 @@ resource "aws_lambda_function" "auth" {
   runtime       = var.runtime
   handler       = var.auth_handler
   filename      = var.artifact_path
+  memory_size   = 512
   timeout       = 900
   publish       = true
+
+  ephemeral_storage {
+    size = 1024
+  }
 
   snap_start {
     apply_on = "PublishedVersions"
@@ -29,8 +34,13 @@ resource "aws_lambda_function" "video_management" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  memory_size   = 512
   timeout       = 900
   publish       = true
+
+  ephemeral_storage {
+    size = 1024
+  }
 
   snap_start {
     apply_on = "PublishedVersions"
@@ -53,8 +63,13 @@ resource "aws_lambda_function" "video_orchestrator" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  memory_size   = 512
   timeout       = 900
   publish       = true
+
+  ephemeral_storage {
+    size = 1024
+  }
 
   snap_start {
     apply_on = "PublishedVersions"
@@ -76,11 +91,12 @@ resource "aws_lambda_function" "video_processor" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  memory_size   = 3072
   timeout       = 900
   publish       = true
 
-  snap_start {
-    apply_on = "PublishedVersions"
+  ephemeral_storage {
+    size = 8192
   }
 
   environment {
@@ -102,8 +118,13 @@ resource "aws_lambda_function" "video_finalizer" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  memory_size   = 1024
   timeout       = 900
   publish       = true
+
+  ephemeral_storage {
+    size = 2048
+  }
 
   snap_start {
     apply_on = "PublishedVersions"
@@ -127,8 +148,13 @@ resource "aws_lambda_function" "update_status_video" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
+  memory_size   = 512
   timeout       = 900
   publish       = true
+
+  ephemeral_storage {
+    size = 1024
+  }
 
   snap_start {
     apply_on = "PublishedVersions"

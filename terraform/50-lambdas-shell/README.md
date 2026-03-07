@@ -2,7 +2,24 @@
 
 Provisiona as seis Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**, **UpdateStatusVideo**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
 
-**SnapStart (Storie-20):** Todas as Lambdas estão configuradas com Lambda SnapStart (`apply_on = "PublishedVersions"`) e `publish = true`. Cada deploy publica uma versão numerada; os invocadores (SQS event source mappings, API Gateway) usam o **qualified ARN** (versão publicada) para reduzir cold start.
+**SnapStart (Storie-20):** As Lambdas Auth, Video Management, Video Orchestrator, Video Finalizer e UpdateStatusVideo estão configuradas com Lambda SnapStart (`apply_on = "PublishedVersions"`) e `publish = true`. O **Video Processor** está com SnapStart desabilitado (None) na configuração de teste/benchmark (Storie-21). Cada deploy publica uma versão numerada; os invocadores usam o **qualified ARN** quando aplicável.
+
+---
+
+## Configuração para testes / benchmark MVP (Storie-21)
+
+**Importante:** Os valores de memória, armazenamento efêmero e timeout abaixo são para **teste e validação técnica do MVP**, não representam a configuração final de produção.
+
+| Lambda | Memory (MB) | Ephemeral storage (MB) | Timeout | SnapStart |
+|--------|-------------|------------------------|---------|-----------|
+| **Video Processor** | 3072 | 8192 | 15 min (900 s) | None |
+| Auth | 512 | 1024 | 15 min | PublishedVersions |
+| Video Management | 512 | 1024 | 15 min | PublishedVersions |
+| Video Orchestrator | 512 | 1024 | 15 min | PublishedVersions |
+| Video Finalizer | 1024 | 2048 | 15 min | PublishedVersions |
+| UpdateStatusVideo | 512 | 1024 | 15 min | PublishedVersions |
+
+O **Video Processor** está dimensionado para **permitir** testes com vídeos grandes (ex.: 1 GB até aproximadamente 1,2 GB em cenário controlado). Isso não constitui garantia absoluta para qualquer tamanho ou cenário; a configuração visa viabilizar benchmark e validação do pipeline.
 
 ---
 
