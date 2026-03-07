@@ -8,6 +8,11 @@ resource "aws_lambda_function" "auth" {
   handler       = var.auth_handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
@@ -25,6 +30,11 @@ resource "aws_lambda_function" "video_management" {
   handler       = var.handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
@@ -44,6 +54,11 @@ resource "aws_lambda_function" "video_orchestrator" {
   handler       = var.handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
@@ -62,6 +77,11 @@ resource "aws_lambda_function" "video_processor" {
   handler       = var.handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
@@ -83,6 +103,11 @@ resource "aws_lambda_function" "video_finalizer" {
   handler       = var.handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
@@ -103,6 +128,11 @@ resource "aws_lambda_function" "update_status_video" {
   handler       = var.handler
   filename      = var.artifact_path
   timeout       = 900
+  publish       = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {

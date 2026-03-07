@@ -1,6 +1,8 @@
 # Módulo 50-lambdas-shell (Storie-08)
 
-Provisiona as cinco Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
+Provisiona as seis Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**, **UpdateStatusVideo**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
+
+**SnapStart (Storie-20):** Todas as Lambdas estão configuradas com Lambda SnapStart (`apply_on = "PublishedVersions"`) e `publish = true`. Cada deploy publica uma versão numerada; os invocadores (SQS event source mappings, API Gateway) usam o **qualified ARN** (versão publicada) para reduzir cold start.
 
 ---
 

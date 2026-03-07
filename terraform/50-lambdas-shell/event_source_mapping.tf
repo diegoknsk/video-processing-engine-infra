@@ -6,14 +6,14 @@
 resource "aws_lambda_permission" "sqs_invoke_orchestrator" {
   statement_id  = "AllowExecutionFromSQS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.video_orchestrator.function_name
+  function_name = aws_lambda_function.video_orchestrator.qualified_arn
   principal     = "sqs.amazonaws.com"
   source_arn    = var.q_video_process_arn
 }
 
 resource "aws_lambda_event_source_mapping" "orchestrator_q_video_process" {
   event_source_arn = var.q_video_process_arn
-  function_name    = aws_lambda_function.video_orchestrator.function_name
+  function_name    = aws_lambda_function.video_orchestrator.qualified_arn
   batch_size       = 1
 }
 
@@ -21,14 +21,14 @@ resource "aws_lambda_event_source_mapping" "orchestrator_q_video_process" {
 resource "aws_lambda_permission" "sqs_invoke_finalizer" {
   statement_id  = "AllowExecutionFromSQS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.video_finalizer.function_name
+  function_name = aws_lambda_function.video_finalizer.qualified_arn
   principal     = "sqs.amazonaws.com"
   source_arn    = var.q_video_zip_finalize_arn
 }
 
 resource "aws_lambda_event_source_mapping" "finalizer_q_video_zip_finalize" {
   event_source_arn = var.q_video_zip_finalize_arn
-  function_name    = aws_lambda_function.video_finalizer.function_name
+  function_name    = aws_lambda_function.video_finalizer.qualified_arn
   batch_size       = 1
 }
 
@@ -36,13 +36,13 @@ resource "aws_lambda_event_source_mapping" "finalizer_q_video_zip_finalize" {
 resource "aws_lambda_permission" "sqs_invoke_update_status_video" {
   statement_id  = "AllowExecutionFromSQS"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.update_status_video.function_name
+  function_name = aws_lambda_function.update_status_video.qualified_arn
   principal     = "sqs.amazonaws.com"
   source_arn    = var.q_video_status_update_arn
 }
 
 resource "aws_lambda_event_source_mapping" "update_status_video_q_video_status_update" {
   event_source_arn = var.q_video_status_update_arn
-  function_name    = aws_lambda_function.update_status_video.function_name
+  function_name    = aws_lambda_function.update_status_video.qualified_arn
   batch_size       = 1
 }
