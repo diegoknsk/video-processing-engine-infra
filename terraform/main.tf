@@ -94,6 +94,8 @@ module "lambdas" {
 
   step_function_arn = var.step_function_arn
 
+  snap_start_enabled = var.lambda_snap_start_enabled
+
   lab_role_arn = var.lab_role_arn
 }
 

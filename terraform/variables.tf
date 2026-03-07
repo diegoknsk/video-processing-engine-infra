@@ -110,6 +110,12 @@ variable "lambda_runtime" {
   default     = "dotnet10"
 }
 
+variable "lambda_snap_start_enabled" {
+  description = "Habilita SnapStart apenas em auth, video_management, video_orchestrator, video_finalizer, update_status_video (video_processor fica sempre sem SnapStart). Default false para desenvolvimento."
+  type        = bool
+  default     = false
+}
+
 variable "lambda_handler" {
   description = "Handler placeholder das Lambdas. Para .NET: Assembly::Namespace.Class::Method."
   type        = string
