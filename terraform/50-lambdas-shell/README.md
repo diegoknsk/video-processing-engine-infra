@@ -2,6 +2,8 @@
 
 Provisiona as seis Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**, **UpdateStatusVideo**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
 
+**Apply Infra vs Deploy Código (Storie-22):** O Terraform **cria** as Lambdas na primeira aplicação com o artefato placeholder (`empty.zip`). A partir daí, o Terraform **não atualiza** o código (pacote/zip) das funções — usa `lifecycle { ignore_changes = [filename, source_code_hash] }` para não sobrescrever o código já implantado. O **deploy do código** das Lambdas (pacote real da aplicação) é responsabilidade do pipeline de build/deploy da aplicação (ex.: GitHub Actions que faz build e atualiza a função via AWS CLI ou SDK). Re-executar `terraform apply` é seguro para alterar config (env, memory, timeout, etc.) e não substitui o código das Lambdas.
+
 **SnapStart (Storie-20):** Quando `snap_start_enabled = true`, apenas Auth, Video Management, Video Orchestrator e UpdateStatusVideo usam SnapStart. **Video Processor** e **Video Finalizer** nunca usam SnapStart (processamento pesado: vídeos e montagem de zip). Cada deploy publica versão; invocadores usam ARN conforme necessário.
 
 ---

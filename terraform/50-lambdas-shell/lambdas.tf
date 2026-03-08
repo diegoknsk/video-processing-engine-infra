@@ -37,6 +37,10 @@ resource "aws_lambda_function" "auth" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 resource "aws_lambda_function" "video_management" {
@@ -76,6 +80,10 @@ resource "aws_lambda_function" "video_management" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 resource "aws_lambda_function" "video_orchestrator" {
@@ -114,6 +122,10 @@ resource "aws_lambda_function" "video_orchestrator" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 # Video Processor: sem SnapStart (configuração de teste para vídeos grandes; SnapStart não se aplica aqui).
@@ -142,6 +154,10 @@ resource "aws_lambda_function" "video_processor" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 # Video Finalizer: sem SnapStart; mesma configuração robusta do Processor (monta zip com todas as imagens, processo pesado).
@@ -169,6 +185,10 @@ resource "aws_lambda_function" "video_finalizer" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 resource "aws_lambda_function" "update_status_video" {
@@ -207,4 +227,8 @@ resource "aws_lambda_function" "update_status_video" {
   }
 
   tags = var.common_tags
+
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
