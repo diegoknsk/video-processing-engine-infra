@@ -1,6 +1,27 @@
 # Módulo 50-lambdas-shell (Storie-08)
 
-Provisiona as cinco Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
+Provisiona as seis Lambdas **em casca** do Processador Video MVP: **Auth**, **Video Management**, **Video Orchestrator**, **Video Processor**, **Video Finalizer**, **UpdateStatusVideo**. Runtime e handler parametrizáveis; artefato `artifacts/empty.zip`; IAM least privilege por função; variáveis de ambiente por Lambda; event source mappings SQS → Lambda conforme o desenho.
+
+**SnapStart (Storie-20):** Quando `snap_start_enabled = true`, apenas Auth, Video Management, Video Orchestrator e UpdateStatusVideo usam SnapStart. **Video Processor** e **Video Finalizer** nunca usam SnapStart (processamento pesado: vídeos e montagem de zip). Cada deploy publica versão; invocadores usam ARN conforme necessário.
+
+---
+
+## Configuração para testes / benchmark MVP (Storie-21)
+
+**Importante:** Os valores de memória, armazenamento efêmero e timeout abaixo são para **teste e validação técnica do MVP**, não representam a configuração final de produção.
+
+Com **SnapStart** habilitado, a AWS limita o armazenamento efêmero a **512 MB**; por isso as Lambdas com SnapStart usam 512 MB de `/tmp`. **Video Processor** e **Video Finalizer** não usam SnapStart e têm configuração robusta (memória e /tmp maiores) para processamento pesado.
+
+| Lambda | Memory (MB) | Ephemeral storage (MB) | Timeout | SnapStart |
+|--------|-------------|------------------------|---------|-----------|
+| **Video Processor** | 3072 | 8192 | 15 min (900 s) | None |
+| **Video Finalizer** | 3072 | 8192 | 15 min (900 s) | None |
+| Auth | 512 | 512 | 15 min | PublishedVersions (se habilitado) |
+| Video Management | 512 | 512 | 15 min | PublishedVersions (se habilitado) |
+| Video Orchestrator | 512 | 512 | 15 min | PublishedVersions (se habilitado) |
+| UpdateStatusVideo | 512 | 512 | 15 min | PublishedVersions (se habilitado) |
+
+O **Video Processor** permite testes com vídeos grandes (ex.: 1 GB até ~1,2 GB em cenário controlado). O **Video Finalizer** consome a fila q-video-zip-finalize, baixa todas as imagens e monta o zip; por isso usa a mesma configuração robusta (3072 MB / 8192 MB /tmp).
 
 ---
 

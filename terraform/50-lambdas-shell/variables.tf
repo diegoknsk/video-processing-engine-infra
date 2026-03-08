@@ -34,6 +34,12 @@ variable "artifact_path" {
   default     = "artifacts/empty.zip"
 }
 
+variable "snap_start_enabled" {
+  description = "Habilita Lambda SnapStart apenas em: auth, video_management, video_orchestrator, update_status_video. video_processor e video_finalizer nunca usam SnapStart (processamento pesado). Default false para desenvolvimento."
+  type        = bool
+  default     = false
+}
+
 # --- DynamoDB (módulo data) ---
 variable "table_name" {
   description = "Nome da tabela DynamoDB de vídeos (output do módulo data)."

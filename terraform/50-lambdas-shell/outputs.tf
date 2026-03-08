@@ -10,6 +10,11 @@ output "lambda_auth_arn" {
   value       = aws_lambda_function.auth.arn
 }
 
+output "lambda_auth_qualified_arn" {
+  description = "Qualified ARN da Lambda Auth (versão publicada, para SnapStart via API Gateway)."
+  value       = aws_lambda_function.auth.qualified_arn
+}
+
 output "lambda_auth_role_arn" {
   description = "ARN da role IAM da Lambda Auth (Lab Role quando em AWS Academy)."
   value       = var.lab_role_arn
@@ -23,6 +28,11 @@ output "lambda_video_management_name" {
 output "lambda_video_management_arn" {
   description = "ARN da Lambda Video Management."
   value       = aws_lambda_function.video_management.arn
+}
+
+output "lambda_video_management_qualified_arn" {
+  description = "Qualified ARN da Lambda Video Management (versão publicada, para SnapStart via API Gateway)."
+  value       = aws_lambda_function.video_management.qualified_arn
 }
 
 output "lambda_video_management_role_arn" {

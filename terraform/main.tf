@@ -94,6 +94,8 @@ module "lambdas" {
 
   step_function_arn = var.step_function_arn
 
+  snap_start_enabled = var.lambda_snap_start_enabled
+
   lab_role_arn = var.lab_role_arn
 }
 
@@ -139,14 +141,17 @@ module "auth" {
 }
 
 # --- API Gateway HTTP API (Storie-10) ---
+# Usa ARN não qualificado (não qualified_arn) para evitar "function not in valid state" enquanto
+# SnapStart prepara a versão publicada; igual ao critério em 50-lambdas-shell/event_source_mapping.tf (SQS).
 module "api" {
   source = "./60-api"
 
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
 
-  lambda_auth_arn             = module.lambdas.lambda_auth_arn
-  lambda_video_management_arn = module.lambdas.lambda_video_management_arn
+  lambda_auth_arn                 = module.lambdas.lambda_auth_arn
+  lambda_video_management_arn     = module.lambdas.lambda_video_management_arn
+  lambda_update_status_video_arn  = module.lambdas.lambda_update_status_video_arn
 
   enable_authorizer  = var.enable_api_authorizer
   cognito_issuer_url = module.auth.issuer

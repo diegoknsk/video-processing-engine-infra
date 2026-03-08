@@ -22,6 +22,11 @@ variable "lambda_video_management_arn" {
   type        = string
 }
 
+variable "lambda_update_status_video_arn" {
+  description = "ARN da Lambda UpdateStatusVideo (output lambda_update_status_video_arn do módulo 50-lambdas-shell)."
+  type        = string
+}
+
 # --- JWT Authorizer (Cognito — outputs do módulo 40-auth quando existir) ---
 variable "enable_authorizer" {
   description = "Habilita JWT authorizer do Cognito. Quando false, rotas ficam acessíveis sem token (bootstrap). Quando 40-auth não existir, manter false."
