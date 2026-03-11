@@ -56,8 +56,9 @@ variable "q_video_status_update_url" {
   type        = string
 }
 
-# --- Lab Role (AWS Academy): não criar IAM role para SFN; usar role existente ---
+# --- Lab Role (AWS Academy): quando definido, usa a role existente em vez de criar uma nova ---
 variable "lab_role_arn" {
-  description = "ARN da role existente (LabRole) usada pela State Machine. Obrigatório quando o Terraform não tem iam:CreateRole (ex.: AWS Academy). A role deve permitir states.amazonaws.com no trust policy."
+  description = "ARN da role existente (LabRole) usada pela State Machine. Obrigatório em AWS Academy (sem iam:CreateRole). Quando null, uma role IAM é criada automaticamente."
   type        = string
+  default     = null
 }

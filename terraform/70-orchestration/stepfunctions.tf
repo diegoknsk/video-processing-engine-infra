@@ -5,7 +5,7 @@ resource "aws_sfn_state_machine" "video_processing" {
   count = var.enable_stepfunctions ? 1 : 0
 
   name       = "${var.prefix}-video-processing"
-  role_arn   = var.lab_role_arn
+  role_arn   = local.sfn_role_arn
   definition = templatefile("${path.module}/state-machines/video-processing.asl.json", {
     lambda_processor_arn       = var.lambda_processor_arn
     q_video_status_update_url = var.q_video_status_update_url

@@ -126,8 +126,9 @@ variable "step_function_arn" {
   default     = ""
 }
 
-# --- Lab Role (AWS Academy): não criar IAM roles; usar role existente ---
+# --- Lab Role (AWS Academy): quando definido, usa a role existente em vez de criar uma nova ---
 variable "lab_role_arn" {
-  description = "ARN da role existente (LabRole) assumida por todas as Lambdas. Obrigatório quando o executor do Terraform não tem iam:CreateRole (ex.: AWS Academy)."
+  description = "ARN da role existente (LabRole) assumida por todas as Lambdas. Obrigatório em AWS Academy (sem iam:CreateRole). Quando null, uma role IAM é criada automaticamente."
   type        = string
+  default     = null
 }

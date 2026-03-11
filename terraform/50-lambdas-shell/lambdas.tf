@@ -4,7 +4,7 @@
 
 resource "aws_lambda_function" "auth" {
   function_name = "${var.prefix}-auth"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.auth_handler
   filename      = var.artifact_path
@@ -45,7 +45,7 @@ resource "aws_lambda_function" "auth" {
 
 resource "aws_lambda_function" "video_management" {
   function_name = "${var.prefix}-video-management"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -88,7 +88,7 @@ resource "aws_lambda_function" "video_management" {
 
 resource "aws_lambda_function" "video_orchestrator" {
   function_name = "${var.prefix}-video-orchestrator"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -131,7 +131,7 @@ resource "aws_lambda_function" "video_orchestrator" {
 # Video Processor: sem SnapStart (configuração de teste para vídeos grandes; SnapStart não se aplica aqui).
 resource "aws_lambda_function" "video_processor" {
   function_name = "${var.prefix}-video-processor"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -163,7 +163,7 @@ resource "aws_lambda_function" "video_processor" {
 # Video Finalizer: sem SnapStart; mesma configuração robusta do Processor (monta zip com todas as imagens, processo pesado).
 resource "aws_lambda_function" "video_finalizer" {
   function_name = "${var.prefix}-video-finalizer"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
@@ -193,7 +193,7 @@ resource "aws_lambda_function" "video_finalizer" {
 
 resource "aws_lambda_function" "update_status_video" {
   function_name = "${var.prefix}-update-status-video"
-  role          = var.lab_role_arn
+  role          = local.lambda_role_arn
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path

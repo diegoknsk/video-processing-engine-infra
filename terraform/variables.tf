@@ -24,10 +24,11 @@ variable "owner" {
   type        = string
 }
 
-# --- Lab Role (AWS Academy): role existente para Lambdas e Step Functions; evita iam:CreateRole ---
+# --- Lab Role (AWS Academy): quando definido, usa a role existente em vez de criar roles novas ---
 variable "lab_role_arn" {
-  description = "ARN da role existente (ex.: LabRole) usada por Lambdas e Step Functions. Obrigatório em AWS Academy (sem iam:CreateRole). Ex.: arn:aws:iam::ACCOUNT_ID:role/LabRole"
+  description = "ARN da role existente (ex.: LabRole) usada por Lambdas e Step Functions. Obrigatório em AWS Academy (sem iam:CreateRole). Quando null, as roles IAM são criadas automaticamente. Ex.: arn:aws:iam::ACCOUNT_ID:role/LabRole"
   type        = string
+  default     = null
 }
 
 variable "retention_days" {

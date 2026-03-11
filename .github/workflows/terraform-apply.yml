@@ -1,6 +1,6 @@
 # Terraform Apply — provisiona a infraestrutura AWS (root único em terraform/).
 # Trigger: manual (workflow_dispatch); opcional: push em main.
-# Credenciais: configurar GitHub Secrets (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN, AWS_REGION).
+# Credenciais: configurar GitHub Secrets (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION).
 # Lab Role (AWS Academy): Secret LAB_ROLE_ARN (ex.: arn:aws:iam::ACCOUNT_ID:role/LabRole). Sobrescreve lab_role_arn do tfvars.
 # Lambda SnapStart: Variable ou Secret LAMBDA_SNAP_START_ENABLED (Settings > Actions > Variables ou Secrets). Valores: true ou false. Nunca commitar credenciais no repositório.
 
@@ -17,7 +17,6 @@ on:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
   TF_VAR_lab_role_arn: ${{ secrets.LAB_ROLE_ARN }}
   TF_VAR_lambda_snap_start_enabled: ${{ secrets.LAMBDA_SNAP_START_ENABLED || vars.LAMBDA_SNAP_START_ENABLED || 'false' }}
