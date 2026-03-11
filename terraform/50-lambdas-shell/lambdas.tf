@@ -135,7 +135,7 @@ resource "aws_lambda_function" "video_processor" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
-  memory_size   = 3072
+  memory_size   = 3008
   timeout       = 900
   publish       = true
 
@@ -167,7 +167,7 @@ resource "aws_lambda_function" "video_finalizer" {
   runtime       = var.runtime
   handler       = var.handler
   filename      = var.artifact_path
-  memory_size   = 3072
+  memory_size   = 3008
   timeout       = 900
   publish       = true
 
