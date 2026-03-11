@@ -3,11 +3,12 @@
 # Em AWS Academy: definir lab_role_arn para usar a LabRole existente e esta role não é criada.
 
 locals {
-  lambda_role_arn = var.lab_role_arn != null ? var.lab_role_arn : aws_iam_role.lambda_exec[0].arn
+  use_lab_role_lambda = var.lab_role_arn != null && var.lab_role_arn != ""
+  lambda_role_arn     = local.use_lab_role_lambda ? var.lab_role_arn : aws_iam_role.lambda_exec[0].arn
 }
 
 resource "aws_iam_role" "lambda_exec" {
-  count = var.lab_role_arn == null ? 1 : 0
+  count = local.use_lab_role_lambda ? 0 : 1
 
   name = "${var.prefix}-lambda-exec-role"
 
@@ -24,13 +25,13 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
-  count      = var.lab_role_arn == null ? 1 : 0
+  count      = local.use_lab_role_lambda ? 0 : 1
   role       = aws_iam_role.lambda_exec[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy" "lambda_app" {
-  count = var.lab_role_arn == null ? 1 : 0
+  count = local.use_lab_role_lambda ? 0 : 1
 
   name = "${var.prefix}-lambda-app-policy"
   role = aws_iam_role.lambda_exec[0].id

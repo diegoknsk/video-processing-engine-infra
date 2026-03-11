@@ -3,13 +3,14 @@
 # Em AWS Academy: definir lab_role_arn para usar a LabRole existente e esta role não é criada.
 
 locals {
-  sfn_role_arn = var.lab_role_arn != null ? var.lab_role_arn : (
+  use_lab_role_sfn = var.lab_role_arn != null && var.lab_role_arn != ""
+  sfn_role_arn = local.use_lab_role_sfn ? var.lab_role_arn : (
     var.enable_stepfunctions ? aws_iam_role.sfn_exec[0].arn : null
   )
 }
 
 resource "aws_iam_role" "sfn_exec" {
-  count = var.lab_role_arn == null && var.enable_stepfunctions ? 1 : 0
+  count = !local.use_lab_role_sfn && var.enable_stepfunctions ? 1 : 0
 
   name = "${var.prefix}-sfn-exec-role"
 
@@ -26,7 +27,7 @@ resource "aws_iam_role" "sfn_exec" {
 }
 
 resource "aws_iam_role_policy" "sfn_exec" {
-  count = var.lab_role_arn == null && var.enable_stepfunctions ? 1 : 0
+  count = !local.use_lab_role_sfn && var.enable_stepfunctions ? 1 : 0
 
   name = "${var.prefix}-sfn-exec-policy"
   role = aws_iam_role.sfn_exec[0].id

@@ -12,7 +12,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
-  TF_VAR_lab_role_arn: ${{ secrets.LAB_ROLE_ARN }}
+  # TF_VAR_lab_role_arn: ${{ secrets.LAB_ROLE_ARN }}  # descomente apenas em AWS Academy
   TF_VAR_lambda_snap_start_enabled: ${{ secrets.LAMBDA_SNAP_START_ENABLED || vars.LAMBDA_SNAP_START_ENABLED || 'false' }}
 
 jobs:
