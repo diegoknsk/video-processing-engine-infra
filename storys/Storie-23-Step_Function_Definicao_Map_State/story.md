@@ -45,6 +45,19 @@ Substituir a definição placeholder da State Machine (Pass state) pela definiç
 - [ ] A variável `q_video_status_update_url` está declarada em `variables.tf` do módulo `70-orchestration` e passada corretamente no root `main.tf`
 - [ ] O README do módulo `70-orchestration` reflete o novo contrato de entrada (campos `chunks`, `contractVersion`, `output`, etc.)
 
+## Registro de mudanças (definição em arquivo JSON)
+
+A definição da State Machine passou a ser carregada de um **arquivo JSON** em vez de `jsonencode` no Terraform, para facilitar edição e reaproveitamento do mesmo JSON (ex.: console AWS, testes).
+
+- **Arquivo da definição:** `terraform/70-orchestration/state-machines/video-processing.asl.json`
+- **Carregamento no Terraform:** `stepfunctions.tf` usa `templatefile("${path.module}/state-machines/video-processing.asl.json", { ... })` para injetar valores dinâmicos.
+- **Placeholders no JSON (substituídos pelo Terraform):**
+  - `${lambda_processor_arn}` → variável `var.lambda_processor_arn` (ex.: ARN da Lambda Video Processor)
+  - `${q_video_status_update_url}` → variável `var.q_video_status_update_url` (URL da fila SQS q-video-status-update)
+- **Escapando `$` no template:** no JSON, `$LATEST` deve ser escrito como `$$LATEST`; para o context object do Map use `$$$$.Map.Item.Value` (no resultado vira `$$.Map.Item.Value`).
+
+**Para ajustar a definição no futuro:** altere o `video-processing.asl.json` (ou envie um novo JSON) e, se necessário, atualize o `templatefile()` em `stepfunctions.tf` para incluir novos placeholders. Não coloque ARN ou URL fixos no JSON; use sempre os placeholders acima (ou novos, passados no segundo argumento do `templatefile`).
+
 ## Rastreamento (dev tracking)
 - **Início:** dia 10/03/2025 (Brasília)
 - **Fim:** —
