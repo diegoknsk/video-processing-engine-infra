@@ -51,6 +51,11 @@ variable "q_video_zip_finalize_url" {
   default     = null
 }
 
+variable "q_video_status_update_url" {
+  description = "URL da fila SQS q-video-status-update (para SendMessage na State Machine após processamento dos chunks)."
+  type        = string
+}
+
 # --- Lab Role (AWS Academy): não criar IAM role para SFN; usar role existente ---
 variable "lab_role_arn" {
   description = "ARN da role existente (LabRole) usada pela State Machine. Obrigatório quando o Terraform não tem iam:CreateRole (ex.: AWS Academy). A role deve permitir states.amazonaws.com no trust policy."

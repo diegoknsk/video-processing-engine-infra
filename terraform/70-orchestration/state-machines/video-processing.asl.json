@@ -1,0 +1,91 @@
+{
+  "Comment": "Video processing: Map state (chunks) → Update Status (SQS) → Success.",
+  "StartAt": "Map",
+  "States": {
+    "Map": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Processor Video",
+        "States": {
+          "Processor Video": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "FunctionName": "${lambda_processor_arn}:$$LATEST",
+              "Payload": {
+                "contractVersion.$": "$.contractVersion",
+                "videoId.$": "$.videoId",
+                "chunk": {
+                  "chunkId.$": "$.chunk.chunkId",
+                  "startSec.$": "$.chunk.startSec",
+                  "endSec.$": "$.chunk.endSec",
+                  "intervalSec.$": "$.chunk.intervalSec"
+                },
+                "source": {
+                  "bucket.$": "$.s3BucketVideo",
+                  "key.$": "$.s3KeyVideo"
+                },
+                "output": {
+                  "manifestBucket.$": "$.output.manifestBucket",
+                  "manifestPrefix.$": "$.chunk.manifestPrefix",
+                  "framesBucket.$": "$.output.framesBucket",
+                  "framesPrefix.$": "$.chunk.framesPrefix"
+                }
+              }
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "Next": "Update Status",
+      "ItemsPath": "$.chunks",
+      "ItemSelector": {
+        "contractVersion.$": "$.contractVersion",
+        "videoId.$": "$.videoId",
+        "userId.$": "$.userId",
+        "s3BucketVideo.$": "$.s3BucketVideo",
+        "s3KeyVideo.$": "$.s3KeyVideo",
+        "output.$": "$.output",
+        "chunk.$": "${context_map_item_value}"
+      },
+      "ResultPath": "$.chunkResults"
+    },
+    "Update Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${q_video_status_update_url}",
+        "MessageBody": {
+          "videoId.$": "$.videoId",
+          "userId.$": "$.userId",
+          "status": 2,
+          "progressPercent": 100,
+          "s3BucketFrames.$": "$.output.framesBucket",
+          "framesPrefix.$": "$.output.framesBasePrefix"
+        }
+      },
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}
