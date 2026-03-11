@@ -1,5 +1,5 @@
 {
-  "Comment": "Video processing: Map state (chunks) → Update Status (SQS) → Success.",
+  "Comment": "Video processing: Map state (chunks) --> Update Status (SQS) -→ Success.",
   "StartAt": "Map",
   "States": {
     "Map": {
