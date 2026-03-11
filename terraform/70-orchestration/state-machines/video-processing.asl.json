@@ -64,7 +64,7 @@
         "s3BucketVideo.$": "$.s3BucketVideo",
         "s3KeyVideo.$": "$.s3KeyVideo",
         "output.$": "$.output",
-        "chunk.$": "$$$$.Map.Item.Value"
+        "chunk.$": "${context_map_item_value}"
       },
       "ResultPath": "$.chunkResults"
     },

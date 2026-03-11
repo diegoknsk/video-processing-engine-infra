@@ -7,8 +7,9 @@ resource "aws_sfn_state_machine" "video_processing" {
   name       = "${var.prefix}-video-processing"
   role_arn   = var.lab_role_arn
   definition = templatefile("${path.module}/state-machines/video-processing.asl.json", {
-    lambda_processor_arn    = var.lambda_processor_arn
+    lambda_processor_arn       = var.lambda_processor_arn
     q_video_status_update_url = var.q_video_status_update_url
+    context_map_item_value     = "$$.Map.Item.Value"
   })
 
   logging_configuration {
