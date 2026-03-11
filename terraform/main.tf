@@ -113,8 +113,9 @@ module "orchestration" {
   lambda_processor_arn = module.lambdas.lambda_video_processor_arn
   lambda_finalizer_arn = module.lambdas.lambda_video_finalizer_arn
 
-  q_video_zip_finalize_arn = module.messaging.q_video_zip_finalize_arn
-  q_video_zip_finalize_url = module.messaging.q_video_zip_finalize_url
+  q_video_zip_finalize_arn  = module.messaging.q_video_zip_finalize_arn
+  q_video_zip_finalize_url  = module.messaging.q_video_zip_finalize_url
+  q_video_status_update_url = module.messaging.q_video_status_update_url
 
   lab_role_arn = var.lab_role_arn
 }

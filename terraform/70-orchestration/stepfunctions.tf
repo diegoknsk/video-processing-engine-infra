@@ -1,19 +1,78 @@
-# State Machine Step Functions (Storie-09).
-# Definição mínima (placeholder) para criar o recurso; fluxo completo (ProcessVideo → Finalize SQS/Lambda)
-# será preenchido e testado depois — ver Storie-09 e decisão JSONPath vs JSONata (Parameters vs Arguments).
+# State Machine Step Functions (Storie-09; Storie-23: Map State).
+# Definição: Map (fan-out chunks via Lambda video-processor) → PrepareUpdateMessage → Update Status (SQS q-video-status-update) → Success.
 
 locals {
   sfn_definition = jsonencode({
-    Comment = "Placeholder: video processing. Definicao completa (Lambda Processor + Finalize) a preencher depois."
-    StartAt = "Placeholder"
+    Comment = "Video processing: Map state (chunks) → Update Status (SQS) → Success."
+    StartAt = "Map"
     States = {
-      Placeholder = {
+      Map = {
+        Type      = "Map"
+        ItemsPath = "$.chunks"
+        ItemSelector = {
+          "contractVersion.$" = "$.contractVersion"
+          "videoId.$"         = "$.videoId"
+          "userId.$"          = "$.userId"
+          "s3BucketVideo.$"   = "$.s3BucketVideo"
+          "s3KeyVideo.$"      = "$.s3KeyVideo"
+          "output.$"          = "$.output"
+          "chunk.$"           = "$$.Map.Item.Value"
+        }
+        ItemProcessor = {
+          ProcessorConfig = {
+            Mode = "INLINE"
+          }
+          StartAt = "Processor Video"
+          States = {
+            "Processor Video" = {
+              Type       = "Task"
+              Resource   = "arn:aws:states:::lambda:invoke"
+              OutputPath = "$.Payload"
+              Parameters = {
+                FunctionName = "${var.lambda_processor_arn}:$LATEST"
+              }
+              Retry = [
+                {
+                  ErrorEquals     = ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"]
+                  IntervalSeconds = 1
+                  MaxAttempts     = 3
+                  BackoffRate     = 2
+                  JitterStrategy  = "FULL"
+                }
+              ]
+              End = true
+            }
+          }
+        }
+        ResultPath = "$.chunkResults"
+        Next       = "PrepareUpdateMessage"
+      }
+
+      PrepareUpdateMessage = {
         Type = "Pass"
         Parameters = {
-          "message" = "Placeholder - substituir pela definicao completa (ProcessVideo, FinalizeSqs/FinalizeLambda)."
+          messageBody = {
+            "videoId.$"        = "$.videoId"
+            "userId.$"         = "$.userId"
+            "status"           = 2
+            "progressPercent"  = 100
+            "s3BucketFrames.$" = "$.output.framesBucket"
+            "framesPrefix.$"   = "$.output.framesBasePrefix"
+          }
+        }
+        Next = "Update Status"
+      }
+
+      "Update Status" = {
+        Type     = "Task"
+        Resource = "arn:aws:states:::sqs:sendMessage"
+        Parameters = {
+          QueueUrl        = var.q_video_status_update_url
+          "MessageBody.$" = "States.JsonToString($.messageBody)"
         }
         Next = "Success"
       }
+
       Success = {
         Type = "Succeed"
       }
