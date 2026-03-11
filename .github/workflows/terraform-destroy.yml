@@ -1,6 +1,6 @@
 # Terraform Destroy — remove a infraestrutura AWS (apenas sob demanda manual).
 # Trigger: workflow_dispatch apenas; não dispara em push.
-# Credenciais: mesmos secrets do Terraform Apply. Lambda SnapStart: variável de repositório LAMBDA_SNAP_START_ENABLED.
+# Credenciais e Lab Role: mesmos secrets do Terraform Apply (incl. LAB_ROLE_ARN). Lambda SnapStart: LAMBDA_SNAP_START_ENABLED.
 # Nunca commitar credenciais no repositório.
 
 name: Terraform Destroy
@@ -13,6 +13,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  TF_VAR_lab_role_arn: ${{ secrets.LAB_ROLE_ARN }}
   TF_VAR_lambda_snap_start_enabled: ${{ secrets.LAMBDA_SNAP_START_ENABLED || vars.LAMBDA_SNAP_START_ENABLED || 'false' }}
 
 jobs:
