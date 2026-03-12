@@ -82,11 +82,9 @@ module "messaging" {
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
 
-  # SNS (opcional)
-  enable_email_subscription_completed  = false
-  email_endpoint                      = null
-  enable_lambda_subscription_completed = false
-  lambda_subscription_arn              = null
+  # SNS — tópico de erro (opcional)
+  enable_email_subscription_error = false
+  email_endpoint_error            = null
 
   # SQS (opcional, defaults no módulo)
   visibility_timeout_seconds    = 300

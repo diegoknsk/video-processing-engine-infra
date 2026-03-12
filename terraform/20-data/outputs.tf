@@ -19,3 +19,15 @@ output "gsi_names" {
   description = "Lista dos nomes dos GSIs da tabela."
   value       = [for gsi in aws_dynamodb_table.videos.global_secondary_index : gsi.name]
 }
+
+# --- Tabela de chunks ---
+
+output "chunks_table_name" {
+  description = "Nome da tabela DynamoDB de status de chunks."
+  value       = aws_dynamodb_table.video_chunks.name
+}
+
+output "chunks_table_arn" {
+  description = "ARN da tabela DynamoDB de status de chunks."
+  value       = aws_dynamodb_table.video_chunks.arn
+}

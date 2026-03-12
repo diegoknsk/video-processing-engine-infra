@@ -208,6 +208,61 @@ aws dynamodb query \
   --expression-attribute-values '{":pk":{"S":"USER#user123"}}'
 ```
 
+---
+
+## Tabela: {prefix}-video-chunks
+
+Tabela para persistir o status individual de cada chunk de processamento de vídeo.
+Permite calcular o progresso do vídeo por contagem de chunks concluídos.
+
+### Chaves
+
+| Atributo | Tipo | Papel | Formato |
+|----------|------|-------|---------|
+| `pk` | String | Partition Key | `VIDEO#{videoId}` |
+| `sk` | String | Sort Key | `CHUNK#{chunkIndex}` |
+
+### Modelo de item
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `pk` | String | Sim | `VIDEO#{videoId}` |
+| `sk` | String | Sim | `CHUNK#{chunkIndex}` |
+| `videoId` | String | Sim | UUID do vídeo |
+| `chunkIndex` | Number | Sim | Índice do chunk (0-based) |
+| `totalChunks` | Number | Sim | Total de chunks do vídeo |
+| `status` | String | Sim | `PENDING`, `PROCESSING`, `COMPLETED`, `FAILED` |
+| `createdAt` | String | Sim | ISO 8601 (ex.: `2026-03-12T10:00:00Z`) |
+| `updatedAt` | String | Sim | ISO 8601 atualizado a cada mudança de status |
+| `errorMessage` | String | Não | Preenchido apenas quando `status = FAILED` |
+| `TTL` | Number | Não | Epoch seconds; ativo quando `enable_chunks_ttl = true` |
+
+### Padrões de acesso
+
+| Operação | Chave | Caso de uso |
+|----------|-------|-------------|
+| `Query` | `pk = VIDEO#{videoId}` | Listar todos os chunks de um vídeo |
+| `GetItem` | `pk = VIDEO#{videoId}`, `sk = CHUNK#{idx}` | Status de um chunk específico |
+| `UpdateItem` condicional | `pk = VIDEO#{videoId}`, `sk = CHUNK#{idx}` | Atualizar status (idempotente) |
+| `Query` com filter | `pk = VIDEO#{videoId}` + `FilterExpression status = COMPLETED` | Calcular progresso |
+
+### Variáveis relacionadas
+
+| Variável | Default | Descrição |
+|----------|---------|-----------|
+| `chunks_billing_mode` | `PAY_PER_REQUEST` | Billing mode da tabela |
+| `enable_chunks_ttl` | `false` | Ativa TTL na tabela |
+| `chunks_ttl_attribute_name` | `TTL` | Nome do atributo TTL |
+
+### Outputs
+
+| Output | Descrição |
+|--------|-----------|
+| `chunks_table_name` | Nome da tabela de chunks |
+| `chunks_table_arn` | ARN da tabela de chunks |
+
+---
+
 ## Estratégia de migração (recriação de tabela)
 
 Alteração de `hash_key`/`range_key` força recriação da tabela (destroy + create). Em ambiente hackathon, recriação é aceitável; dados são efêmeros. Downtime esperado: ~2-5 minutos. Código Lambda deve usar `pk`/`sk` e `gsi1pk`/`gsi1sk` após o apply.

@@ -13,27 +13,15 @@ variable "common_tags" {
   type        = map(string)
 }
 
-# --- SNS: subscription topic-video-completed (ativo agora = email; preparado para depois = Lambda) ---
-variable "enable_email_subscription_completed" {
-  description = "Ativo agora: habilita subscription email no topic-video-completed para notificação."
+# --- SNS: subscription topic-video-processing-error (alertas de erro) ---
+variable "enable_email_subscription_error" {
+  description = "Habilita subscription de e-mail no topic-video-processing-error para alertas de erro."
   type        = bool
   default     = false
 }
 
-variable "email_endpoint" {
-  description = "E-mail para notificação quando enable_email_subscription_completed = true; vazio ou null desabilita."
-  type        = string
-  default     = null
-}
-
-variable "enable_lambda_subscription_completed" {
-  description = "Preparado para depois: placeholder para subscription Lambda no topic-video-completed."
-  type        = bool
-  default     = false
-}
-
-variable "lambda_subscription_arn" {
-  description = "ARN da Lambda para subscription no topic-video-completed; usado quando enable_lambda_subscription_completed = true (futuro)."
+variable "email_endpoint_error" {
+  description = "E-mail para alerta de erro quando enable_email_subscription_error = true; vazio ou null desabilita."
   type        = string
   default     = null
 }

@@ -69,6 +69,16 @@ output "dynamodb_gsi1_name" {
   value       = module.data.gsi1_name
 }
 
+output "chunks_table_name" {
+  description = "Nome da tabela DynamoDB de status de chunks."
+  value       = module.data.chunks_table_name
+}
+
+output "chunks_table_arn" {
+  description = "ARN da tabela DynamoDB de status de chunks."
+  value       = module.data.chunks_table_arn
+}
+
 # --- Orchestration (Step Functions — Storie-09) ---
 output "step_machine_arn" {
   description = "ARN da State Machine Step Functions (video processing). Usar em step_function_arn (tfvars) para a Lambda Orchestrator invocar StartExecution."

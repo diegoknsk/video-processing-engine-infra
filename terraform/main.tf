@@ -42,10 +42,8 @@ module "messaging" {
   prefix      = module.foundation.prefix
   common_tags = module.foundation.common_tags
 
-  enable_email_subscription_completed  = var.enable_email_subscription_completed
-  email_endpoint                       = var.email_endpoint
-  enable_lambda_subscription_completed = var.enable_lambda_subscription_completed
-  lambda_subscription_arn              = var.lambda_subscription_arn
+  enable_email_subscription_error = var.enable_email_subscription_error
+  email_endpoint_error            = var.email_endpoint_error
 
   visibility_timeout_seconds    = var.visibility_timeout_seconds
   message_retention_seconds     = var.message_retention_seconds
@@ -89,8 +87,6 @@ module "lambdas" {
   q_video_status_update_arn = module.messaging.q_video_status_update_arn
   q_video_zip_finalize_url  = module.messaging.q_video_zip_finalize_url
   q_video_zip_finalize_arn  = module.messaging.q_video_zip_finalize_arn
-
-  topic_video_completed_arn = module.messaging.topic_video_completed_arn
 
   step_function_arn = var.step_function_arn
 

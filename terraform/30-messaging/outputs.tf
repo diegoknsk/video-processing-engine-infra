@@ -1,9 +1,9 @@
 # Outputs do módulo 30-messaging — SNS (Storie-05; Storie-18.1) e SQS (Storie-06).
 
 # --- SNS: ARNs dos tópicos ---
-output "topic_video_completed_arn" {
-  description = "ARN do tópico SNS topic-video-completed (evento de processamento concluído)."
-  value       = aws_sns_topic.topic_video_completed.arn
+output "topic_video_processing_error_arn" {
+  description = "ARN do tópico SNS topic-video-processing-error (notificação de erros de processamento)."
+  value       = aws_sns_topic.topic_video_processing_error.arn
 }
 
 # --- SQS: URLs e ARNs das filas principais e DLQs ---
