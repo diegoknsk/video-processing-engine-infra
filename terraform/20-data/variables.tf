@@ -34,3 +34,23 @@ variable "environment" {
   type        = string
   default     = null
 }
+
+# --- Tabela de chunks (status por chunk de vídeo) ---
+
+variable "chunks_billing_mode" {
+  description = "Billing mode da tabela de chunks (PAY_PER_REQUEST ou PROVISIONED)."
+  type        = string
+  default     = "PAY_PER_REQUEST"
+}
+
+variable "enable_chunks_ttl" {
+  description = "Habilita TTL na tabela de chunks."
+  type        = bool
+  default     = false
+}
+
+variable "chunks_ttl_attribute_name" {
+  description = "Nome do atributo TTL na tabela de chunks (número epoch seconds)."
+  type        = string
+  default     = "TTL"
+}

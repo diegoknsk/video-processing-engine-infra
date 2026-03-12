@@ -16,12 +16,6 @@ variable "runtime" {
   default     = "dotnet10"
 }
 
-variable "handler" {
-  description = "Handler placeholder; aplicação substitui no deploy. Para .NET: Assembly::Namespace.Class::Method."
-  type        = string
-  default     = "Lambda::Lambda.Function::FunctionHandler"
-}
-
 variable "auth_handler" {
   description = "Handler da Lambda de autenticação. Para .NET: Assembly::Namespace.Class::Method."
   type        = string
@@ -48,6 +42,11 @@ variable "table_name" {
 
 variable "table_arn" {
   description = "ARN da tabela DynamoDB (output do módulo data)."
+  type        = string
+}
+
+variable "chunks_table_arn" {
+  description = "ARN da tabela DynamoDB de chunks (output do módulo data). Usada pela Lambda video-management para Query/GetItem/PutItem."
   type        = string
 }
 
@@ -110,12 +109,6 @@ variable "q_video_zip_finalize_url" {
 
 variable "q_video_zip_finalize_arn" {
   description = "ARN da fila q-video-zip-finalize (output do módulo messaging)."
-  type        = string
-}
-
-# --- SNS (módulo messaging) ---
-variable "topic_video_completed_arn" {
-  description = "ARN do tópico SNS topic-video-completed (output do módulo messaging)."
   type        = string
 }
 

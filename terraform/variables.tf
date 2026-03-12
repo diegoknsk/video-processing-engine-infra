@@ -56,26 +56,14 @@ variable "enable_lifecycle_expiration" {
 }
 
 # --- Messaging (30-messaging: SNS + SQS) ---
-variable "enable_email_subscription_completed" {
-  description = "Habilita subscription email no topic-video-completed (SNS)."
+variable "enable_email_subscription_error" {
+  description = "Habilita subscription email no topic-video-processing-error (SNS) para alertas de erro."
   type        = bool
   default     = false
 }
 
-variable "email_endpoint" {
-  description = "E-mail para notificação no topic-video-completed quando enable_email_subscription_completed = true."
-  type        = string
-  default     = null
-}
-
-variable "enable_lambda_subscription_completed" {
-  description = "Placeholder: habilita subscription Lambda no topic-video-completed (preparado para depois)."
-  type        = bool
-  default     = false
-}
-
-variable "lambda_subscription_arn" {
-  description = "ARN da Lambda para subscription no topic-video-completed (quando enable_lambda_subscription_completed = true)."
+variable "email_endpoint_error" {
+  description = "E-mail para alerta de erro no topic-video-processing-error quando enable_email_subscription_error = true."
   type        = string
   default     = null
 }
@@ -115,12 +103,6 @@ variable "lambda_snap_start_enabled" {
   description = "Habilita SnapStart em auth, video_management, video_orchestrator, update_status_video. video_processor e video_finalizer ficam sempre sem SnapStart. Default false para desenvolvimento."
   type        = bool
   default     = false
-}
-
-variable "lambda_handler" {
-  description = "Handler placeholder das Lambdas. Para .NET: Assembly::Namespace.Class::Method."
-  type        = string
-  default     = "Lambda::Lambda.Function::FunctionHandler"
 }
 
 variable "step_function_arn" {

@@ -130,8 +130,6 @@ module "lambdas" {
   q_video_zip_finalize_arn  = module.messaging.q_video_zip_finalize_arn
 
   topic_video_submitted_arn = module.messaging.topic_video_submitted_arn
-  topic_video_completed_arn = module.messaging.topic_video_completed_arn
-
   step_function_arn         = ""  # ou module.orchestration.state_machine_arn quando Storie-09
   enable_status_update_consumer = true
 }

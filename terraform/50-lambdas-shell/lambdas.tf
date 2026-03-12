@@ -39,7 +39,7 @@ resource "aws_lambda_function" "auth" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
 
@@ -47,7 +47,7 @@ resource "aws_lambda_function" "video_management" {
   function_name = "${var.prefix}-video-management"
   role          = local.lambda_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = "VideoProcessing.VideoManagement.Api"
   filename      = var.artifact_path
   memory_size   = 512
   timeout       = 900
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "video_management" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
 
@@ -90,7 +90,7 @@ resource "aws_lambda_function" "video_orchestrator" {
   function_name = "${var.prefix}-video-orchestrator"
   role          = local.lambda_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = "VideoProcessing.VideoOrchestrator.Lambda::VideoProcessing.VideoOrchestrator.Lambda.Function::FunctionHandler"
   filename      = var.artifact_path
   memory_size   = 512
   timeout       = 900
@@ -124,7 +124,7 @@ resource "aws_lambda_function" "video_orchestrator" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
 
@@ -133,7 +133,7 @@ resource "aws_lambda_function" "video_processor" {
   function_name = "${var.prefix}-video-processor"
   role          = local.lambda_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = "VideoProcessor.Lambda::VideoProcessor.Lambda.Function::FunctionHandler"
   filename      = var.artifact_path
   memory_size   = 3008
   timeout       = 900
@@ -156,7 +156,7 @@ resource "aws_lambda_function" "video_processor" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
 
@@ -165,7 +165,7 @@ resource "aws_lambda_function" "video_finalizer" {
   function_name = "${var.prefix}-video-finalizer"
   role          = local.lambda_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = "VideoProcessing.Finalizer.Lambda::VideoProcessing.Finalizer.Lambda.Function::FunctionHandler"
   filename      = var.artifact_path
   memory_size   = 3008
   timeout       = 900
@@ -177,17 +177,16 @@ resource "aws_lambda_function" "video_finalizer" {
 
   environment {
     variables = {
-      TABLE_NAME                = var.table_name
-      IMAGES_BUCKET             = var.images_bucket_name
-      ZIP_BUCKET                = var.zip_bucket_name
-      TOPIC_VIDEO_COMPLETED_ARN = var.topic_video_completed_arn
+      TABLE_NAME    = var.table_name
+      IMAGES_BUCKET = var.images_bucket_name
+      ZIP_BUCKET    = var.zip_bucket_name
     }
   }
 
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
 
@@ -195,7 +194,7 @@ resource "aws_lambda_function" "update_status_video" {
   function_name = "${var.prefix}-update-status-video"
   role          = local.lambda_role_arn
   runtime       = var.runtime
-  handler       = var.handler
+  handler       = "VideoProcessing.VideoManagement.LambdaUpdateVideo::VideoProcessing.VideoManagement.LambdaUpdateVideo.Function::Handler"
   filename      = var.artifact_path
   memory_size   = 512
   timeout       = 900
@@ -229,6 +228,6 @@ resource "aws_lambda_function" "update_status_video" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash, handler]
+    ignore_changes = [filename, source_code_hash]
   }
 }
