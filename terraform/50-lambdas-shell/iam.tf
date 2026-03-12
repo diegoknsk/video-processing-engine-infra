@@ -54,9 +54,13 @@ resource "aws_iam_role_policy" "lambda_app" {
         Effect = "Allow"
         Action = [
           "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan"
+          "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan",
+          "dynamodb:BatchWriteItem"
         ]
-        Resource = [var.table_arn, "${var.table_arn}/index/*"]
+        Resource = [
+          var.table_arn, "${var.table_arn}/index/*",
+          var.chunks_table_arn, "${var.chunks_table_arn}/index/*"
+        ]
       },
       {
         Sid    = "SQSAccess"

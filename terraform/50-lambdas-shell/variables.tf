@@ -51,6 +51,11 @@ variable "table_arn" {
   type        = string
 }
 
+variable "chunks_table_arn" {
+  description = "ARN da tabela DynamoDB de chunks (output do módulo data). Usada pela Lambda video-management para Query/GetItem/PutItem."
+  type        = string
+}
+
 # --- S3 (módulo storage) ---
 variable "videos_bucket_name" {
   description = "Nome do bucket S3 de vídeos (output do módulo storage)."

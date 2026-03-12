@@ -71,8 +71,9 @@ module "lambdas" {
   handler       = var.lambda_handler
   artifact_path = "${path.module}/../artifacts/empty.zip"
 
-  table_name = module.data.table_name
-  table_arn  = module.data.table_arn
+  table_name       = module.data.table_name
+  table_arn        = module.data.table_arn
+  chunks_table_arn = module.data.chunks_table_arn
 
   videos_bucket_name = module.storage.videos_bucket_name
   videos_bucket_arn  = module.storage.videos_bucket_arn
