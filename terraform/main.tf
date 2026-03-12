@@ -68,7 +68,6 @@ module "lambdas" {
   common_tags = module.foundation.common_tags
 
   runtime       = var.lambda_runtime
-  handler       = var.lambda_handler
   artifact_path = "${path.module}/../artifacts/empty.zip"
 
   table_name       = module.data.table_name

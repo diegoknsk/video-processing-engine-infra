@@ -16,12 +16,6 @@ variable "runtime" {
   default     = "dotnet10"
 }
 
-variable "handler" {
-  description = "Handler placeholder; aplicação substitui no deploy. Para .NET: Assembly::Namespace.Class::Method."
-  type        = string
-  default     = "Lambda::Lambda.Function::FunctionHandler"
-}
-
 variable "auth_handler" {
   description = "Handler da Lambda de autenticação. Para .NET: Assembly::Namespace.Class::Method."
   type        = string

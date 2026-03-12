@@ -105,12 +105,6 @@ variable "lambda_snap_start_enabled" {
   default     = false
 }
 
-variable "lambda_handler" {
-  description = "Handler placeholder das Lambdas. Para .NET: Assembly::Namespace.Class::Method."
-  type        = string
-  default     = "Lambda::Lambda.Function::FunctionHandler"
-}
-
 variable "step_function_arn" {
   description = "ARN da Step Function (módulo 70-orchestration); preencher com output step_machine_arn após primeiro apply (Lambda Orchestrator usa para StartExecution)."
   type        = string
