@@ -72,12 +72,6 @@ resource "aws_iam_role_policy" "lambda_app" {
         ]
       },
       {
-        Sid      = "SNSPublish"
-        Effect   = "Allow"
-        Action   = ["sns:Publish"]
-        Resource = [var.topic_video_completed_arn]
-      },
-      {
         Sid      = "StepFunctions"
         Effect   = "Allow"
         Action   = ["states:StartExecution"]

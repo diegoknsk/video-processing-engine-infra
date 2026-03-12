@@ -113,12 +113,6 @@ variable "q_video_zip_finalize_arn" {
   type        = string
 }
 
-# --- SNS (módulo messaging) ---
-variable "topic_video_completed_arn" {
-  description = "ARN do tópico SNS topic-video-completed (output do módulo messaging)."
-  type        = string
-}
-
 # --- Step Functions (módulo 70-orchestration; placeholder se ainda não existir) ---
 variable "step_function_arn" {
   description = "ARN da Step Function de orquestração (output do módulo 70-orchestration ou placeholder)."

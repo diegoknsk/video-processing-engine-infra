@@ -177,10 +177,9 @@ resource "aws_lambda_function" "video_finalizer" {
 
   environment {
     variables = {
-      TABLE_NAME                = var.table_name
-      IMAGES_BUCKET             = var.images_bucket_name
-      ZIP_BUCKET                = var.zip_bucket_name
-      TOPIC_VIDEO_COMPLETED_ARN = var.topic_video_completed_arn
+      TABLE_NAME    = var.table_name
+      IMAGES_BUCKET = var.images_bucket_name
+      ZIP_BUCKET    = var.zip_bucket_name
     }
   }
 
