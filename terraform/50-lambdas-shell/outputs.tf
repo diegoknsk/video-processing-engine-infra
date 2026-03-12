@@ -16,8 +16,8 @@ output "lambda_auth_qualified_arn" {
 }
 
 output "lambda_auth_role_arn" {
-  description = "ARN da role IAM da Lambda Auth (Lab Role quando em AWS Academy)."
-  value       = var.lab_role_arn
+  description = "ARN da role IAM das Lambdas."
+  value       = local.lambda_role_arn
 }
 
 output "lambda_video_management_name" {
@@ -36,8 +36,8 @@ output "lambda_video_management_qualified_arn" {
 }
 
 output "lambda_video_management_role_arn" {
-  description = "ARN da role IAM da Lambda Video Management (Lab Role quando em AWS Academy)."
-  value       = var.lab_role_arn
+  description = "ARN da role IAM das Lambdas."
+  value       = local.lambda_role_arn
 }
 
 output "lambda_video_orchestrator_name" {
@@ -51,8 +51,8 @@ output "lambda_video_orchestrator_arn" {
 }
 
 output "lambda_video_orchestrator_role_arn" {
-  description = "ARN da role IAM da Lambda Video Orchestrator (Lab Role quando em AWS Academy)."
-  value       = var.lab_role_arn
+  description = "ARN da role IAM das Lambdas."
+  value       = local.lambda_role_arn
 }
 
 output "lambda_video_processor_name" {
@@ -66,8 +66,8 @@ output "lambda_video_processor_arn" {
 }
 
 output "lambda_video_processor_role_arn" {
-  description = "ARN da role IAM da Lambda Video Processor (Lab Role quando em AWS Academy)."
-  value       = var.lab_role_arn
+  description = "ARN da role IAM das Lambdas."
+  value       = local.lambda_role_arn
 }
 
 output "lambda_video_finalizer_name" {
@@ -81,8 +81,8 @@ output "lambda_video_finalizer_arn" {
 }
 
 output "lambda_video_finalizer_role_arn" {
-  description = "ARN da role IAM da Lambda Video Finalizer (Lab Role quando em AWS Academy)."
-  value       = var.lab_role_arn
+  description = "ARN da role IAM das Lambdas."
+  value       = local.lambda_role_arn
 }
 
 output "lambda_update_status_video_name" {

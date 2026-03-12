@@ -15,7 +15,7 @@
             "Resource": "arn:aws:states:::lambda:invoke",
             "OutputPath": "$.Payload",
             "Parameters": {
-              "FunctionName": "${lambda_processor_arn}:$$LATEST",
+              "FunctionName": "${lambda_processor_arn}",
               "Payload": {
                 "contractVersion.$": "$.contractVersion",
                 "videoId.$": "$.videoId",
