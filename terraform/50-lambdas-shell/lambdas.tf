@@ -39,7 +39,7 @@ resource "aws_lambda_function" "auth" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "video_management" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
 
@@ -124,7 +124,7 @@ resource "aws_lambda_function" "video_orchestrator" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
 
@@ -156,7 +156,7 @@ resource "aws_lambda_function" "video_processor" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
 
@@ -187,7 +187,7 @@ resource "aws_lambda_function" "video_finalizer" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
 
@@ -229,6 +229,6 @@ resource "aws_lambda_function" "update_status_video" {
   tags = var.common_tags
 
   lifecycle {
-    ignore_changes = [filename, source_code_hash]
+    ignore_changes = [filename, source_code_hash, handler]
   }
 }
