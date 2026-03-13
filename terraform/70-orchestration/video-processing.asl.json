@@ -140,9 +140,14 @@
                 "system": "VIDEO PROCESSING ENGINE",
                 "environment": "DEV",
                 "notificationType": "PROCESSING_ERROR",
-                "videoName": "teste-video-hackathon.mp4",
-                "email": "diego.knsk@hotmail.com",
-                "error": "Falha simulada no processamento de chunk do video",
+                "videoName.$": "$.title",
+                "email.$": "$.user.email",
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "chunkIndex.$": "$.chunk.chunkIndex",
+                "chunkId.$": "$.chunk.chunkId",
+                "executionId.$": "$.executionId",
+                "error": "Processor lambda failed",
                 "action": "Execution will be marked as FAILED"
               }
             },
@@ -222,7 +227,56 @@
         }
       ],
       "Next": "Finish",
-      "ResultPath": "$.PayloadZip"
+      "ResultPath": "$.PayloadZip",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify Generate Zip Error"
+        }
+      ]
+    },
+    "Notify Generate Zip Error": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:380894490298:video-processing-engine-dev-topic-video-processing-error",
+        "Message": {
+          "system": "VIDEO GENERATE ZIP ERROR",
+          "environment": "DEV",
+          "notificationType": "VIDEO_GENERATE_ERROR",
+          "videoName.$": "$.title",
+          "email.$": "$.user.email",
+          "videoId.$": "$.videoId",
+          "userId.$": "$.userId",
+          "chunkIndex.$": "$.chunk.chunkIndex",
+          "chunkId.$": "$.chunk.chunkId",
+          "executionId.$": "$.executionId",
+          "error": "Processor lambda failed",
+          "action": "Execution will be marked as FAILED"
+        }
+      },
+      "Next": "Notify Error Zip",
+      "ResultPath": "$.notifyErrorResultSnsZip"
+    },
+    "Notify Error Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+        "MessageBody": {
+          "videoId.$": "$.videoId",
+          "userId.$": "$.userId",
+          "status": 4,
+          "error": "Erro no processamento"
+        }
+      },
+      "ResultPath": "$.notifyErrorResultSqsZip",
+      "Next": "Fail"
+    },
+    "Fail": {
+      "Type": "Fail"
     },
     "Finish": {
       "Type": "Task",
