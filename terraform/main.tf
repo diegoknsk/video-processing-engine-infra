@@ -106,8 +106,9 @@ module "orchestration" {
   log_retention_days   = var.orchestration_log_retention_days
   finalization_mode    = var.finalization_mode
 
-  lambda_processor_arn = module.lambdas.lambda_video_processor_arn
-  lambda_finalizer_arn = module.lambdas.lambda_video_finalizer_arn
+  lambda_processor_arn     = module.lambdas.lambda_video_processor_arn
+  lambda_finalizer_arn     = module.lambdas.lambda_video_finalizer_arn
+  lambda_update_status_arn = module.lambdas.lambda_update_status_video_arn
 
   q_video_zip_finalize_arn         = module.messaging.q_video_zip_finalize_arn
   q_video_zip_finalize_url         = module.messaging.q_video_zip_finalize_url

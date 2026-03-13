@@ -42,6 +42,7 @@ resource "aws_iam_role_policy" "sfn_exec" {
         Resource = [
           var.lambda_processor_arn,
           var.lambda_finalizer_arn,
+          var.lambda_update_status_arn,
         ]
       },
       {

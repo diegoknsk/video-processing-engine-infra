@@ -39,6 +39,11 @@ variable "lambda_finalizer_arn" {
   type        = string
 }
 
+variable "lambda_update_status_arn" {
+  description = "ARN da Lambda Update Status Video (output do módulo 50-lambdas-shell)."
+  type        = string
+}
+
 variable "q_video_zip_finalize_arn" {
   description = "ARN da fila q-video-zip-finalize (output do módulo 30-messaging); obrigatório quando finalization_mode = sqs."
   type        = string
