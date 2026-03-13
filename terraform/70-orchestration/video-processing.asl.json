@@ -1,91 +1,201 @@
 {
-    "Comment": "Placeholder: video processing. Definicao completa (Lambda Processor + Finalize) a preencher depois.",
-    "StartAt": "Map",
-    "States": {
-      "Map": {
-        "Type": "Map",
-        "ItemProcessor": {
-          "ProcessorConfig": {
-            "Mode": "INLINE"
+  "Comment": "Video processing: Map state (chunks) -> Update Status (SQS) -> Success.",
+  "StartAt": "Set Processing Started",
+  "States": {
+    "Set Processing Started": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${q_video_status_update_url}",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 1
+        }
+      },
+      "Next": "Map",
+      "ResultPath": "$.start"
+    },
+    "Map": {
+      "Type": "Map",
+      "ItemsPath": "$.video.chunks",
+      "ItemSelector": {
+        "contractVersion.$": "$.contractVersion",
+        "executionId.$": "$.executionId",
+        "videoId.$": "$.video.videoId",
+        "userId.$": "$.video.userId",
+        "title.$": "$.video.title",
+        "s3BucketVideo.$": "$.video.s3Bucket",
+        "s3KeyVideo.$": "$.video.s3Key",
+        "videoOutputPrefix.$": "$.video.outputPrefix",
+        "output": {
+          "framesBucket.$": "$.output.framesBucket",
+          "manifestBucket.$": "$.output.manifestBucket"
+        },
+        "zip": {
+          "outputBucket.$": "$.zip.outputBucket",
+          "outputKey.$": "$.zip.outputKey"
+        },
+        "finalize": {
+          "framesBucket.$": "$.finalize.framesBucket",
+          "framesBasePrefix.$": "$.finalize.framesBasePrefix",
+          "outputBucket.$": "$.finalize.outputBucket",
+          "videoId.$": "$.finalize.videoId",
+          "outputBasePrefix.$": "$.finalize.outputBasePrefix",
+          "ordenaAutomaticamente.$": "$.finalize.ordenaAutomaticamente"
+        },
+        "user": {
+          "name.$": "$.user.name",
+          "email.$": "$.user.email"
+        },
+        "chunk.$": "${context_map_item_value}"
+      },
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Processor Video",
+        "States": {
+          "Processor Video": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "${lambda_processor_arn}",
+              "Payload": {
+                "contractVersion.$": "$.contractVersion",
+                "videoId.$": "$.videoId",
+                "chunk": {
+                  "chunkId.$": "$.chunk.chunkId",
+                  "startSec.$": "$.chunk.startSec",
+                  "endSec.$": "$.chunk.endSec",
+                  "intervalSec.$": "$.chunk.intervalSec"
+                },
+                "source": {
+                  "bucket.$": "$.s3BucketVideo",
+                  "key.$": "$.s3KeyVideo"
+                },
+                "output": {
+                  "manifestBucket.$": "$.output.manifestBucket",
+                  "manifestPrefix.$": "$.chunk.manifestPrefix",
+                  "framesBucket.$": "$.output.framesBucket",
+                  "framesPrefix.$": "$.chunk.framesPrefix"
+                }
+              }
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "Next": "Set progress",
+            "ResultPath": "$.processorResult"
           },
-          "StartAt": "Processor Video",
-          "States": {
-            "Processor Video": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::lambda:invoke",
-              "OutputPath": "$.Payload",
-              "Parameters": {
-                "FunctionName": "arn:aws:lambda:us-east-1:819277236335:function:video-processing-engine-dev-video-processor:$LATEST",
-                "Payload": {
-                  "contractVersion.$": "$.contractVersion",
-                  "videoId.$": "$.videoId",
-                  "chunk": {
-                    "chunkId.$": "$.chunk.chunkId",
-                    "startSec.$": "$.chunk.startSec",
-                    "endSec.$": "$.chunk.endSec",
-                    "intervalSec.$": "$.chunk.intervalSec"
-                  },
-                  "source": {
-                    "bucket.$": "$.s3BucketVideo",
-                    "key.$": "$.s3KeyVideo"
-                  },
-                  "output": {
-                    "manifestBucket.$": "$.output.manifestBucket",
-                    "manifestPrefix.$": "$.chunk.manifestPrefix",
-                    "framesBucket.$": "$.output.framesBucket",
-                    "framesPrefix.$": "$.chunk.framesPrefix"
-                  }
+          "Set progress": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sqs:sendMessage",
+            "Parameters": {
+              "QueueUrl": "${q_video_status_update_url}",
+              "MessageBody": {
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "status": 2,
+                "chunk": {
+                  "chunkId.$": "$.chunk.chunkId",
+                  "startSec.$": "$.chunk.startSec",
+                  "endSec.$": "$.chunk.endSec",
+                  "intervalSec.$": "$.chunk.intervalSec",
+                  "framesPrefix.$": "$.chunk.framesPrefix",
+                  "manifestPrefix.$": "$.chunk.manifestPrefix"
                 }
-              },
-              "Retry": [
-                {
-                  "ErrorEquals": [
-                    "Lambda.ServiceException",
-                    "Lambda.AWSLambdaException",
-                    "Lambda.SdkClientException",
-                    "Lambda.TooManyRequestsException"
-                  ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 3,
-                  "BackoffRate": 2,
-                  "JitterStrategy": "FULL"
-                }
-              ],
-              "End": true
-            }
+              }
+            },
+            "ResultPath": "$.progress",
+            "End": true
           }
-        },
-        "Next": "Update Status",
-        "ItemsPath": "$.chunks",
-        "ItemSelector": {
-          "contractVersion.$": "$.contractVersion",
-          "videoId.$": "$.videoId",
-          "userId.$": "$.userId",
-          "s3BucketVideo.$": "$.s3BucketVideo",
-          "s3KeyVideo.$": "$.s3KeyVideo",
-          "output.$": "$.output",
-          "chunk.$": "$$.Map.Item.Value"
-        },
-        "ResultPath": "$.chunkResults"
+        }
       },
-      "Update Status": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sqs:sendMessage",
-        "Parameters": {
-          "QueueUrl": "https://sqs.us-east-1.amazonaws.com/819277236335/video-processing-engine-dev-q-video-status-update",
-          "MessageBody": {
-            "videoId.$": "$.videoId",
-            "userId.$": "$.userId",
-            "status": 2,
-            "progressPercent": 100,
-            "s3BucketFrames.$": "$.output.framesBucket",
-            "framesPrefix.$": "$.output.framesBasePrefix"
-          }
-        },
-        "Next": "Success"
+      "ResultPath": "$.chunkResults",
+      "Next": "Initiate Zip"
+    },
+    "Initiate Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${q_video_status_update_url}",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 2,
+          "progressPercent": 100
+        }
       },
-      "Success": {
-        "Type": "Succeed"
-      }
+      "Next": "Generate Zip",
+      "ResultPath": "$.initiateZip"
+    },
+    "Generate Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload": {
+          "videoId.$": "$.finalize.videoId",
+          "userId.$": "$.video.userId",
+          "framesBucket.$": "$.finalize.framesBucket",
+          "framesBasePrefix.$": "$.finalize.framesBasePrefix",
+          "outputBucket.$": "$.finalize.outputBucket",
+          "outputBasePrefix.$": "$.finalize.outputBasePrefix",
+          "outputKey.$": "$.zip.outputKey",
+          "zipFileName.$": "States.Format('{}.zip', $.video.videoId)",
+          "ordenaAutomaticamente.$": "$.finalize.ordenaAutomaticamente"
+        },
+        "FunctionName": "${lambda_finalizer_arn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Finish",
+      "ResultPath": "$.PayloadZip"
+    },
+    "Finish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${q_video_status_update_url}",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 4,
+          "progressPercent": 100,
+          "s3BucketFrames.$": "$.output.framesBucket",
+          "framesPrefix.$": "$.video.outputPrefix",
+          "zipBucket.$": "$.zip.outputBucket",
+          "zipKey.$": "$.PayloadZip.Payload.ZipS3Key",
+          "zipFileName.$": "States.ArrayGetItem(States.StringSplit($.PayloadZip.Payload.ZipS3Key, '/'), States.MathAdd(States.ArrayLength(States.StringSplit($.PayloadZip.Payload.ZipS3Key, '/')), -1))"
+        }
+      },
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
     }
   }
+}

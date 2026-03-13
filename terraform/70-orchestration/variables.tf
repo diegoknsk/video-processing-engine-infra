@@ -56,6 +56,11 @@ variable "q_video_status_update_url" {
   type        = string
 }
 
+variable "topic_video_processing_error_arn" {
+  description = "ARN do tópico SNS topic-video-processing-error (notificação de erros de processamento na State Machine)."
+  type        = string
+}
+
 # --- Lab Role (AWS Academy): quando definido, usa a role existente em vez de criar uma nova ---
 variable "lab_role_arn" {
   description = "ARN da role existente (LabRole) usada pela State Machine. Obrigatório em AWS Academy (sem iam:CreateRole). Quando null, uma role IAM é criada automaticamente."

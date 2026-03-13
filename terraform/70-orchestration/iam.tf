@@ -51,6 +51,12 @@ resource "aws_iam_role_policy" "sfn_exec" {
         Resource = ["*"]
       },
       {
+        Sid      = "SNSPublishError"
+        Effect   = "Allow"
+        Action   = ["sns:Publish"]
+        Resource = [var.topic_video_processing_error_arn]
+      },
+      {
         Sid    = "CloudWatchLogs"
         Effect = "Allow"
         Action = [
