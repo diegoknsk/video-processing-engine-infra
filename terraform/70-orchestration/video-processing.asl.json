@@ -6,7 +6,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
-        "QueueUrl": "${q_video_status_update_url}",
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
         "MessageBody": {
           "videoId.$": "$.video.videoId",
           "userId.$": "$.video.userId",
@@ -48,7 +48,7 @@
           "name.$": "$.user.name",
           "email.$": "$.user.email"
         },
-        "chunk.$": "${context_map_item_value}"
+        "chunk.$": "$$.Map.Item.Value"
       },
       "ItemProcessor": {
         "ProcessorConfig": {
@@ -60,7 +60,7 @@
             "Type": "Task",
             "Resource": "arn:aws:states:::lambda:invoke",
             "Parameters": {
-              "FunctionName": "${lambda_processor_arn}",
+              "FunctionName": "arn:aws:lambda:us-east-1:380894490298:function:video-processing-engine-dev-video-processor",
               "Payload": {
                 "contractVersion.$": "$.contractVersion",
                 "videoId.$": "$.videoId",
@@ -97,13 +97,23 @@
               }
             ],
             "Next": "Set progress",
-            "ResultPath": "$.processorResult"
+            "ResultPath": "$.processorResult",
+            "Catch": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "Comment": "Processor Error",
+                "Next": "Notify processor Error",
+                "ResultPath": "$.errorInfo"
+              }
+            ]
           },
           "Set progress": {
             "Type": "Task",
             "Resource": "arn:aws:states:::sqs:sendMessage",
             "Parameters": {
-              "QueueUrl": "${q_video_status_update_url}",
+              "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
               "MessageBody": {
                 "videoId.$": "$.videoId",
                 "userId.$": "$.userId",
@@ -120,6 +130,45 @@
             },
             "ResultPath": "$.progress",
             "End": true
+          },
+          "Notify processor Error": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sns:publish",
+            "Parameters": {
+              "TopicArn": "arn:aws:sns:us-east-1:380894490298:video-processing-engine-dev-topic-video-processing-error",
+              "Message": {
+                "system": "VIDEO PROCESSING ENGINE",
+                "environment": "DEV",
+                "notificationType": "PROCESSING_ERROR",
+                "videoName": "teste-video-hackathon.mp4",
+                "email": "diego.knsk@hotmail.com",
+                "error": "Falha simulada no processamento de chunk do video",
+                "action": "Execution will be marked as FAILED"
+              }
+            },
+            "Next": "Notify Error",
+            "ResultPath": "$.notifyErrorResultSns"
+          },
+          "Notify Error": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sqs:sendMessage",
+            "Parameters": {
+              "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+              "MessageBody": {
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "status": 4,
+                "error": "Erro no processamento"
+              }
+            },
+            "ResultPath": "$.notifyErrorResultSqs",
+            "Next": "Processing Failed"
+          },
+          "Processing Failed": {
+            "Type": "Fail",
+            "Comment": "VideoProcessingError",
+            "Error": "VideoProcessingError",
+            "Cause": "Processor lambda failed"
           }
         }
       },
@@ -130,7 +179,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
-        "QueueUrl": "${q_video_status_update_url}",
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
         "MessageBody": {
           "videoId.$": "$.video.videoId",
           "userId.$": "$.video.userId",
@@ -156,7 +205,7 @@
           "zipFileName.$": "States.Format('{}.zip', $.video.videoId)",
           "ordenaAutomaticamente.$": "$.finalize.ordenaAutomaticamente"
         },
-        "FunctionName": "${lambda_finalizer_arn}"
+        "FunctionName": "arn:aws:lambda:us-east-1:380894490298:function:video-processing-engine-dev-video-finalizer"
       },
       "Retry": [
         {
@@ -179,11 +228,11 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
-        "QueueUrl": "${q_video_status_update_url}",
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
         "MessageBody": {
           "videoId.$": "$.video.videoId",
           "userId.$": "$.video.userId",
-          "status": 4,
+          "status": 3,
           "progressPercent": 100,
           "s3BucketFrames.$": "$.output.framesBucket",
           "framesPrefix.$": "$.video.outputPrefix",
