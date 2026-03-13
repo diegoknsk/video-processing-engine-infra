@@ -26,17 +26,28 @@ Quando o upload é confirmado pela API/Lambda (modo api_publish), a **Lambda Vid
 
 Fluxo ponta a ponta: upload → S3 → SNS video-submitted → SQS process → orquestração → processamento → finalização → SNS completed → e-mail/Lambda.
 
+### topic-video-processing-error
+
+| Papel        | Componente                                                                 |
+|-------------|-----------------------------------------------------------------------------|
+| **Publica** | Lambdas (Orchestrator, Processor, Finalizer) e Step Functions ao detectar erros de processamento. |
+| **Consome** | E-mail (configurável por variável `enable_email_subscription_error` + `email_endpoint_error`). |
+
+Tópico dedicado a alertas de erro: falhas durante orquestração, extração de frames ou geração de zip são publicadas aqui para notificar a equipe por e-mail.
+
+> **Atenção:** subscrições do tipo `email` no SNS exigem **confirmação manual**. Após o Terraform criar a subscrição (ou após subscrição manual no console), a AWS envia um e-mail com um link de confirmação. O e-mail só começa a receber notificações após clicar em **"Confirm subscription"** nesse e-mail.
+
 ---
 
 ## Ativo agora vs Preparado para depois (SNS)
 
-| Item                          | Ativo agora                                                                 | Preparado para depois                                      |
-|-------------------------------|-----------------------------------------------------------------------------|------------------------------------------------------------|
-| Tópicos SNS                   | topic-video-submitted, topic-video-completed                                | —                                                          |
-| Outputs                       | ARNs dos dois tópicos                                                       | —                                                          |
-| Subscription email (completed)| Configurável por variável (endpoint email)                                  | —                                                          |
-| Subscription Lambda (completed)| —                                                                          | Placeholder configurável por variável (lambda_arn opcional) |
-| Subscription SQS (submitted)   | —                                                                          | Outra story (integração SNS→SQS)                           |
+| Item                               | Ativo agora                                                                     | Preparado para depois                                      |
+|------------------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------|
+| Tópicos SNS                        | topic-video-submitted, topic-video-completed, topic-video-processing-error      | —                                                          |
+| Outputs                            | ARNs dos três tópicos                                                           | —                                                          |
+| Subscription email (error)         | Configurável por variável (`enable_email_subscription_error` + `email_endpoint_error`) | —                                                 |
+| Subscription Lambda (completed)    | —                                                                               | Placeholder configurável por variável (lambda_arn opcional) |
+| Subscription SQS (submitted)       | —                                                                               | Outra story (integração SNS→SQS)                           |
 
 ---
 
@@ -68,6 +79,35 @@ Todas as filas principais possuem **redrive_policy** apontando para a DLQ corres
 ## Integração upload concluído (Storie-18: S3 → SQS)
 
 Desde a Storie-18, o fluxo de upload concluído é **S3 bucket videos → SQS q-video-process** (direto), configurado no **root** (`upload_integration.tf`): queue policy na fila (permite S3 publicar com `aws:SourceArn`) e bucket notification com filtro `prefix = "videos/"`, `suffix = "original"`. Os módulos 10-storage e 30-messaging não recebem mais variáveis de integração (`trigger_mode`, `videos_bucket_arn`, `topic_video_submitted_arn`) para esse fluxo; o root usa os outputs `videos_bucket_name`, `videos_bucket_arn`, `q_video_process_arn` e `q_video_process_url` para configurar os recursos.
+
+---
+
+## Como receber e-mails de erro de processamento
+
+Para receber alertas quando houver falhas de processamento, é necessário cadastrar uma subscrição de e-mail no tópico **`<prefix>-topic-video-processing-error`** (ex.: `video-processing-engine-dev-topic-video-processing-error`).
+
+### Via Terraform (recomendado)
+
+Defina as variáveis no arquivo de variáveis do ambiente (ex.: `envs/dev.tfvars`):
+
+```hcl
+enable_email_subscription_error = true
+email_endpoint_error            = "seu-email@exemplo.com"
+```
+
+Após `terraform apply`, o Terraform criará a subscrição com status **"PendingConfirmation"**.
+
+### Via console AWS (manual)
+
+1. Acesse o [console SNS](https://console.aws.amazon.com/sns/home) na região do projeto (`us-east-1` por padrão).
+2. Em **Topics**, localize o tópico **`<prefix>-topic-video-processing-error`**.
+3. Clique em **Create subscription**.
+4. Protocolo: **Email**; Endpoint: seu e-mail.
+5. Clique em **Create subscription**.
+
+### Confirmação obrigatória (ambas as opções)
+
+Após criar a subscrição (via Terraform ou console), **a AWS envia automaticamente um e-mail de confirmação**. O cadastro só é ativado após clicar em **"Confirm subscription"** nesse e-mail. Enquanto não confirmado, o status aparece como **"PendingConfirmation"** no console SNS e nenhuma notificação é entregue.
 
 ---
 

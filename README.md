@@ -55,7 +55,7 @@ video-processing-engine-infra/
 | **00-foundation** | Providers, backend (opcional), locals, variables, outputs base; convenções de naming e tags. |
 | **10-storage** | 3 buckets S3: vídeos (upload), imagens (frames), zip (resultado final). |
 | **20-data** | Tabela DynamoDB para metadados e status dos vídeos; GSI para consulta por VideoId. |
-| **30-messaging** | SNS: topic-video-submitted, topic-video-completed; SQS: q-video-process, q-video-status-update, q-video-zip-finalize + DLQs. |
+| **30-messaging** | SNS: topic-video-submitted, topic-video-completed, topic-video-processing-error (alertas de erro de processamento); SQS: q-video-process, q-video-status-update, q-video-zip-finalize + DLQs. |
 | **40-auth** | Cognito User Pool e App Client (autenticação JWT para a API). |
 | **50-lambdas-shell** | 5 Lambdas em casca (Auth, Video Management, Orchestrator, Processor, Finalizer), IAM (Lab Role), event source mappings. |
 | **60-api** | API Gateway HTTP API, stage, rotas (/auth/*, /videos/*), authorizer Cognito (opcional). |
@@ -185,6 +185,34 @@ Os workflows usam `working-directory: terraform` e, por padrão, `-var-file=envs
 | **trigger_mode** | 10-storage, 30-messaging | `s3_event` = S3 notifica SNS ao upload; `api_publish` = Lambda publica no SNS. |
 | **finalization_mode** | 70-orchestration | `sqs` = Step Functions envia para q-video-zip-finalize; `lambda` = Step Functions invoca a Lambda Finalizer. |
 | **lab_role_arn** | Root (repassado a 50-lambdas-shell e 70-orchestration) | Obrigatório em AWS Academy (sem permissão iam:CreateRole). ARN da Lab Role usada por todas as Lambdas e pela State Machine. Ex.: `arn:aws:iam::ACCOUNT_ID:role/LabRole`. |
+
+---
+
+## Notificações de erro por e-mail (SNS)
+
+O tópico **`topic-video-processing-error`** (módulo `30-messaging`) recebe mensagens de erro publicadas pelas Lambdas e pela Step Functions durante o processamento de vídeos. Para receber essas notificações por e-mail, é necessário **cadastrar manualmente uma subscrição** no tópico — o Terraform não confirma o e-mail automaticamente (limitação do protocolo `email` no SNS).
+
+### Opção 1 — Habilitar via Terraform (recomendado)
+
+Defina as variáveis no `envs/dev.tfvars` (ou equivalente) e rode `terraform apply`:
+
+```hcl
+enable_email_subscription_error = true
+email_endpoint_error            = "seu-email@exemplo.com"
+```
+
+O Terraform criará a subscrição com status **"PendingConfirmation"**. **Após o apply, a AWS envia um e-mail de confirmação; é obrigatório clicar no link "Confirm subscription" para começar a receber os alertas.**
+
+### Opção 2 — Subscrição manual pelo console AWS
+
+1. Acesse o [console SNS](https://console.aws.amazon.com/sns/home) na região do projeto (`us-east-1` por padrão).
+2. Em **Topics**, localize o tópico **`<prefix>-topic-video-processing-error`** (ex.: `video-processing-engine-dev-topic-video-processing-error`).
+3. Clique em **Create subscription**.
+4. Protocolo: **Email**; Endpoint: seu e-mail.
+5. Clique em **Create subscription**.
+6. **Verifique a caixa de entrada** e clique em **"Confirm subscription"** no e-mail recebido da AWS.
+
+> **Importante:** enquanto a subscrição não for confirmada (link no e-mail), nenhuma notificação de erro será entregue. O status fica como "PendingConfirmation" no console SNS até a confirmação.
 
 ---
 
