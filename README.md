@@ -5,29 +5,33 @@ Repositório de **Infraestrutura como Código (IaC)** do projeto **Video Process
 Este repositório **cria recursos de infraestrutura** e não realiza deploy do código das aplicações (cada Lambda possui seu próprio repositório).
 
 ---
-## 🚀 Deploy dos Serviços
+## 🚀 Ordem de Deploy da Solução
 
-Após a criação da infraestrutura, é necessário executar o deploy de cada serviço através das GitHub Actions correspondentes.
+A criação e publicação dos serviços deve seguir a ordem abaixo.
 
-- 🔐 **Autenticação**  
-  Executar a action de deploy:  
-  https://github.com/diegoknsk/video-processing-engine-auth-lambda  
+1️⃣ **Infraestrutura + Banco de Dados**  
+Executar a GitHub Action `terraform apply`:  
+https://github.com/diegoknsk/video-processing-engine-infra  
 
-- 🎬 **Gestão de Vídeos**  
-  Executar a action de deploy:  
-  https://github.com/diegoknsk/video-processing-engine-video-management-lambda  
+2️⃣ **Serviço de Autenticação**  
+Executar a GitHub Action de deploy:  
+https://github.com/diegoknsk/video-processing-engine-auth-lambda  
 
-- ⚙️ **Orquestrador do Processo de Vídeos**  
-  Executar a action de deploy:  
-  https://github.com/diegoknsk/video-processing-engine-video-orchestrator-lambda  
+3️⃣ **Serviço de Gestão de Vídeos**  
+Executar a GitHub Action de deploy:  
+https://github.com/diegoknsk/video-processing-engine-video-management-lambda  
 
-- 🖼️ **Processador de Vídeos (extração de imagens)**  
-  Executar a action de deploy:  
-  https://github.com/diegoknsk/video-processing-engine-video-processor-lambda  
+4️⃣ **Serviço Orquestrador do Processamento**  
+Executar a GitHub Action de deploy:  
+https://github.com/diegoknsk/video-processing-engine-video-orchestrator-lambda  
 
-- 📦 **Compactador de Imagens (finalização)**  
-  Executar a action de deploy:  
-  https://github.com/diegoknsk/video-processing-engine-video-finalizer-lambda  
+5️⃣ **Serviço Processador de Vídeos (extração de imagens)**  
+Executar a GitHub Action de deploy:  
+https://github.com/diegoknsk/video-processing-engine-video-processor-lambda  
+
+6️⃣ **Serviço Compactador de Imagens (Finalização)**  
+Executar a GitHub Action de deploy:  
+https://github.com/diegoknsk/video-processing-engine-video-finalizer-lambda   
 
 ## 1. Visão Geral da Solução
 
