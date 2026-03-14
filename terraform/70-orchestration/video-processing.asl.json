@@ -1,91 +1,318 @@
 {
-    "Comment": "Placeholder: video processing. Definicao completa (Lambda Processor + Finalize) a preencher depois.",
-    "StartAt": "Map",
-    "States": {
-      "Map": {
-        "Type": "Map",
-        "ItemProcessor": {
-          "ProcessorConfig": {
-            "Mode": "INLINE"
-          },
-          "StartAt": "Processor Video",
-          "States": {
-            "Processor Video": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::lambda:invoke",
-              "OutputPath": "$.Payload",
-              "Parameters": {
-                "FunctionName": "arn:aws:lambda:us-east-1:819277236335:function:video-processing-engine-dev-video-processor:$LATEST",
-                "Payload": {
-                  "contractVersion.$": "$.contractVersion",
-                  "videoId.$": "$.videoId",
-                  "chunk": {
-                    "chunkId.$": "$.chunk.chunkId",
-                    "startSec.$": "$.chunk.startSec",
-                    "endSec.$": "$.chunk.endSec",
-                    "intervalSec.$": "$.chunk.intervalSec"
-                  },
-                  "source": {
-                    "bucket.$": "$.s3BucketVideo",
-                    "key.$": "$.s3KeyVideo"
-                  },
-                  "output": {
-                    "manifestBucket.$": "$.output.manifestBucket",
-                    "manifestPrefix.$": "$.chunk.manifestPrefix",
-                    "framesBucket.$": "$.output.framesBucket",
-                    "framesPrefix.$": "$.chunk.framesPrefix"
-                  }
-                }
-              },
-              "Retry": [
-                {
-                  "ErrorEquals": [
-                    "Lambda.ServiceException",
-                    "Lambda.AWSLambdaException",
-                    "Lambda.SdkClientException",
-                    "Lambda.TooManyRequestsException"
-                  ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 3,
-                  "BackoffRate": 2,
-                  "JitterStrategy": "FULL"
-                }
-              ],
-              "End": true
-            }
-          }
+  "Comment": "Video processing: Map state (chunks) -> Update Status (SQS) -> Success.",
+  "StartAt": "Set Processing Started",
+  "States": {
+    "Set Processing Started": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 1
+        }
+      },
+      "Next": "Map",
+      "ResultPath": "$.start"
+    },
+    "Map": {
+      "Type": "Map",
+      "ItemsPath": "$.video.chunks",
+      "ItemSelector": {
+        "contractVersion.$": "$.contractVersion",
+        "executionId.$": "$.executionId",
+        "videoId.$": "$.video.videoId",
+        "userId.$": "$.video.userId",
+        "title.$": "$.video.title",
+        "s3BucketVideo.$": "$.video.s3Bucket",
+        "s3KeyVideo.$": "$.video.s3Key",
+        "videoOutputPrefix.$": "$.video.outputPrefix",
+        "output": {
+          "framesBucket.$": "$.output.framesBucket",
+          "manifestBucket.$": "$.output.manifestBucket"
         },
-        "Next": "Update Status",
-        "ItemsPath": "$.chunks",
-        "ItemSelector": {
-          "contractVersion.$": "$.contractVersion",
+        "zip": {
+          "outputBucket.$": "$.zip.outputBucket",
+          "outputKey.$": "$.zip.outputKey"
+        },
+        "finalize": {
+          "framesBucket.$": "$.finalize.framesBucket",
+          "framesBasePrefix.$": "$.finalize.framesBasePrefix",
+          "outputBucket.$": "$.finalize.outputBucket",
+          "videoId.$": "$.finalize.videoId",
+          "outputBasePrefix.$": "$.finalize.outputBasePrefix",
+          "ordenaAutomaticamente.$": "$.finalize.ordenaAutomaticamente"
+        },
+        "user": {
+          "name.$": "$.user.name",
+          "email.$": "$.user.email"
+        },
+        "chunk.$": "$$.Map.Item.Value"
+      },
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Processor Video",
+        "States": {
+          "Processor Video": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "arn:aws:lambda:us-east-1:380894490298:function:video-processing-engine-dev-video-processor",
+              "Payload": {
+                "contractVersion.$": "$.contractVersion",
+                "videoId.$": "$.videoId",
+                "chunk": {
+                  "chunkId.$": "$.chunk.chunkId",
+                  "startSec.$": "$.chunk.startSec",
+                  "endSec.$": "$.chunk.endSec",
+                  "intervalSec.$": "$.chunk.intervalSec"
+                },
+                "source": {
+                  "bucket.$": "$.s3BucketVideo",
+                  "key.$": "$.s3KeyVideo"
+                },
+                "output": {
+                  "manifestBucket.$": "$.output.manifestBucket",
+                  "manifestPrefix.$": "$.chunk.manifestPrefix",
+                  "framesBucket.$": "$.output.framesBucket",
+                  "framesPrefix.$": "$.chunk.framesPrefix"
+                }
+              }
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "Next": "Update Progress",
+            "ResultPath": "$.processorResult",
+            "Catch": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "Comment": "Processor Error",
+                "Next": "Notify processor Error",
+                "ResultPath": "$.errorInfo"
+              }
+            ]
+          },
+          "Update Progress": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "arn:aws:lambda:us-east-1:380894490298:function:video-processing-engine-dev-update-status-video",
+              "Payload": {
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "status": 1,
+                "chunk": {
+                  "chunkId.$": "$.chunk.chunkId",
+                  "startSec.$": "$.chunk.startSec",
+                  "endSec.$": "$.chunk.endSec",
+                  "intervalSec.$": "$.chunk.intervalSec",
+                  "framesPrefix.$": "$.chunk.framesPrefix",
+                  "manifestPrefix.$": "$.chunk.manifestPrefix"
+                }
+              }
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "End": true,
+            "ResultPath": "$.progress"
+          },
+          "Notify processor Error": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sns:publish",
+            "Parameters": {
+              "TopicArn": "arn:aws:sns:us-east-1:380894490298:video-processing-engine-dev-topic-video-processing-error",
+              "Message": {
+                "system": "VIDEO PROCESSING ENGINE",
+                "environment": "DEV",
+                "notificationType": "PROCESSING_ERROR",
+                "videoName.$": "$.title",
+                "email.$": "$.user.email",
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "chunkIndex.$": "$.chunk.chunkIndex",
+                "chunkId.$": "$.chunk.chunkId",
+                "executionId.$": "$.executionId",
+                "error": "Processor lambda failed",
+                "action": "Execution will be marked as FAILED"
+              }
+            },
+            "Next": "Notify Error",
+            "ResultPath": "$.notifyErrorResultSns"
+          },
+          "Notify Error": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sqs:sendMessage",
+            "Parameters": {
+              "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+              "MessageBody": {
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "status": 4,
+                "error": "Erro no processamento"
+              }
+            },
+            "ResultPath": "$.notifyErrorResultSqs",
+            "Next": "Processing Failed"
+          },
+          "Processing Failed": {
+            "Type": "Fail",
+            "Comment": "VideoProcessingError",
+            "Error": "VideoProcessingError",
+            "Cause": "Processor lambda failed"
+          }
+        }
+      },
+      "ResultPath": "$.chunkResults",
+      "Next": "Initiate Zip"
+    },
+    "Initiate Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 2,
+          "progressPercent": 100
+        }
+      },
+      "Next": "Generate Zip",
+      "ResultPath": "$.initiateZip"
+    },
+    "Generate Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload": {
+          "videoId.$": "$.finalize.videoId",
+          "userId.$": "$.video.userId",
+          "framesBucket.$": "$.finalize.framesBucket",
+          "framesBasePrefix.$": "$.finalize.framesBasePrefix",
+          "outputBucket.$": "$.finalize.outputBucket",
+          "outputBasePrefix.$": "$.finalize.outputBasePrefix",
+          "outputKey.$": "$.zip.outputKey",
+          "zipFileName.$": "States.Format('{}.zip', $.video.videoId)",
+          "ordenaAutomaticamente.$": "$.finalize.ordenaAutomaticamente"
+        },
+        "FunctionName": "arn:aws:lambda:us-east-1:380894490298:function:video-processing-engine-dev-video-finalizer"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Finish",
+      "ResultPath": "$.PayloadZip",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify Generate Zip Error"
+        }
+      ]
+    },
+    "Notify Generate Zip Error": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:380894490298:video-processing-engine-dev-topic-video-processing-error",
+        "Message": {
+          "system": "VIDEO GENERATE ZIP ERROR",
+          "environment": "DEV",
+          "notificationType": "VIDEO_GENERATE_ERROR",
+          "videoName.$": "$.title",
+          "email.$": "$.user.email",
           "videoId.$": "$.videoId",
           "userId.$": "$.userId",
-          "s3BucketVideo.$": "$.s3BucketVideo",
-          "s3KeyVideo.$": "$.s3KeyVideo",
-          "output.$": "$.output",
-          "chunk.$": "$$.Map.Item.Value"
-        },
-        "ResultPath": "$.chunkResults"
+          "chunkIndex.$": "$.chunk.chunkIndex",
+          "chunkId.$": "$.chunk.chunkId",
+          "executionId.$": "$.executionId",
+          "error": "Processor lambda failed",
+          "action": "Execution will be marked as FAILED"
+        }
       },
-      "Update Status": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sqs:sendMessage",
-        "Parameters": {
-          "QueueUrl": "https://sqs.us-east-1.amazonaws.com/819277236335/video-processing-engine-dev-q-video-status-update",
-          "MessageBody": {
-            "videoId.$": "$.videoId",
-            "userId.$": "$.userId",
-            "status": 2,
-            "progressPercent": 100,
-            "s3BucketFrames.$": "$.output.framesBucket",
-            "framesPrefix.$": "$.output.framesBasePrefix"
-          }
-        },
-        "Next": "Success"
+      "Next": "Notify Error Zip",
+      "ResultPath": "$.notifyErrorResultSnsZip"
+    },
+    "Notify Error Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+        "MessageBody": {
+          "videoId.$": "$.videoId",
+          "userId.$": "$.userId",
+          "status": 4,
+          "error": "Erro no processamento"
+        }
       },
-      "Success": {
-        "Type": "Succeed"
-      }
+      "ResultPath": "$.notifyErrorResultSqsZip",
+      "Next": "Fail"
+    },
+    "Fail": {
+      "Type": "Fail"
+    },
+    "Finish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/380894490298/video-processing-engine-dev-q-video-status-update",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 3,
+          "progressPercent": 100,
+          "s3BucketFrames.$": "$.output.framesBucket",
+          "framesPrefix.$": "$.video.outputPrefix",
+          "zipBucket.$": "$.zip.outputBucket",
+          "zipKey.$": "$.PayloadZip.Payload.ZipS3Key",
+          "zipFileName.$": "States.ArrayGetItem(States.StringSplit($.PayloadZip.Payload.ZipS3Key, '/'), States.MathAdd(States.ArrayLength(States.StringSplit($.PayloadZip.Payload.ZipS3Key, '/')), -1))"
+        }
+      },
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
     }
   }
+}

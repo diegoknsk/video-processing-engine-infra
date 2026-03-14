@@ -42,6 +42,7 @@ resource "aws_iam_role_policy" "sfn_exec" {
         Resource = [
           var.lambda_processor_arn,
           var.lambda_finalizer_arn,
+          var.lambda_update_status_arn,
         ]
       },
       {
@@ -49,6 +50,12 @@ resource "aws_iam_role_policy" "sfn_exec" {
         Effect   = "Allow"
         Action   = ["sqs:SendMessage"]
         Resource = ["*"]
+      },
+      {
+        Sid      = "SNSPublishError"
+        Effect   = "Allow"
+        Action   = ["sns:Publish"]
+        Resource = [var.topic_video_processing_error_arn]
       },
       {
         Sid    = "CloudWatchLogs"

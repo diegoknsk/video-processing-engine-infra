@@ -39,6 +39,11 @@ variable "lambda_finalizer_arn" {
   type        = string
 }
 
+variable "lambda_update_status_arn" {
+  description = "ARN da Lambda Update Status Video (output do módulo 50-lambdas-shell)."
+  type        = string
+}
+
 variable "q_video_zip_finalize_arn" {
   description = "ARN da fila q-video-zip-finalize (output do módulo 30-messaging); obrigatório quando finalization_mode = sqs."
   type        = string
@@ -53,6 +58,11 @@ variable "q_video_zip_finalize_url" {
 
 variable "q_video_status_update_url" {
   description = "URL da fila SQS q-video-status-update (para SendMessage na State Machine após processamento dos chunks)."
+  type        = string
+}
+
+variable "topic_video_processing_error_arn" {
+  description = "ARN do tópico SNS topic-video-processing-error (notificação de erros de processamento na State Machine)."
   type        = string
 }
 

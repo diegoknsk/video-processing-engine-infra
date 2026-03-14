@@ -1,0 +1,120 @@
+{
+  "info": {
+    "_postman_id": "1eaca417-ced2-477d-aef6-bb08601dcfa3",
+    "name": "00_Cognito",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "15750959",
+    "_collection_link": "https://go.postman.co/collection/15750959-1eaca417-ced2-477d-aef6-bb08601dcfa3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "TokenMachine2Machine",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let response = pm.response.json();\r",
+              "\r",
+              "if (response) {\r",
+              "    pm.globals.set(\"internal_access_token\", response.access_token);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "password",
+              "value": "{{secretM2M}}",
+              "type": "string"
+            },
+            {
+              "key": "username",
+              "value": "{{clienteIdM2M}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "type": "text",
+              "key": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "type": "text",
+              "key": "scope",
+              "value": "video-processing-engine/analyze:run"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://video-processing-engine-dev-auth.auth.us-east-1.amazoncognito.com/oauth2/token",
+          "protocol": "https",
+          "host": [
+            "video-processing-engine-dev-auth",
+            "auth",
+            "us-east-1",
+            "amazoncognito",
+            "com"
+          ],
+          "path": [
+            "oauth2",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "clienteIdM2M",
+      "value": ""
+    },
+    {
+      "key": "secretM2M",
+      "value": ""
+    }
+  ]
+}
