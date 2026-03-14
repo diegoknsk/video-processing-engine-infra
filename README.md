@@ -5,6 +5,22 @@ Repositório de **Infraestrutura como Código (IaC)** do projeto **Video Process
 Este repositório **cria recursos de infraestrutura** e não realiza deploy do código das aplicações (cada Lambda possui seu próprio repositório).
 
 ---
+## 0. Instrucoes gerais:
+Verificar documentação de cada projeto para preencher secrets e varaibles
+Repositórios usados:
+
+INFRA + BANCO (rodar action terraform apply)
+https://github.com/diegoknsk/video-processing-engine-infra
+Autenticação (rodar action deploy)
+https://github.com/diegoknsk/video-processing-engine-auth-lambda
+Gestão de Vídeos (rodar action deploy)
+https://github.com/diegoknsk/video-processing-engine-video-management-lambda
+Orquestrador de processo de Vídeos (rodar action deploy)
+https://github.com/diegoknsk/video-processing-engine-video-orchestrator-lambda
+Processador de Vídeos para criação de imagens (rodar action deploy)
+https://github.com/diegoknsk/video-processing-engine-video-processor-lambda
+Compactador de Imagens (rodar action deploy)
+https://github.com/diegoknsk/video-processing-engine-video-finalizer-lambda
 
 ## 1. Visão Geral da Solução
 
