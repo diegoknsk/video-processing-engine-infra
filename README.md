@@ -6,6 +6,147 @@ Este repositório **cria recursos de infraestrutura** e não realiza deploy do c
 
 ---
 
+## 1. Visão Geral da Solução
+
+O **Video Processing Engine** é uma solução serverless para **processamento distribuído de vídeos** na AWS. O objetivo central é receber vídeos enviados por usuários, extrair frames em paralelo (chunks) e entregar o resultado compactado, com rastreamento completo de estado e notificação ao final do processamento.
+
+Principais características da abordagem:
+
+- **Serverless:** toda a computação é baseada em AWS Lambda e Step Functions — sem servidores para gerenciar, com escalonamento automático conforme demanda.
+- **Paralelismo (fan-out / fan-in):** o vídeo é dividido em chunks processados simultaneamente via Map State na Step Functions, reduzindo drasticamente o tempo total de processamento.
+- **Arquitetura inspirada em ~80% Clean Architecture:** cada serviço possui responsabilidades bem delimitadas, com separação entre domínio, casos de uso e infraestrutura; adaptada para o contexto serverless/Lambda.
+- **Escalabilidade horizontal automática:** componentes stateless escalam independentemente; DynamoDB e S3 não possuem limites práticos de capacidade para o volume esperado.
+- **Desacoplamento entre serviços:** comunicação exclusivamente por eventos (SNS/SQS), sem chamadas síncronas diretas entre serviços de domínio distintos.
+
+---
+
+## 2. Modelagem de Domínio (DDD)
+
+![Modelagem DDD](docs/arquitetura/ddd.png)
+
+A modelagem segue princípios de **Domain-Driven Design**, com os seguintes elementos centrais:
+
+- **Domínio principal — Processamento de Vídeos:** concentra toda a lógica de negócio relacionada ao ciclo de vida do processamento.
+- **Agregado Principal — `Video`:** representa a entidade central do domínio; é responsável pelo ciclo de vida completo do processamento (criação, divisão em chunks, acompanhamento de progresso, finalização e notificação).
+- **Subdomínio de suporte — Autenticação:** trata da identidade do usuário via Cognito; não pertence ao núcleo de negócio, mas é necessário para o acesso seguro à API.
+- **Serviços distribuídos:**
+  - **Gestão de Vídeos** — recebe requisições da API, persiste metadados e gera URL pré-assinada para upload no S3.
+  - **Orquestração** — consome eventos de upload e inicia o fluxo de processamento na Step Functions.
+  - **Processamento** — extrai frames do vídeo por chunk de forma paralela.
+  - **Compactação (Finalizer)** — agrega os frames gerados e produz o arquivo zip final.
+
+---
+
+## 3. Arquitetura da Solução
+
+![Arquitetura da Solução](docs/arquitetura/Arquitetura_solucao.png)
+
+A solução é **orientada a eventos**, com os seguintes componentes AWS principais:
+
+| Componente | Papel |
+|---|---|
+| **API Gateway (HTTP API)** | Ponto de entrada das requisições REST; valida o token JWT via authorizer Cognito. |
+| **Cognito** | Gerencia autenticação e emissão de tokens JWT para os usuários. |
+| **Lambda (Video Management)** | Persiste metadados no DynamoDB e gera URL pré-assinada para upload no S3. |
+| **S3** | Armazena os vídeos enviados, os frames extraídos (por chunk) e o zip final. |
+| **SNS** | Publica eventos de domínio: `video-submitted`, `video-completed`, `video-processing-error`. |
+| **SQS** | Filas de desacoplamento para processamento, atualização de status e finalização; inclui DLQs. |
+| **Lambda (Orchestrator)** | Consome a fila SQS e inicia a execução da State Machine na Step Functions. |
+| **Step Functions** | Orquestra o fluxo de processamento com suporte a execução paralela (Map State). |
+| **Lambda (Processor)** | Extrai frames do chunk de vídeo e persiste no S3. |
+| **Lambda (Finalizer)** | Compacta todos os frames extraídos e persiste o zip no S3. |
+| **DynamoDB** | Armazena metadados, status e progresso de cada vídeo processado. |
+
+**Características arquiteturais:**
+
+- **Orientada a eventos:** nenhum serviço chama diretamente outro serviço de domínio; a comunicação ocorre via SNS/SQS.
+- **Fan-out / fan-in:** o processamento de chunks é disparado em paralelo (fan-out via Map State) e consolidado ao final (fan-in na Lambda Finalizer).
+- **Desacoplamento total:** a Lambda Orchestrator, o Processor e o Finalizer são acionados por eventos, não por chamadas diretas — cada um pode evoluir ou escalar de forma independente.
+
+---
+
+## 4. Orquestração e Paralelismo
+
+![Step Functions — Fluxo de Orquestração](docs/arquitetura/stepFunctions.png)
+
+A **State Machine** na Step Functions é o coração do processamento distribuído:
+
+1. **Divisão em chunks:** ao iniciar, o fluxo recebe o vídeo e o divide em segmentos (chunks) conforme configuração.
+2. **Execução paralela (Map State):** cada chunk é processado de forma simultânea e independente pela Lambda Processor — extraindo frames e persistindo no S3. Isso reduz o tempo total de processamento de forma linear conforme o número de chunks.
+3. **Atualização de progresso:** ao concluir cada chunk, o status do vídeo no DynamoDB é atualizado, permitindo rastreamento em tempo real do progresso.
+4. **Geração do arquivo compactado final:** após todos os chunks serem processados (fan-in), a Lambda Finalizer é invocada para consolidar os frames e gerar o zip final no S3.
+5. **Notificação de conclusão:** ao finalizar, o evento `video-completed` é publicado no SNS, podendo acionar notificações externas (ex.: e-mail via subscrição SNS).
+
+---
+
+## 5. Banco de Dados
+
+**Tabela principal — metadados e status do vídeo:**
+
+![Tabela Principal DynamoDB](docs/arquitetura/bancoDeDadosTabelaPrincipal.png)
+
+**Tabela de detalhes — chunks e progresso:**
+
+![Tabela de Detalhes DynamoDB](docs/arquitetura/bancoDeDadosTabelaDetalhesChunks.png)
+
+### Por que DynamoDB (chave-valor)?
+
+O DynamoDB foi escolhido como banco de dados principal por ser o mais adequado para o perfil de acesso e escala desta solução:
+
+| Critério | Justificativa |
+|---|---|
+| **Alta velocidade de leitura e escrita** | Latência de milissegundos em qualquer escala; essencial para rastreamento em tempo real de eventos de processamento. |
+| **Baixa latência** | Acesso por chave primária em O(1); nenhuma query complexa é necessária para o fluxo de processamento. |
+| **Grande volume de eventos** | Cada chunk processado gera uma atualização de status; o volume de escritas cresce proporcionalmente ao paralelismo. |
+| **Estrutura dinâmica e flexível** | Schema-less permite evoluir os atributos de metadados sem migrações; chunks de vídeos distintos podem ter atributos diferentes. |
+| **Escalabilidade horizontal automática** | Capacidade provisionada ou on-demand ajusta automaticamente sem intervenção operacional. |
+| **Aderência à arquitetura orientada a eventos** | Integração nativa com Streams DynamoDB para captura de mudanças; sem necessidade de pooling ou transações longas. |
+
+---
+
+## 6. Deploy da Solução
+
+O processo de deploy segue a seguinte sequência:
+
+1. **Configurar variáveis de infraestrutura:** preencher o arquivo `terraform/envs/dev.tfvars` com os valores específicos do ambiente (região, prefixo, lab_role_arn, etc.) conforme instruções detalhadas na seção [Variáveis importantes](#variáveis-importantes) e nos READMEs de cada módulo.
+
+2. **Provisionar a infraestrutura:** executar a GitHub Action **Terraform Apply** neste repositório. Isso criará todos os recursos AWS (S3, DynamoDB, SNS, SQS, Cognito, Lambdas em casca, API Gateway, Step Functions).
+
+3. **Obter dados do Cognito (primeira execução):** após o `terraform apply`, os outputs do Cognito são gerados automaticamente. Recuperar os valores de:
+   - `cognito_user_pool_id`
+   - `cognito_client_id`
+   - `cognito_issuer`
+   - `cognito_jwks_url`
+
+4. **Configurar os serviços dependentes:** com os dados do Cognito obtidos no passo anterior, configurar as variáveis de ambiente nos repositórios:
+   - **Serviço de autenticação (Lambda Auth)**
+   - **Gestão de vídeos (Lambda Video Management)**
+   - **Orquestrador (Lambda Orchestrator)**
+
+5. **Executar as actions de deploy dos serviços:** após configurar cada repositório de Lambda com as variáveis corretas, disparar os workflows de deploy em cada repositório para publicar o código nas Lambdas em casca criadas pela infraestrutura.
+
+> **Importante:** o deploy dos serviços (passo 5) só funciona corretamente após a infraestrutura estar provisionada (passo 2) e os serviços estarem configurados com os dados do Cognito (passos 3 e 4).
+
+---
+
+## 7. Collections de Teste
+
+As collections Postman para teste da API estão disponíveis na pasta `docs/collections/`:
+
+| Collection | Arquivo | Finalidade |
+|---|---|---|
+| **Cognito (Setup)** | [`docs/collections/00_Cognito.postman_collection.json`](docs/collections/00_Cognito.postman_collection.json) | Criação de usuário e obtenção de token JWT via Cognito. Executar antes das demais collections. |
+| **Autenticação** | [`docs/collections/Auth.postman_collection.json`](docs/collections/Auth.postman_collection.json) | Endpoints de autenticação via Lambda Auth (login, refresh, etc.). |
+| **Gestão de Vídeos** | [`docs/collections/Video Management.postman_collection.json`](docs/collections/Video%20Management.postman_collection.json) | Endpoints completos de upload, listagem, consulta de status e acompanhamento do processamento de vídeos. |
+
+**Ordem recomendada de execução para testes ponta a ponta:**
+
+1. `00_Cognito` — criar usuário e obter token
+2. `Auth` — validar autenticação
+3. `Video Management` — testar o fluxo completo de upload e processamento
+
+---
+
 ## Visão geral da arquitetura (Processador Video MVP + Fan-out)
 
 A arquitetura segue o desenho **Processador Video MVP + Fan-out**:

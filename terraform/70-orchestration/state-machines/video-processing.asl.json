@@ -96,7 +96,7 @@
                 "JitterStrategy": "FULL"
               }
             ],
-            "Next": "Set progress",
+            "Next": "Update Progress",
             "ResultPath": "$.processorResult",
             "Catch": [
               {
@@ -109,15 +109,15 @@
               }
             ]
           },
-          "Set progress": {
+          "Update Progress": {
             "Type": "Task",
-            "Resource": "arn:aws:states:::sqs:sendMessage",
+            "Resource": "arn:aws:states:::lambda:invoke",
             "Parameters": {
-              "QueueUrl": "${q_video_status_update_url}",
-              "MessageBody": {
+              "FunctionName": "${lambda_update_status_arn}",
+              "Payload": {
                 "videoId.$": "$.videoId",
                 "userId.$": "$.userId",
-                "status": 2,
+                "status": 1,
                 "chunk": {
                   "chunkId.$": "$.chunk.chunkId",
                   "startSec.$": "$.chunk.startSec",
@@ -128,15 +128,42 @@
                 }
               }
             },
-            "ResultPath": "$.progress",
-            "End": true
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "End": true,
+            "ResultPath": "$.progress"
           },
           "Notify processor Error": {
             "Type": "Task",
             "Resource": "arn:aws:states:::sns:publish",
             "Parameters": {
               "TopicArn": "${topic_video_processing_error_arn}",
-              "Message.$": "States.Format('{\"system\":\"VIDEO PROCESSING ENGINE\",\"environment\":\"DEV\",\"notificationType\":\"PROCESSING_ERROR\",\"videoName\":\"{}\",\"email\":\"{}\",\"error\":\"{}\",\"action\":\"Execution will be marked as FAILED\"}', $$.title, $$.user.email, $$.errorInfo.Cause)"
+              "Message": {
+                "system": "VIDEO PROCESSING ENGINE",
+                "environment": "DEV",
+                "notificationType": "PROCESSING_ERROR",
+                "videoName.$": "$.title",
+                "email.$": "$.user.email",
+                "videoId.$": "$.videoId",
+                "userId.$": "$.userId",
+                "chunkIndex.$": "$.chunk.chunkIndex",
+                "chunkId.$": "$.chunk.chunkId",
+                "executionId.$": "$.executionId",
+                "error": "Processor lambda failed",
+                "action": "Execution will be marked as FAILED"
+              }
             },
             "Next": "Notify Error",
             "ResultPath": "$.notifyErrorResultSns"
@@ -214,7 +241,54 @@
         }
       ],
       "Next": "Finish",
-      "ResultPath": "$.PayloadZip"
+      "ResultPath": "$.PayloadZip",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify Generate Zip Error"
+        }
+      ]
+    },
+    "Notify Generate Zip Error": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${topic_video_processing_error_arn}",
+        "Message": {
+          "system": "VIDEO GENERATE ZIP ERROR",
+          "environment": "DEV",
+          "notificationType": "VIDEO_GENERATE_ERROR",
+          "videoName.$": "$.video.title",
+          "email.$": "$.user.email",
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "executionId.$": "$.executionId",
+          "error": "Processor lambda failed",
+          "action": "Execution will be marked as FAILED"
+        }
+      },
+      "Next": "Notify Error Zip",
+      "ResultPath": "$.notifyErrorResultSnsZip"
+    },
+    "Notify Error Zip": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${q_video_status_update_url}",
+        "MessageBody": {
+          "videoId.$": "$.video.videoId",
+          "userId.$": "$.video.userId",
+          "status": 4,
+          "error": "Erro no processamento"
+        }
+      },
+      "ResultPath": "$.notifyErrorResultSqsZip",
+      "Next": "Fail"
+    },
+    "Fail": {
+      "Type": "Fail"
     },
     "Finish": {
       "Type": "Task",

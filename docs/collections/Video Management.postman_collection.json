@@ -1,0 +1,403 @@
+{
+  "info": {
+    "_postman_id": "9655734e-5d1f-4ba1-ba97-75e08f6cca31",
+    "name": "Video Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "15750959",
+    "_collection_link": "https://go.postman.co/collection/15750959-9655734e-5d1f-4ba1-ba97-75e08f6cca31?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "try {\r",
+              "    const r = pm.response.json();\r",
+              "\r",
+              "    if (r?.success && r?.data?.videoId) {\r",
+              "        pm.globals.set(\"videoId\", r.data.videoId);\r",
+              "        pm.globals.set(\"uploadUrl\", r.data.uploadUrl);\r",
+              "\r",
+              "        console.log(\"Video variables set successfully.\");\r",
+              "    } else {\r",
+              "        console.warn(\"Unexpected response structure.\");\r",
+              "    }\r",
+              "} catch (e) {\r",
+              "    console.error(\"Failed to parse response:\", e);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalFileName\": \"Teste.mp4\",\r\n  \"contentType\": \"video/mp4\",\r\n  \"sizeKb\": 15000,\r\n  \"durationSec\": 45,\r\n  \"frameIntervalSec\": 5,\r\n  \"parallelChunks\": 3\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create VideoError",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "try {\r",
+              "    const r = pm.response.json();\r",
+              "\r",
+              "    if (r?.success && r?.data?.videoId) {\r",
+              "        pm.globals.set(\"videoId\", r.data.videoId);\r",
+              "        pm.globals.set(\"uploadUrl\", r.data.uploadUrl);\r",
+              "\r",
+              "        console.log(\"Video variables set successfully.\");\r",
+              "    } else {\r",
+              "        console.warn(\"Unexpected response structure.\");\r",
+              "    }\r",
+              "} catch (e) {\r",
+              "    console.error(\"Failed to parse response:\", e);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalFileName\": \"test1.mp4\",\r\n  \"contentType\": \"video/mp4\",\r\n  \"sizeKb\": 15700,\r\n  \"durationSec\": 1303\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Large Video",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "try {\r",
+              "    const r = pm.response.json();\r",
+              "\r",
+              "    if (r?.success && r?.data?.videoId) {\r",
+              "        pm.globals.set(\"videoId\", r.data.videoId);\r",
+              "        pm.globals.set(\"uploadUrl\", r.data.uploadUrl);\r",
+              "\r",
+              "        console.log(\"Video variables set successfully.\");\r",
+              "    } else {\r",
+              "        console.warn(\"Unexpected response structure.\");\r",
+              "    }\r",
+              "} catch (e) {\r",
+              "    console.error(\"Failed to parse response:\", e);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalFileName\": \"Final Fantasy XVI Ascension OST (Ifrit Risen vs Bahamut Theme).mp4\",\r\n  \"contentType\": \"video/mp4\",\r\n  \"sizeKb\": 100000,\r\n  \"durationSec\": 248,\r\n  \"frameIntervalSec\": 5,\r\n  \"parallelChunks\": 3\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UploadUrlPreSigned",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "file",
+          "file": {
+            "src": "/D:/TesteVideos/teste1.mp4"
+          }
+        },
+        "url": {
+          "raw": "{{uploadUrl}}",
+          "host": [
+            "{{uploadUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UploadUrlPreSigned Large Video",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "file",
+          "file": {
+            "src": "/D:/TesteVideos/Final Fantasy XVI Ascension OST (Ifrit Risen vs Bahamut Theme) [4].MP4"
+          }
+        },
+        "url": {
+          "raw": "{{uploadUrl}}",
+          "host": [
+            "{{uploadUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetVideos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJraWQiOiJrRWpkdmVpQ2FqT2s1YWNSXC95YVNJaFU2V1wvakdKXC9RR2VyVjMyTmE4dk80PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI2bTM0aGljNDl2ZWY5N2VlcXQxZzZpODEzOSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoidmlkZW8tcHJvY2Vzc2luZy1lbmdpbmVcL2FuYWx5emU6cnVuIiwiYXV0aF90aW1lIjoxNzcyMzk4NDgxLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV81ZTlrTWNyUTMiLCJleHAiOjE3NzI0MDIwODEsImlhdCI6MTc3MjM5ODQ4MSwidmVyc2lvbiI6MiwianRpIjoiNTdiZWIxYjYtNTUyYy00ZjI0LTg4ZmYtMmFmNWUyM2Y0ZGZlIiwiY2xpZW50X2lkIjoiNm0zNGhpYzQ5dmVmOTdlZXF0MWc2aTgxMzkifQ.DxUNg5AUfdjt-mRb7iBo0BxOMV1qEMltXtpKi8ymJZ9hPhrlu7HtKjC4AtxfAVGzn2K9lVbVa_UEcyKPPFcFiKXxcCkL1m33o39HuMSXkVpRIv5-3sqIs-s9C9YNNxKNvEibIi_wZpbTwOaqHFP_rYdu9rTtEsOMAeVhLsXW1YJJLaaCxn_eoHhfsIg3KkloWv_E0ClnEpeZHE1nGF08LrJHQ-Q9EFW6h3uUB1MNglxYhfsPZUErr4P1GAzYKVyzr74_AN7-HkDPK-dN867AcxpwyuuTK4EfTvZ8AQAc_vecZieSH83IPZXqg87PDMYw2xq5jM9X-LMLfqed7Ci0sA",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetVideosById",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internal_access_token}}",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos/{{videoId}}",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ],
+          "path": [
+            "{{videoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetVideosById (access m2m)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internal_access_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}internal/videos/{{userId}}/{{videoId}}",
+          "host": [
+            "{{apiVideoManagement}}internal"
+          ],
+          "path": [
+            "videos",
+            "{{userId}}",
+            "{{videoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Patch_OLD",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userId\": \"{{userId}}\",\r\n  \"status\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{apiVideoManagement}}videos/{{videoId}}",
+          "host": [
+            "{{apiVideoManagement}}videos"
+          ],
+          "path": [
+            "{{videoId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
